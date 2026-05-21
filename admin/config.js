@@ -1,6 +1,6 @@
 // admin/config.js — Configuración global del frontend
 // Cambia esta URL a la de tu Railway backend en producción
-const API_URL = 'https://autodromo-backend-production.up.railway.app/api';
+const API_URL = 'https://autodromo.up.railway.app/api';
 // Para desarrollo local usa: const API_URL = 'http://localhost:3001/api';
 
 // Helpers globales de sesión
