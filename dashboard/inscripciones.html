@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscripciones — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="#fff" width="22" height="22"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg></div>
+      <div><div class="logo-titulo">Autódromo</div><div class="logo-sub">Monterrey</div></div>
+    </div>
+    <nav class="nav">
+      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="pilotos.html"       class="nav-link">Pilotos</a>
+      <a href="carreras.html"      class="nav-link">Carreras</a>
+      <a href="inscripciones.html" class="nav-link activo">Inscripciones</a>
+      <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div><div class="usuario-nombre" id="usuarioNombre"></div><div class="usuario-rol" id="usuarioRol"></div></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <h1 class="page-titulo">Inscripciones</h1>
+        <p class="page-sub" id="contadorInsc">Cargando...</p>
+      </div>
+      <button class="btn-primario" id="btnNuevaInsc" onclick="abrirModalInscripcion()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Inscribir Piloto
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="barra-filtros">
+      <select class="select" id="filtroCarrera" onchange="cargarInscripciones()">
+        <option value="">Selecciona una carrera...</option>
+      </select>
+      <select class="select" id="filtroCategoria" onchange="cargarInscripciones()">
+        <option value="">Todas las categorías</option>
+      </select>
+      <select class="select" id="filtroEstatus" onchange="cargarInscripciones()">
+        <option value="">Todos los estatus</option>
+        <option>Pendiente</option><option>Pagado</option><option>Descalificado</option>
+      </select>
+      <input class="input" type="text" id="inputBuscar" placeholder="Buscar por nombre o número..." oninput="filtrarTabla()" />
+    </div>
+
+    <div class="card tabla-card">
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>#</th><th>Piloto</th><th>Sangre</th><th>Categoría</th><th>Vehículo</th><th>Estatus</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyInsc">
+            <tr><td colspan="7" class="td-vacio">Selecciona una carrera para ver las inscripciones</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal inscripción -->
+  <div class="modal-overlay" id="modalInsc" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-titulo">Inscribir Piloto</span>
+        <button class="modal-cerrar" onclick="cerrarModalInsc()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="campo">
+          <label class="etiqueta">Piloto *</label>
+          <select class="select" id="iPiloto" required>
+            <option value="">Seleccionar piloto...</option>
+          </select>
+        </div>
+        <div class="grid-2" style="margin-top:12px">
+          <div class="campo">
+            <label class="etiqueta">Carrera *</label>
+            <select class="select" id="iCarrera" required>
+              <option value="">Seleccionar...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Número de Piloto *</label>
+            <input class="input" type="number" id="iNumero" min="1" max="999" placeholder="Ej: 42" required />
+            <div style="font-size:0.7rem;color:#666;margin-top:4px">Único por carrera</div>
+          </div>
+          <div class="campo col-2">
+            <label class="etiqueta">Categoría *</label>
+            <div id="gridCategorias" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px"></div>
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Vehículo / Kart *</label>
+            <input class="input" id="iVehiculo" placeholder="Ej: Tony Kart" required />
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Modelo</label>
+            <input class="input" id="iModelo" placeholder="Modelo específico" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModalInsc()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnInscribir" onclick="guardarInscripcion()">Inscribir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal cobro -->
+  <div class="modal-overlay" id="modalCobro" style="display:none">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-header">
+        <span class="modal-titulo">Registrar Pago</span>
+        <button class="modal-cerrar" onclick="cerrarModalCobro()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="infoCobro" style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:16px"></div>
+        <div class="campo">
+          <label class="etiqueta">Método de Pago</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="metodoPago">
+            <button class="metodo-btn activo" onclick="seleccionarMetodo('Efectivo',this)">Efectivo</button>
+            <button class="metodo-btn" onclick="seleccionarMetodo('Transferencia',this)">Transferencia</button>
+            <button class="metodo-btn" onclick="seleccionarMetodo('Tarjeta',this)">Tarjeta</button>
+          </div>
+        </div>
+        <div class="campo">
+          <label class="etiqueta">Monto (opcional)</label>
+          <input class="input" type="number" step="0.01" id="iMonto" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModalCobro()">Cancelar</button>
+        <button class="btn-exito flex-1" id="btnConfirmarPago" onclick="confirmarPago()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+          Confirmar Pago
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .metodo-btn {
+      padding: 8px 6px; border-radius: 8px; font-family: 'Barlow',sans-serif;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid #1e1e1e; background: #0a0a0a; color: #666;
+      transition: all 0.18s;
+    }
+    .metodo-btn.activo { background: rgba(230,57,70,0.15); border-color: rgba(230,57,70,0.4); color: #e63946; }
+    .cat-btn {
+      padding: 8px 6px; border-radius: 8px; font-family: 'Barlow',sans-serif;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid #1e1e1e; background: #0a0a0a; color: #666;
+      transition: all 0.18s; text-align: center;
+    }
+    .cat-btn.activo { color: #fff; }
+  </style>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion();
+    const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+    if (usuario.rol === 'admin') {
+      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    }
+    if (usuario.rol === 'torre') {
+      document.getElementById('btnNuevaInsc').style.display = 'none';
+    }
+
+    let categorias = [], carreras = [], pilotos = [];
+    let inscripcionesActuales = [];
+    let categoriaSeleccionada = '';
+    let metodoPagoSeleccionado = 'Efectivo';
+    let inscripcionCobroId = null;
+
+    async function inicializar() {
+      try {
+        [carreras, categorias, pilotos] = await Promise.all([
+          apiFetch('/carreras'),
+          apiFetch('/categorias'),
+          apiFetch('/pilotos'),
+        ]);
+
+        // Selectores de filtro
+        const filtroCarrera = document.getElementById('filtroCarrera');
+        filtroCarrera.innerHTML = '<option value="">Selecciona una carrera...</option>' +
+          carreras.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
+        const filtroCategoria = document.getElementById('filtroCategoria');
+        filtroCategoria.innerHTML = '<option value="">Todas las categorías</option>' +
+          categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
+        // Selectores del modal
+        document.getElementById('iCarrera').innerHTML = '<option value="">Seleccionar...</option>' +
+          carreras.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
+        document.getElementById('iPiloto').innerHTML = '<option value="">Seleccionar piloto...</option>' +
+          pilotos.map(p => `<option value="${p.id}">${p.nombre_completo}</option>`).join('');
+
+        // Grid categorías
+        document.getElementById('gridCategorias').innerHTML = categorias.map(c => `
+          <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
+            onclick="seleccionarCategoria(${c.id}, '${c.color}', this)">
+            ${c.nombre}
+          </button>
+        `).join('');
+
+        // Si hay carrera en URL, pre-seleccionar
+        if (carreras.length > 0) {
+          filtroCarrera.value = carreras[0].id;
+          cargarInscripciones();
+        }
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    async function cargarInscripciones() {
+      const carreraId  = document.getElementById('filtroCarrera').value;
+      const categoriaId = document.getElementById('filtroCategoria').value;
+      const estatus    = document.getElementById('filtroEstatus').value;
+      if (!carreraId) {
+        document.getElementById('tbodyInsc').innerHTML =
+          '<tr><td colspan="7" class="td-vacio">Selecciona una carrera</td></tr>';
+        return;
+      }
+      try {
+        let url = `/inscripciones?carrera_id=${carreraId}`;
+        if (categoriaId) url += `&categoria_id=${categoriaId}`;
+        if (estatus)     url += `&estatus=${estatus}`;
+        inscripcionesActuales = await apiFetch(url);
+        filtrarTabla();
+        const pagados    = inscripcionesActuales.filter(i => i.estatus === 'Pagado').length;
+        const pendientes = inscripcionesActuales.filter(i => i.estatus === 'Pendiente').length;
+        document.getElementById('contadorInsc').textContent =
+          `${inscripcionesActuales.length} inscripción(es) · ${pagados} pagados · ${pendientes} pendientes`;
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function filtrarTabla() {
+      const buscar = document.getElementById('inputBuscar').value.toLowerCase();
+      const filtrados = inscripcionesActuales.filter(i =>
+        !buscar ||
+        i.piloto_nombre.toLowerCase().includes(buscar) ||
+        i.numero_piloto.toString().includes(buscar)
+      );
+      renderizarTabla(filtrados);
+    }
+
+    function renderizarTabla(lista) {
+      const tbody = document.getElementById('tbodyInsc');
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="td-vacio">Sin inscripciones</td></tr>';
+        return;
+      }
+      tbody.innerHTML = lista.map(i => `
+        <tr id="fila-${i.id}">
+          <td><span class="num-piloto">${i.numero_piloto}</span></td>
+          <td>
+            <div style="font-weight:600">${i.piloto_nombre}</div>
+            ${i.auto_registro ? '<div style="font-size:0.72rem;color:#3b82f6">auto-registro</div>' : ''}
+          </td>
+          <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946;display:flex;align-items:center;gap:4px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            ${i.tipo_sangre}
+          </span></td>
+          <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${i.categoria_color}22;color:${i.categoria_color};border:1px solid ${i.categoria_color}44">${i.categoria_nombre}</span></td>
+          <td style="color:#666">${i.vehiculo}</td>
+          <td>${badgeEstatus(i.estatus)}</td>
+          <td>
+            <div style="display:flex;gap:6px;align-items:center">
+              ${(usuario.rol !== 'torre' && i.estatus === 'Pendiente') ? `
+                <button class="btn-exito" style="padding:6px 12px;font-size:0.7rem" onclick="abrirModalCobro(${i.id}, '${i.piloto_nombre}', ${i.numero_piloto}, '${i.categoria_nombre}', '${i.vehiculo}')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Cobrar
+                </button>
+              ` : ''}
+              ${usuario.rol === 'admin' ? `
+                <button class="btn-peligro" style="padding:6px 10px;font-size:0.7rem" onclick="eliminarInscripcion(${i.id})">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14H6L5,6"/></svg>
+                </button>
+              ` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Modal inscripción
+    function abrirModalInscripcion() {
+      categoriaSeleccionada = '';
+      document.getElementById('iPiloto').value  = '';
+      document.getElementById('iCarrera').value = carreras.length > 0 ? carreras[0].id : '';
+      document.getElementById('iNumero').value  = '';
+      document.getElementById('iVehiculo').value = '';
+      document.getElementById('iModelo').value  = '';
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
+      document.getElementById('modalInsc').style.display = 'flex';
+    }
+
+    function cerrarModalInsc() { document.getElementById('modalInsc').style.display = 'none'; }
+
+    function seleccionarCategoria(id, color, btn) {
+      categoriaSeleccionada = id;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('activo');
+        b.style.background = '#0a0a0a';
+        b.style.borderColor = '#1e1e1e';
+        b.style.color = '#666';
+      });
+      btn.classList.add('activo');
+      btn.style.background = color + '22';
+      btn.style.borderColor = color + '66';
+      btn.style.color = color;
+    }
+
+    async function guardarInscripcion() {
+      const pilotoId   = document.getElementById('iPiloto').value;
+      const carreraId  = document.getElementById('iCarrera').value;
+      const numero     = document.getElementById('iNumero').value;
+      const vehiculo   = document.getElementById('iVehiculo').value.trim();
+
+      if (!pilotoId)            return mostrarToast('Selecciona un piloto', 'error');
+      if (!carreraId)           return mostrarToast('Selecciona una carrera', 'error');
+      if (!numero)              return mostrarToast('Ingresa el número de piloto', 'error');
+      if (!categoriaSeleccionada) return mostrarToast('Selecciona una categoría', 'error');
+      if (!vehiculo)            return mostrarToast('Ingresa el vehículo', 'error');
+
+      const btn = document.getElementById('btnInscribir');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+
+      try {
+        await apiFetch('/inscripciones', {
+          method: 'POST',
+          body: JSON.stringify({
+            piloto_id:       parseInt(pilotoId),
+            carrera_id:      parseInt(carreraId),
+            categoria_id:    parseInt(categoriaSeleccionada),
+            numero_piloto:   parseInt(numero),
+            vehiculo,
+            modelo_vehiculo: document.getElementById('iModelo').value || null,
+          }),
+        });
+        mostrarToast('Piloto inscrito exitosamente');
+        cerrarModalInsc();
+        document.getElementById('filtroCarrera').value = carreraId;
+        cargarInscripciones();
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Inscribir';
+      }
+    }
+
+    // Modal cobro
+    function abrirModalCobro(id, nombre, numero, categoria, vehiculo) {
+      inscripcionCobroId = id;
+      metodoPagoSeleccionado = 'Efectivo';
+      document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('activo'));
+      document.querySelectorAll('.metodo-btn')[0].classList.add('activo');
+      document.getElementById('iMonto').value = '';
+      document.getElementById('infoCobro').innerHTML = `
+        <div style="font-family:'Bebas Neue';font-size:2rem;color:#e63946">#${numero}</div>
+        <div style="font-weight:700;font-size:1.05rem;margin:4px 0">${nombre}</div>
+        <div style="color:#666;font-size:0.82rem">${categoria} — ${vehiculo}</div>
+      `;
+      document.getElementById('modalCobro').style.display = 'flex';
+    }
+
+    function cerrarModalCobro() { document.getElementById('modalCobro').style.display = 'none'; }
+
+    function seleccionarMetodo(metodo, btn) {
+      metodoPagoSeleccionado = metodo;
+      document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+    }
+
+    async function confirmarPago() {
+      const btn = document.getElementById('btnConfirmarPago');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        await apiFetch(`/inscripciones/${inscripcionCobroId}/pagar`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            metodo_pago: metodoPagoSeleccionado,
+            monto_pago:  parseFloat(document.getElementById('iMonto').value) || null,
+          }),
+        });
+        mostrarToast('✅ Pago registrado correctamente');
+        cerrarModalCobro();
+        cargarInscripciones();
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> Confirmar Pago';
+      }
+    }
+
+    async function eliminarInscripcion(id) {
+      if (!confirm('¿Eliminar esta inscripción?')) return;
+      try {
+        await apiFetch(`/inscripciones/${id}`, { method: 'DELETE' });
+        mostrarToast('Inscripción eliminada');
+        cargarInscripciones();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModalInsc(); cerrarModalCobro(); } });
+
+    inicializar();
+  </script>
+</body>
+</html>

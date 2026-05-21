@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autódromo Monterrey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #050505;
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .loader { text-align: center; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 2px solid #222;
+      border-top-color: #e63946;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { font-family: 'Bebas Neue'; letter-spacing: 0.2em; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="loader">
+    <div class="spinner"></div>
+    <p>Autódromo Monterrey</p>
+  </div>
+  <script>
+    // Redirigir según sesión activa
+    const token = localStorage.getItem('autodromo_token');
+    const usuario = JSON.parse(localStorage.getItem('autodromo_usuario') || 'null');
+    if (token && usuario) {
+      if (usuario.rol === 'admin' || usuario.rol === 'inscripciones') {
+        window.location.href = './dashboard/index.html';
+      } else {
+        window.location.href = './dashboard/index.html';
+      }
+    } else {
+      window.location.href = './Login/index.html';
+    }
+  </script>
+</body>
+</html>

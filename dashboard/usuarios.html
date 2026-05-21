@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuarios — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="#fff" width="22" height="22"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg></div>
+      <div><div class="logo-titulo">Autódromo</div><div class="logo-sub">Monterrey</div></div>
+    </div>
+    <nav class="nav">
+      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="pilotos.html"       class="nav-link">Pilotos</a>
+      <a href="carreras.html"      class="nav-link">Carreras</a>
+      <a href="inscripciones.html" class="nav-link">Inscripciones</a>
+      <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="usuarios.html"      class="nav-link activo">Usuarios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div><div class="usuario-nombre" id="usuarioNombre"></div><div class="usuario-rol" id="usuarioRol"></div></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <h1 class="page-titulo">Usuarios</h1>
+        <p class="page-sub">Gestión de accesos y roles del sistema</p>
+      </div>
+      <button class="btn-primario" onclick="abrirModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Usuario
+      </button>
+    </div>
+
+    <div id="gridUsuarios" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <div class="card" style="padding:32px;text-align:center;color:#555;grid-column:span 3">Cargando...</div>
+    </div>
+  </main>
+
+  <!-- Modal nuevo usuario -->
+  <div class="modal-overlay" id="modalUsuario" style="display:none">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <span class="modal-titulo">Nuevo Usuario</span>
+        <button class="modal-cerrar" onclick="cerrarModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="campo">
+          <label class="etiqueta">Nombre Completo *</label>
+          <input class="input" id="uNombre" placeholder="Nombre del usuario" />
+        </div>
+        <div class="campo" style="margin-top:12px">
+          <label class="etiqueta">Username *</label>
+          <input class="input" id="uUsername" placeholder="usuario123" />
+        </div>
+        <div class="campo" style="margin-top:12px">
+          <label class="etiqueta">Contraseña *</label>
+          <input class="input" type="password" id="uPassword" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div class="campo" style="margin-top:12px">
+          <label class="etiqueta">Rol *</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px" id="gridRoles">
+            <button type="button" class="rol-btn activo" data-rol="inscripciones" onclick="selRol('inscripciones',this)">Inscripciones</button>
+            <button type="button" class="rol-btn" data-rol="torre" onclick="selRol('torre',this)">Torre</button>
+            <button type="button" class="rol-btn" data-rol="admin" onclick="selRol('admin',this)">Admin</button>
+          </div>
+          <div style="margin-top:8px;padding:8px 10px;background:#0a0a0a;border-radius:6px;font-size:0.75rem;color:#555" id="descRol">
+            Puede registrar pilotos y cobrar inscripciones
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnCrearUsuario" onclick="crearUsuario()">Crear Usuario</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal cambiar contraseña -->
+  <div class="modal-overlay" id="modalPassword" style="display:none">
+    <div class="modal" style="max-width:360px">
+      <div class="modal-header">
+        <span class="modal-titulo">Cambiar Contraseña</span>
+        <button class="modal-cerrar" onclick="cerrarModalPw()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem;color:#666;margin-bottom:14px">Usuario: <span id="pwUsuarioNombre" style="color:#fff;font-weight:600"></span></p>
+        <div class="campo">
+          <label class="etiqueta">Nueva Contraseña</label>
+          <input class="input" type="password" id="pwNueva" placeholder="Mínimo 6 caracteres" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModalPw()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnCambiarPw" onclick="cambiarPassword()">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .rol-btn {
+      padding: 8px 6px; border-radius: 8px; font-family: 'Barlow',sans-serif;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid #1e1e1e; background: #0a0a0a; color: #666;
+      transition: all 0.18s;
+    }
+    .rol-btn.activo { background: rgba(230,57,70,0.15); border-color: rgba(230,57,70,0.4); color: #e63946; }
+  </style>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion(['admin']);
+
+    const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+
+    const DESC_ROLES = {
+      admin:         'Acceso total: pilotos, carreras, usuarios y corte general',
+      inscripciones: 'Puede registrar pilotos y cobrar inscripciones',
+      torre:         'Solo lectura — verifica pilotos en pista',
+    };
+
+    let rolSeleccionado = 'inscripciones';
+    let usuarioPwId     = null;
+
+    function selRol(rol, btn) {
+      rolSeleccionado = rol;
+      document.querySelectorAll('.rol-btn').forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+      document.getElementById('descRol').textContent = DESC_ROLES[rol];
+    }
+
+    async function cargar() {
+      try {
+        const usuarios = await apiFetch('/usuarios');
+        const grid = document.getElementById('gridUsuarios');
+        if (usuarios.length === 0) {
+          grid.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555;grid-column:span 3">Sin usuarios</div>';
+          return;
+        }
+        grid.innerHTML = usuarios.map(u => `
+          <div class="card" style="opacity:${u.activo ? 1 : 0.5};transition:opacity 0.2s">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+              <div style="width:44px;height:44px;border-radius:50%;background:rgba(230,57,70,0.15);border:2px solid rgba(230,57,70,0.25);display:flex;align-items:center;justify-content:center;color:#e63946;font-family:'Bebas Neue';font-size:1.4rem">
+                ${u.nombre[0].toUpperCase()}
+              </div>
+              <button onclick="toggleActivo(${u.id}, ${u.activo})" title="${u.activo ? 'Desactivar' : 'Activar'}"
+                style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;transition:background 0.2s"
+                onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='none'">
+                ${u.activo
+                  ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3" fill="#4ade80"/></svg>`
+                  : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="8" cy="12" r="3" fill="#555"/></svg>`
+                }
+              </button>
+            </div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:2px">${u.nombre}</div>
+            <div style="font-size:0.78rem;color:#555;margin-bottom:10px">@${u.username}</div>
+            <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:9999px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(230,57,70,0.12);color:#e63946;border:1px solid rgba(230,57,70,0.25)">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              ${u.rol}
+            </span>
+            <div style="font-size:0.72rem;color:#444;margin-top:6px">${DESC_ROLES[u.rol]}</div>
+            <button onclick="abrirModalPw(${u.id}, '${u.username}')"
+              style="margin-top:14px;width:100%;padding:7px;border-radius:7px;background:none;border:1px solid #1e1e1e;color:#555;font-family:'Barlow',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:6px"
+              onmouseover="this.style.borderColor='#333';this.style.color='#fff'" onmouseout="this.style.borderColor='#1e1e1e';this.style.color='#555'">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Cambiar contraseña
+            </button>
+          </div>
+        `).join('');
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function abrirModal() {
+      rolSeleccionado = 'inscripciones';
+      document.getElementById('uNombre').value   = '';
+      document.getElementById('uUsername').value = '';
+      document.getElementById('uPassword').value = '';
+      document.querySelectorAll('.rol-btn').forEach(b => {
+        b.classList.toggle('activo', b.dataset.rol === 'inscripciones');
+      });
+      document.getElementById('descRol').textContent = DESC_ROLES['inscripciones'];
+      document.getElementById('modalUsuario').style.display = 'flex';
+    }
+
+    function cerrarModal() { document.getElementById('modalUsuario').style.display = 'none'; }
+
+    async function crearUsuario() {
+      const nombre   = document.getElementById('uNombre').value.trim();
+      const username = document.getElementById('uUsername').value.trim();
+      const password = document.getElementById('uPassword').value;
+      if (!nombre || !username || !password) return mostrarToast('Todos los campos son obligatorios', 'error');
+      if (password.length < 6) return mostrarToast('La contraseña debe tener al menos 6 caracteres', 'error');
+
+      const btn = document.getElementById('btnCrearUsuario');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        await apiFetch('/usuarios', {
+          method: 'POST',
+          body: JSON.stringify({ nombre, username, password, rol: rolSeleccionado }),
+        });
+        mostrarToast('Usuario creado correctamente');
+        cerrarModal();
+        cargar();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Crear Usuario'; }
+    }
+
+    async function toggleActivo(id, activo) {
+      try {
+        await apiFetch(`/usuarios/${id}/activar`, { method: 'PATCH' });
+        mostrarToast(activo ? 'Usuario desactivado' : 'Usuario activado', activo ? 'advertencia' : 'exito');
+        cargar();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function abrirModalPw(id, username) {
+      usuarioPwId = id;
+      document.getElementById('pwUsuarioNombre').textContent = '@' + username;
+      document.getElementById('pwNueva').value = '';
+      document.getElementById('modalPassword').style.display = 'flex';
+    }
+
+    function cerrarModalPw() { document.getElementById('modalPassword').style.display = 'none'; }
+
+    async function cambiarPassword() {
+      const pw = document.getElementById('pwNueva').value;
+      if (!pw || pw.length < 6) return mostrarToast('Mínimo 6 caracteres', 'error');
+      const btn = document.getElementById('btnCambiarPw');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        await apiFetch(`/usuarios/${usuarioPwId}/password`, {
+          method: 'PATCH',
+          body: JSON.stringify({ password: pw }),
+        });
+        mostrarToast('Contraseña actualizada');
+        cerrarModalPw();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Actualizar'; }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { cerrarModal(); cerrarModalPw(); }
+    });
+
+    cargar();
+  </script>
+</body>
+</html>

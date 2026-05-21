@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar Sesión — Autódromo Monterrey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --rojo:     #e63946;
+      --rojo-d:   #c1121f;
+      --oscuro:   #050505;
+      --card:     #111111;
+      --borde:    #222222;
+      --muted:    #666666;
+      --verde:    #22c55e;
+    }
+
+    body {
+      background: var(--oscuro);
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+      overflow: hidden;
+    }
+
+    /* Decoración de fondo */
+    .bg-blob {
+      position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0;
+    }
+    .bg-blob-1 { width: 500px; height: 500px; background: rgba(230,57,70,0.06); top: -150px; right: -150px; }
+    .bg-blob-2 { width: 400px; height: 400px; background: rgba(244,80,30,0.04); bottom: -100px; left: -100px; }
+
+    .contenedor {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 380px;
+      padding: 0 20px;
+    }
+
+    /* Header */
+    .encabezado { text-align: center; margin-bottom: 32px; }
+    .logo {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 60px; height: 60px;
+      background: var(--rojo);
+      border-radius: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px rgba(230,57,70,0.35);
+    }
+    .logo svg { width: 28px; height: 28px; fill: #fff; }
+    .titulo { font-family: 'Bebas Neue'; font-size: 3.2rem; letter-spacing: 0.15em; line-height: 1; }
+    .subtitulo { font-size: 0.7rem; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+    .linea {
+      height: 1px; margin-top: 16px;
+      background: linear-gradient(to right, transparent, var(--rojo), transparent);
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--borde);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    /* Formulario */
+    .campo { margin-bottom: 16px; }
+    .etiqueta {
+      display: block; font-size: 0.65rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .input-wrap { position: relative; }
+    .input {
+      width: 100%; padding: 11px 14px;
+      background: #0a0a0a; border: 1px solid var(--borde);
+      color: #fff; border-radius: 8px;
+      font-family: 'Barlow', sans-serif; font-size: 0.95rem;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .input:focus { border-color: var(--rojo); }
+    .input::placeholder { color: var(--muted); }
+    .btn-ver {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      display: flex; align-items: center; padding: 0;
+      transition: color 0.2s;
+    }
+    .btn-ver:hover { color: #fff; }
+
+    /* Botón */
+    .btn-primario {
+      width: 100%; padding: 13px;
+      background: var(--rojo); border: none; border-radius: 8px;
+      color: #fff; font-family: 'Barlow', sans-serif;
+      font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: pointer; margin-top: 8px;
+      transition: background 0.2s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primario:hover  { background: var(--rojo-d); }
+    .btn-primario:active { transform: scale(0.98); }
+    .btn-primario:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Error / spinner */
+    .alerta {
+      padding: 10px 14px; border-radius: 8px; font-size: 0.85rem;
+      margin-bottom: 14px; display: none;
+    }
+    .alerta.error  { background: rgba(230,57,70,0.12); border: 1px solid rgba(230,57,70,0.3); color: #ff6b6b; }
+    .alerta.exito  { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: var(--verde); }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Pie */
+    .pie { text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--muted); }
+    .pie a { color: var(--rojo); text-decoration: none; }
+    .pie a:hover { color: #ff6b6b; }
+  </style>
+</head>
+<body>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+
+  <div class="contenedor">
+    <div class="encabezado">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+        </svg>
+      </div>
+      <h1 class="titulo">Autódromo</h1>
+      <p class="subtitulo">Monterrey — Sistema de Pilotos</p>
+      <div class="linea"></div>
+    </div>
+
+    <div class="card">
+      <div id="alerta" class="alerta"></div>
+      <form id="formLogin" novalidate>
+        <div class="campo">
+          <label class="etiqueta" for="username">Usuario</label>
+          <input class="input" type="text" id="username" placeholder="usuario" autocomplete="username" required />
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="password">Contraseña</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" required style="padding-right: 42px;" />
+            <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
+              <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn-primario" type="submit" id="btnEntrar">
+          Entrar al Sistema
+        </button>
+      </form>
+    </div>
+
+    <div class="pie">
+      ¿Eres piloto? <a href="../Registro/index.html">Pre-inscríbete aquí</a>
+    </div>
+  </div>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    const formLogin = document.getElementById('formLogin');
+    const btnEntrar = document.getElementById('btnEntrar');
+    const alertaEl  = document.getElementById('alerta');
+    const inputPw   = document.getElementById('password');
+    const btnVer    = document.getElementById('btnVer');
+
+    // Redirigir si ya hay sesión
+    if (localStorage.getItem('autodromo_token')) {
+      window.location.href = '../dashboard/index.html';
+    }
+
+    // Mostrar/ocultar contraseña
+    btnVer.addEventListener('click', () => {
+      const esTexto = inputPw.type === 'text';
+      inputPw.type = esTexto ? 'password' : 'text';
+      document.getElementById('iconoOjo').style.opacity = esTexto ? '1' : '0.4';
+    });
+
+    function mostrarAlerta(msg, tipo = 'error') {
+      alertaEl.textContent = msg;
+      alertaEl.className = `alerta ${tipo}`;
+      alertaEl.style.display = 'block';
+    }
+
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertaEl.style.display = 'none';
+      const username = document.getElementById('username').value.trim();
+      const password = inputPw.value;
+      if (!username || !password) return mostrarAlerta('Ingresa usuario y contraseña');
+
+      btnEntrar.disabled = true;
+      btnEntrar.innerHTML = '<div class="spinner"></div> Autenticando...';
+
+      try {
+        const res  = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
+
+        localStorage.setItem('autodromo_token', data.token);
+        localStorage.setItem('autodromo_usuario', JSON.stringify(data.usuario));
+        window.location.href = '../dashboard/index.html';
+      } catch (err) {
+        mostrarAlerta(err.message);
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar al Sistema';
+      }
+    });
+  </script>
+</body>
+</html>

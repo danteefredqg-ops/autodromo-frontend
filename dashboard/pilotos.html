@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pilotos — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <!-- Sidebar idéntico -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="#fff" width="22" height="22"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg></div>
+      <div><div class="logo-titulo">Autódromo</div><div class="logo-sub">Monterrey</div></div>
+    </div>
+    <nav class="nav">
+      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="pilotos.html"       class="nav-link activo">Pilotos</a>
+      <a href="carreras.html"      class="nav-link">Carreras</a>
+      <a href="inscripciones.html" class="nav-link">Inscripciones</a>
+      <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div><div class="usuario-nombre" id="usuarioNombre"></div><div class="usuario-rol" id="usuarioRol"></div></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <h1 class="page-titulo">Pilotos</h1>
+        <p class="page-sub" id="contadorPilotos">Cargando...</p>
+      </div>
+      <button class="btn-primario" id="btnNuevoPiloto" onclick="abrirModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Piloto
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="barra-filtros">
+      <input class="input" type="text" id="inputBuscar" placeholder="Buscar por nombre, email, teléfono..." oninput="filtrarPilotos()" />
+      <select class="select" id="filtroLicencia" onchange="filtrarPilotos()">
+        <option value="">Todos los estatus</option>
+        <option>Vigente</option><option>Vencida</option><option>Suspendida</option>
+      </select>
+    </div>
+
+    <div class="card tabla-card">
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Piloto</th><th>Sangre</th><th>Teléfono</th><th>Nacionalidad</th><th>Licencia</th><th>Estatus</th><th>Carreras</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="tbodyPilotos">
+            <tr><td colspan="8" class="td-vacio">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal piloto -->
+  <div class="modal-overlay" id="modalPiloto" style="display:none">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <span class="modal-titulo" id="modalTitulo">Nuevo Piloto</span>
+        <button class="modal-cerrar" onclick="cerrarModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="formPiloto" novalidate>
+          <input type="hidden" id="pilotoId" />
+          <div class="campo col-2">
+            <label class="etiqueta">Nombre Completo *</label>
+            <input class="input" id="fNombre" required placeholder="Nombre completo del piloto" />
+          </div>
+          <div class="grid-2" style="margin-top:12px">
+            <div class="campo">
+              <label class="etiqueta">Teléfono</label>
+              <input class="input" id="fTelefono" placeholder="81 1234 5678" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Email</label>
+              <input class="input" type="email" id="fEmail" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Tipo de Sangre *</label>
+              <select class="select" id="fSangre" required>
+                <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Estatus Licencia</label>
+              <select class="select" id="fEstatusLicencia">
+                <option>Vigente</option><option>Vencida</option><option>Suspendida</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Número de Licencia</label>
+              <input class="input" id="fLicencia" placeholder="LIC-000" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Nacionalidad</label>
+              <select class="select" id="fNacionalidad">
+                <option>Mexicana</option><option>Estadounidense</option><option>Canadiense</option>
+                <option>Brasileña</option><option>Argentina</option><option>Otra</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Fecha de Nacimiento</label>
+              <input class="input" type="date" id="fNacimiento" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Contacto de Emergencia</label>
+              <input class="input" id="fEmergencia" placeholder="Nombre del familiar" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Tel. Emergencia</label>
+              <input class="input" id="fTelEmergencia" placeholder="81 0000 0000" />
+            </div>
+            <div class="campo col-2">
+              <label class="etiqueta">Dirección</label>
+              <input class="input" id="fDireccion" placeholder="Calle, número, colonia" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Ciudad</label>
+              <input class="input" id="fCiudad" placeholder="Monterrey" value="Monterrey" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Estado</label>
+              <input class="input" id="fEstado" placeholder="Nuevo León" value="Nuevo León" />
+            </div>
+            <div class="campo col-2">
+              <label class="etiqueta">Notas</label>
+              <textarea class="textarea" id="fNotas" placeholder="Notas adicionales..."></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnGuardar" onclick="guardarPiloto()">Registrar Piloto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion();
+    const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+    if (usuario.rol === 'admin') {
+      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    }
+    if (usuario.rol === 'torre') {
+      document.getElementById('btnNuevoPiloto').style.display = 'none';
+    }
+
+    let pilotos = [];
+
+    async function cargarPilotos() {
+      try {
+        pilotos = await apiFetch('/pilotos');
+        renderizarPilotos(pilotos);
+        document.getElementById('contadorPilotos').textContent = `${pilotos.length} piloto(s) registrado(s)`;
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      }
+    }
+
+    function renderizarPilotos(lista) {
+      const tbody = document.getElementById('tbodyPilotos');
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="td-vacio">No se encontraron pilotos</td></tr>';
+        return;
+      }
+      tbody.innerHTML = lista.map(p => `
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);display:flex;align-items:center;justify-content:center;color:#e63946;font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${p.nombre_completo[0]}</div>
+              <div>
+                <div style="font-weight:600">${p.nombre_completo}</div>
+                ${p.email ? `<div style="font-size:0.75rem;color:#666">${p.email}</div>` : ''}
+              </div>
+            </div>
+          </td>
+          <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946;display:flex;align-items:center;gap:4px">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            ${p.tipo_sangre}
+          </span></td>
+          <td style="color:#666">${p.telefono || '—'}</td>
+          <td style="color:#666">${p.nacionalidad}</td>
+          <td style="color:#666;font-size:0.8rem">${p.numero_licencia || '—'}</td>
+          <td>${badgeEstatus(p.estatus_licencia)}</td>
+          <td style="font-family:'Bebas Neue';font-size:1.1rem;color:#666">${p.total_carreras}</td>
+          <td>
+            ${usuario.rol !== 'torre' ? `<button class="btn-secundario" style="padding:6px 12px;font-size:0.7rem" onclick="editarPiloto(${p.id})">Editar</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filtrarPilotos() {
+      const buscar = document.getElementById('inputBuscar').value.toLowerCase();
+      const estatus = document.getElementById('filtroLicencia').value;
+      const filtrados = pilotos.filter(p => {
+        const matchBuscar = !buscar ||
+          p.nombre_completo.toLowerCase().includes(buscar) ||
+          (p.email || '').toLowerCase().includes(buscar) ||
+          (p.telefono || '').includes(buscar) ||
+          (p.numero_licencia || '').toLowerCase().includes(buscar);
+        const matchEstatus = !estatus || p.estatus_licencia === estatus;
+        return matchBuscar && matchEstatus;
+      });
+      renderizarPilotos(filtrados);
+    }
+
+    function abrirModal(piloto = null) {
+      document.getElementById('pilotoId').value     = piloto ? piloto.id : '';
+      document.getElementById('modalTitulo').textContent = piloto ? 'Editar Piloto' : 'Nuevo Piloto';
+      document.getElementById('btnGuardar').textContent  = piloto ? 'Guardar Cambios' : 'Registrar Piloto';
+      document.getElementById('fNombre').value       = piloto?.nombre_completo || '';
+      document.getElementById('fTelefono').value     = piloto?.telefono || '';
+      document.getElementById('fEmail').value        = piloto?.email || '';
+      document.getElementById('fSangre').value       = piloto?.tipo_sangre || 'O+';
+      document.getElementById('fEstatusLicencia').value = piloto?.estatus_licencia || 'Vigente';
+      document.getElementById('fLicencia').value     = piloto?.numero_licencia || '';
+      document.getElementById('fNacionalidad').value = piloto?.nacionalidad || 'Mexicana';
+      document.getElementById('fNacimiento').value   = piloto?.fecha_nacimiento?.split('T')[0] || '';
+      document.getElementById('fEmergencia').value   = piloto?.contacto_emergencia || '';
+      document.getElementById('fTelEmergencia').value= piloto?.telefono_emergencia || '';
+      document.getElementById('fDireccion').value    = piloto?.direccion || '';
+      document.getElementById('fCiudad').value       = piloto?.ciudad || 'Monterrey';
+      document.getElementById('fEstado').value       = piloto?.estado || 'Nuevo León';
+      document.getElementById('fNotas').value        = piloto?.notas || '';
+      document.getElementById('modalPiloto').style.display = 'flex';
+    }
+
+    async function editarPiloto(id) {
+      try {
+        const piloto = await apiFetch(`/pilotos/${id}`);
+        abrirModal(piloto);
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalPiloto').style.display = 'none';
+    }
+
+    async function guardarPiloto() {
+      const id     = document.getElementById('pilotoId').value;
+      const nombre = document.getElementById('fNombre').value.trim();
+      const sangre = document.getElementById('fSangre').value;
+      if (!nombre) return mostrarToast('El nombre es obligatorio', 'error');
+      if (!sangre) return mostrarToast('El tipo de sangre es obligatorio', 'error');
+
+      const btn = document.getElementById('btnGuardar');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Guardando...';
+
+      const datos = {
+        nombre_completo:     nombre,
+        telefono:            document.getElementById('fTelefono').value || null,
+        email:               document.getElementById('fEmail').value || null,
+        tipo_sangre:         sangre,
+        estatus_licencia:    document.getElementById('fEstatusLicencia').value,
+        numero_licencia:     document.getElementById('fLicencia').value || null,
+        nacionalidad:        document.getElementById('fNacionalidad').value,
+        fecha_nacimiento:    document.getElementById('fNacimiento').value || null,
+        contacto_emergencia: document.getElementById('fEmergencia').value || null,
+        telefono_emergencia: document.getElementById('fTelEmergencia').value || null,
+        direccion:           document.getElementById('fDireccion').value || null,
+        ciudad:              document.getElementById('fCiudad').value || null,
+        estado:              document.getElementById('fEstado').value || null,
+        notas:               document.getElementById('fNotas').value || null,
+      };
+
+      try {
+        if (id) {
+          await apiFetch(`/pilotos/${id}`, { method: 'PUT', body: JSON.stringify(datos) });
+          mostrarToast('Piloto actualizado correctamente');
+        } else {
+          await apiFetch('/pilotos', { method: 'POST', body: JSON.stringify(datos) });
+          mostrarToast('Piloto registrado correctamente');
+        }
+        cerrarModal();
+        cargarPilotos();
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Guardar Cambios' : 'Registrar Piloto';
+      }
+    }
+
+    // Cerrar modal con Escape
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+
+    cargarPilotos();
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carreras — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24" fill="#fff" width="22" height="22"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg></div>
+      <div><div class="logo-titulo">Autódromo</div><div class="logo-sub">Monterrey</div></div>
+    </div>
+    <nav class="nav">
+      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="pilotos.html"       class="nav-link">Pilotos</a>
+      <a href="carreras.html"      class="nav-link activo">Carreras</a>
+      <a href="inscripciones.html" class="nav-link">Inscripciones</a>
+      <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div><div class="usuario-nombre" id="usuarioNombre"></div><div class="usuario-rol" id="usuarioRol"></div></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <h1 class="page-titulo">Carreras</h1>
+        <p class="page-sub" id="contador">Cargando...</p>
+      </div>
+      <button class="btn-primario solo-admin" id="btnNuevaCarrera" style="display:none" onclick="abrirModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nueva Carrera
+      </button>
+    </div>
+
+    <div id="gridCarreras" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <div class="card" style="padding:32px;text-align:center;color:#555;grid-column:span 3">Cargando...</div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalCarrera" style="display:none">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <span class="modal-titulo">Nueva Carrera</span>
+        <button class="modal-cerrar" onclick="cerrarModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="campo"><label class="etiqueta">Nombre de la Etapa *</label><input class="input" id="cNombre" placeholder="Ej: Etapa 1 - Copa Monterrey 2025" /></div>
+        <div class="campo" style="margin-top:12px"><label class="etiqueta">Fecha *</label><input class="input" type="date" id="cFecha" /></div>
+        <div class="campo" style="margin-top:12px"><label class="etiqueta">Ubicación</label><input class="input" id="cUbicacion" value="Autódromo Monterrey" /></div>
+        <div class="campo" style="margin-top:12px"><label class="etiqueta">Descripción</label><textarea class="textarea" id="cDescripcion" rows="2"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnCrear" onclick="crearCarrera()">Crear Carrera</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion();
+    const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+    if (usuario.rol === 'admin') {
+      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    }
+
+    async function cargar() {
+      try {
+        const carreras = await apiFetch('/carreras');
+        document.getElementById('contador').textContent = `${carreras.length} etapa(s) registrada(s)`;
+        const grid = document.getElementById('gridCarreras');
+        if (carreras.length === 0) {
+          grid.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555;grid-column:span 3">Sin carreras registradas</div>';
+          return;
+        }
+        grid.innerHTML = carreras.map(c => `
+          <div class="card" style="position:relative;overflow:hidden;transition:border-color 0.2s;cursor:default" onmouseover="this.style.borderColor='rgba(230,57,70,0.4)'" onmouseout="this.style.borderColor='#1e1e1e'">
+            <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:12px">
+              <div style="padding:8px;background:rgba(230,57,70,0.1);border-radius:8px">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+              </div>
+              <span style="font-size:0.7rem;padding:2px 8px;border-radius:9999px;background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3)">Activa</span>
+            </div>
+            <h3 style="font-family:'Bebas Neue';font-size:1.3rem;letter-spacing:0.05em;line-height:1.2;margin-bottom:4px">${c.nombre}</h3>
+            <p style="font-size:0.75rem;color:#555;margin-bottom:12px">${c.ubicacion}</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.8rem">
+              <span style="color:#666;display:flex;align-items:center;gap:4px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                ${formatFecha(c.fecha)}
+              </span>
+              <span style="font-family:'Bebas Neue';font-size:1rem;display:flex;align-items:center;gap:4px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                ${c.total_inscritos} inscritos
+              </span>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function abrirModal() { document.getElementById('modalCarrera').style.display = 'flex'; }
+    function cerrarModal() { document.getElementById('modalCarrera').style.display = 'none'; }
+
+    async function crearCarrera() {
+      const nombre = document.getElementById('cNombre').value.trim();
+      const fecha  = document.getElementById('cFecha').value;
+      if (!nombre || !fecha) return mostrarToast('Nombre y fecha son obligatorios', 'error');
+      const btn = document.getElementById('btnCrear');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        await apiFetch('/carreras', {
+          method: 'POST',
+          body: JSON.stringify({
+            nombre, fecha,
+            ubicacion:   document.getElementById('cUbicacion').value || 'Autódromo Monterrey',
+            descripcion: document.getElementById('cDescripcion').value || null,
+          }),
+        });
+        mostrarToast('Carrera creada correctamente');
+        cerrarModal();
+        cargar();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Crear Carrera'; }
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+    cargar();
+  </script>
+</body>
+</html>

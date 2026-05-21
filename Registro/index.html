@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pre-inscripción — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --rojo:   #e63946;
+      --oscuro: #050505;
+      --card:   #111111;
+      --borde:  #1e1e1e;
+      --muted:  #555555;
+      --verde:  #22c55e;
+    }
+    body {
+      background: var(--oscuro);
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .bg-blob { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
+    .bg-1 { width: 500px; height: 500px; background: rgba(230,57,70,0.05); top: -150px; right: -150px; }
+    .bg-2 { width: 400px; height: 400px; background: rgba(244,80,30,0.04); bottom: -100px; left: -100px; }
+
+    .contenedor { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    .encabezado { text-align: center; margin-bottom: 28px; }
+    .logo {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 52px; height: 52px; background: var(--rojo); border-radius: 14px;
+      margin-bottom: 14px; box-shadow: 0 8px 24px rgba(230,57,70,0.3);
+    }
+    .titulo  { font-family: 'Bebas Neue'; font-size: 2.8rem; letter-spacing: 0.12em; line-height: 1; }
+    .sub     { font-size: 0.7rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+    .linea   { height: 1px; margin-top: 14px; background: linear-gradient(to right, transparent, var(--rojo), transparent); }
+
+    /* Stepper */
+    .stepper { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 24px; }
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue'; font-size: 0.9rem; transition: all 0.2s;
+      background: #1e1e1e; color: var(--muted); border: 1px solid #2a2a2a;
+    }
+    .step-dot.activo  { background: var(--rojo); color: #fff; border-color: var(--rojo); box-shadow: 0 0 12px rgba(230,57,70,0.4); }
+    .step-dot.hecho   { background: var(--verde); color: #fff; border-color: var(--verde); }
+    .step-linea { width: 40px; height: 1px; background: #1e1e1e; }
+
+    .card { background: var(--card); border: 1px solid var(--borde); border-radius: 14px; padding: 24px; }
+
+    .campo { margin-bottom: 14px; }
+    .etiqueta { display: block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .input, .select { width: 100%; padding: 10px 14px; background: #0a0a0a; border: 1px solid var(--borde); color: #fff; border-radius: 8px; font-family: 'Barlow',sans-serif; font-size: 0.92rem; outline: none; transition: border-color 0.18s; }
+    .input:focus, .select:focus { border-color: var(--rojo); }
+    .input::placeholder { color: var(--muted); }
+    .select option { background: var(--card); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .alerta { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 14px; display: none; }
+    .alerta.error { background: rgba(230,57,70,0.12); border: 1px solid rgba(230,57,70,0.3); color: #f87171; }
+    .alerta.info  { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+
+    .btn-primario {
+      width: 100%; padding: 13px; background: var(--rojo); border: none; border-radius: 8px;
+      color: #fff; font-family: 'Barlow',sans-serif; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; margin-top: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-primario:hover { background: #c1121f; }
+    .btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-secundario {
+      width: 100%; padding: 11px; background: none; border: 1px solid var(--borde); border-radius: 8px;
+      color: var(--muted); font-family: 'Barlow',sans-serif; font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; margin-top: 8px;
+      transition: all 0.18s;
+    }
+    .btn-secundario:hover { border-color: #444; color: #fff; }
+
+    .piloto-encontrado {
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 10px; padding: 14px; margin-bottom: 14px;
+    }
+    .piloto-etiqueta { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--verde); margin-bottom: 4px; }
+
+    .cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .cat-btn {
+      padding: 8px 6px; border-radius: 8px; font-family: 'Barlow',sans-serif;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid var(--borde); background: #0a0a0a; color: var(--muted);
+      transition: all 0.18s; text-align: center;
+    }
+    .cat-btn.activo { color: #fff; }
+
+    /* Confirmación */
+    .confirmacion { text-align: center; }
+    .check-circle {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(34,197,94,0.15); border: 2px solid rgba(34,197,94,0.4);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .num-grande { font-family: 'Bebas Neue'; font-size: 3.5rem; color: var(--rojo); line-height: 1; }
+    .dato-fila { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--borde); font-size: 0.85rem; }
+    .dato-fila:last-child { border-bottom: none; }
+    .dato-key { color: var(--muted); }
+    .aviso-pago { background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.25); border-radius: 10px; padding: 14px; margin-top: 16px; font-size: 0.82rem; color: #f87171; text-align: center; }
+
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pie { text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--muted); }
+    .pie a { color: var(--rojo); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="bg-blob bg-1"></div>
+  <div class="bg-blob bg-2"></div>
+
+  <div class="contenedor">
+    <div class="encabezado">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="#fff" width="24" height="24"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+      </div>
+      <h1 class="titulo">Pre-inscripción</h1>
+      <p class="sub">Autódromo Monterrey</p>
+      <div class="linea"></div>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper" id="stepper">
+      <div class="step-dot activo" id="dot1">1</div>
+      <div class="step-linea"></div>
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-linea"></div>
+      <div class="step-dot" id="dot3">✓</div>
+    </div>
+
+    <!-- PASO 1: Identificar piloto -->
+    <div id="paso1">
+      <div class="card">
+        <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">¿Ya estás registrado?</h2>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Ingresa tu email para buscar tu expediente en el sistema</p>
+
+        <div id="alertaPaso1" class="alerta"></div>
+
+        <div style="display:flex;gap:8px">
+          <input class="input" type="email" id="emailBuscar" placeholder="tucorreo@email.com" style="flex:1"
+            onkeydown="if(event.key==='Enter') buscarPiloto()" />
+          <button onclick="buscarPiloto()" id="btnBuscar"
+            style="padding:10px 16px;background:var(--rojo);border:none;border-radius:8px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'Barlow',sans-serif;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;transition:background 0.18s"
+            onmouseover="this.style.background='#c1121f'" onmouseout="this.style.background='var(--rojo)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Buscar
+          </button>
+        </div>
+
+        <!-- Piloto encontrado -->
+        <div id="pilotoEncontrado" style="display:none;margin-top:14px">
+          <div class="piloto-encontrado">
+            <div class="piloto-etiqueta">✓ Piloto encontrado en el sistema</div>
+            <div id="pilotoNombreDisplay" style="font-weight:700;font-size:1.05rem;color:#fff"></div>
+            <div id="pilotoDatosDisplay" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
+          </div>
+          <button class="btn-primario" onclick="irPaso2()">
+            Continuar con mi inscripción
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </div>
+
+        <!-- Nuevo piloto -->
+        <div id="nuevoPiloto" style="display:none;margin-top:14px">
+          <div style="background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.25);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.82rem;color:#f87171">
+            No encontramos tu email — llena tus datos para registrarte
+          </div>
+          <div class="grid-2">
+            <div class="campo" style="grid-column:span 2">
+              <label class="etiqueta">Nombre Completo *</label>
+              <input class="input" id="npNombre" placeholder="Tu nombre completo" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Teléfono</label>
+              <input class="input" id="npTelefono" placeholder="81 0000 0000" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Tipo de Sangre *</label>
+              <select class="select" id="npSangre">
+                <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+              </select>
+            </div>
+            <div class="campo" style="grid-column:span 2">
+              <label class="etiqueta">Contacto de Emergencia</label>
+              <input class="input" id="npEmergencia" placeholder="Nombre del familiar" />
+            </div>
+            <div class="campo" style="grid-column:span 2">
+              <label class="etiqueta">Tel. Emergencia</label>
+              <input class="input" id="npTelEmergencia" placeholder="81 0000 0000" />
+            </div>
+          </div>
+          <button class="btn-primario" onclick="irPaso2NuevoPiloto()">
+            Continuar con mis datos
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2: Datos de inscripción -->
+    <div id="paso2" style="display:none">
+      <div class="card">
+        <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:16px">Datos de Inscripción</h2>
+
+        <div id="alertaPaso2" class="alerta"></div>
+
+        <div class="campo">
+          <label class="etiqueta">Carrera / Etapa *</label>
+          <select class="select" id="iCarrera">
+            <option value="">Selecciona la carrera...</option>
+          </select>
+        </div>
+
+        <div class="campo" style="margin-top:12px">
+          <label class="etiqueta">Categoría *</label>
+          <div class="cat-grid" id="catGrid"></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:12px">
+          <div class="campo">
+            <label class="etiqueta">Número de Piloto *</label>
+            <input class="input" type="number" id="iNumero" min="1" max="999" placeholder="Ej: 42" />
+            <div style="font-size:0.7rem;color:var(--muted);margin-top:4px">Único por carrera</div>
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Vehículo / Kart *</label>
+            <input class="input" id="iVehiculo" placeholder="Ej: Tony Kart" />
+          </div>
+          <div class="campo" style="grid-column:span 2">
+            <label class="etiqueta">Modelo</label>
+            <input class="input" id="iModelo" placeholder="Modelo específico (opcional)" />
+          </div>
+        </div>
+
+        <button class="btn-primario" id="btnPreInscribir" onclick="enviarInscripcion()" style="margin-top:8px">
+          Enviar Pre-inscripción
+        </button>
+        <button class="btn-secundario" onclick="volverPaso1()">← Volver</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Confirmación -->
+    <div id="paso3" style="display:none">
+      <div class="card confirmacion">
+        <div class="check-circle">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+        </div>
+        <h2 style="font-family:'Bebas Neue';font-size:2.2rem;color:var(--verde);letter-spacing:0.1em;margin-bottom:4px">¡Pre-inscripción Exitosa!</h2>
+        <p style="color:var(--muted);font-size:0.85rem;margin-bottom:20px">Guarda esta información — la necesitarás en la ventanilla</p>
+
+        <div class="num-grande" id="confNumero"></div>
+        <div style="background:#0a0a0a;border:1px solid var(--borde);border-radius:10px;padding:14px;margin-top:14px;text-align:left">
+          <div class="dato-fila"><span class="dato-key">Piloto</span>     <span id="confNombre" style="font-weight:600"></span></div>
+          <div class="dato-fila"><span class="dato-key">Categoría</span>  <span id="confCategoria"></span></div>
+          <div class="dato-fila"><span class="dato-key">Carrera</span>    <span id="confCarrera" style="font-size:0.8rem"></span></div>
+          <div class="dato-fila"><span class="dato-key">Vehículo</span>   <span id="confVehiculo" style="color:var(--muted)"></span></div>
+          <div class="dato-fila"><span class="dato-key">Estatus</span>
+            <span style="font-size:0.72rem;padding:2px 10px;border-radius:9999px;font-weight:700;text-transform:uppercase;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">Pendiente de pago</span>
+          </div>
+        </div>
+
+        <div class="aviso-pago">
+          Preséntate a la ventanilla de inscripciones el día del evento para completar tu pago y confirmar tu lugar.
+        </div>
+
+        <a href="../Login/index.html" style="display:block;margin-top:16px;padding:11px;border:1px solid var(--borde);border-radius:8px;color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;text-decoration:none;text-align:center;transition:all 0.18s"
+          onmouseover="this.style.borderColor='#444';this.style.color='#fff'" onmouseout="this.style.borderColor='var(--borde)';this.style.color='var(--muted)'">
+          Volver al inicio
+        </a>
+      </div>
+    </div>
+
+    <div class="pie" style="margin-top:20px">
+      ¿Eres staff? <a href="../Login/index.html">Iniciar sesión</a>
+    </div>
+  </div>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    let pilotoData    = null; // { id } si existe o { nuevo: true, ...datos } si es nuevo
+    let catSeleccionada = null;
+    let carreras = [], categorias = [];
+
+    async function inicializar() {
+      try {
+        [carreras, categorias] = await Promise.all([
+          apiFetch('/carreras'),
+          apiFetch('/categorias'),
+        ]);
+        document.getElementById('iCarrera').innerHTML =
+          '<option value="">Selecciona la carrera...</option>' +
+          carreras.map(c => `<option value="${c.id}">${c.nombre} — ${formatFecha(c.fecha)}</option>`).join('');
+
+        document.getElementById('catGrid').innerHTML = categorias.map(c => `
+          <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
+            onclick="selCat(${c.id},'${c.color}',this)">
+            ${c.nombre}
+          </button>
+        `).join('');
+
+        if (carreras.length > 0) {
+          document.getElementById('iCarrera').value = carreras[0].id;
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    function mostrarAlerta(id, msg, tipo = 'error') {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.className = 'alerta ' + tipo;
+      el.style.display = 'block';
+    }
+
+    function ocultarAlerta(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    async function buscarPiloto() {
+      const email = document.getElementById('emailBuscar').value.trim();
+      if (!email) return mostrarAlerta('alertaPaso1', 'Ingresa tu email para buscar');
+      ocultarAlerta('alertaPaso1');
+
+      const btn = document.getElementById('btnBuscar');
+      btn.disabled = true;
+      btn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></div>';
+
+      try {
+        const pilotos = await apiFetch(`/pilotos?buscar=${encodeURIComponent(email)}`);
+        const match = pilotos.find(p => p.email?.toLowerCase() === email.toLowerCase());
+
+        document.getElementById('pilotoEncontrado').style.display = 'none';
+        document.getElementById('nuevoPiloto').style.display      = 'none';
+
+        if (match) {
+          pilotoData = { id: match.id };
+          document.getElementById('pilotoNombreDisplay').textContent = match.nombre_completo;
+          document.getElementById('pilotoDatosDisplay').textContent  =
+            `${match.nacionalidad} · Sangre: ${match.tipo_sangre}`;
+          document.getElementById('pilotoEncontrado').style.display = 'block';
+        } else {
+          pilotoData = { nuevo: true, email };
+          document.getElementById('npNombre').value = '';
+          document.getElementById('nuevoPiloto').style.display = 'block';
+        }
+      } catch (err) {
+        mostrarAlerta('alertaPaso1', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Buscar';
+      }
+    }
+
+    function irPaso2() {
+      actualizarStepper(2);
+      document.getElementById('paso1').style.display = 'none';
+      document.getElementById('paso2').style.display = 'block';
+    }
+
+    function irPaso2NuevoPiloto() {
+      const nombre = document.getElementById('npNombre').value.trim();
+      const sangre = document.getElementById('npSangre').value;
+      if (!nombre) return mostrarAlerta('alertaPaso1', 'El nombre es obligatorio');
+      pilotoData = {
+        nuevo: true,
+        email:               document.getElementById('emailBuscar').value.trim() || null,
+        nombre_completo:     nombre,
+        telefono:            document.getElementById('npTelefono').value || null,
+        tipo_sangre:         sangre,
+        contacto_emergencia: document.getElementById('npEmergencia').value || null,
+        telefono_emergencia: document.getElementById('npTelEmergencia').value || null,
+      };
+      irPaso2();
+    }
+
+    function volverPaso1() {
+      actualizarStepper(1);
+      document.getElementById('paso2').style.display = 'none';
+      document.getElementById('paso1').style.display = 'block';
+    }
+
+    function selCat(id, color, btn) {
+      catSeleccionada = id;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.classList.remove('activo');
+        b.style.background   = '#0a0a0a';
+        b.style.borderColor  = 'var(--borde)';
+        b.style.color        = 'var(--muted)';
+      });
+      btn.classList.add('activo');
+      btn.style.background  = color + '22';
+      btn.style.borderColor = color + '66';
+      btn.style.color       = color;
+    }
+
+    async function enviarInscripcion() {
+      ocultarAlerta('alertaPaso2');
+      const carreraId = document.getElementById('iCarrera').value;
+      const numero    = document.getElementById('iNumero').value;
+      const vehiculo  = document.getElementById('iVehiculo').value.trim();
+
+      if (!carreraId)        return mostrarAlerta('alertaPaso2', 'Selecciona la carrera');
+      if (!catSeleccionada)  return mostrarAlerta('alertaPaso2', 'Selecciona tu categoría');
+      if (!numero)           return mostrarAlerta('alertaPaso2', 'Ingresa tu número de piloto');
+      if (!vehiculo)         return mostrarAlerta('alertaPaso2', 'Ingresa el nombre de tu vehículo');
+
+      const btn = document.getElementById('btnPreInscribir');
+      btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Enviando...';
+
+      const payload = {
+        carrera_id:   parseInt(carreraId),
+        categoria_id: parseInt(catSeleccionada),
+        numero_piloto: parseInt(numero),
+        vehiculo,
+        modelo_vehiculo: document.getElementById('iModelo').value || null,
+      };
+
+      if (pilotoData.id) {
+        // Piloto existente — usamos auto-registro con email
+        const pilotos = await apiFetch(`/pilotos/${pilotoData.id}`).catch(() => null);
+        if (pilotos?.email) payload.email = pilotos.email;
+        payload.piloto_id = pilotoData.id;
+        // Llamar endpoint normal sería mejor, pero usamos auto-registro unificado
+      } else {
+        payload.email                = pilotoData.email;
+        payload.nombre_completo      = pilotoData.nombre_completo;
+        payload.telefono             = pilotoData.telefono;
+        payload.tipo_sangre          = pilotoData.tipo_sangre;
+        payload.contacto_emergencia  = pilotoData.contacto_emergencia;
+        payload.telefono_emergencia  = pilotoData.telefono_emergencia;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/inscripciones/auto-registro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al registrar');
+
+        const i = data.inscripcion;
+        document.getElementById('confNumero').textContent    = '#' + i.numero_piloto;
+        document.getElementById('confNombre').textContent    = i.piloto_nombre;
+        document.getElementById('confCategoria').textContent = i.categoria_nombre;
+        document.getElementById('confCarrera').textContent   = i.carrera_nombre;
+        document.getElementById('confVehiculo').textContent  = i.vehiculo;
+
+        actualizarStepper(3);
+        document.getElementById('paso2').style.display = 'none';
+        document.getElementById('paso3').style.display = 'block';
+      } catch (err) {
+        mostrarAlerta('alertaPaso2', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enviar Pre-inscripción';
+      }
+    }
+
+    function actualizarStepper(paso) {
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById('dot' + i);
+        dot.className = 'step-dot';
+        if (i < paso)  dot.classList.add('hecho');
+        if (i === paso) dot.classList.add('activo');
+      }
+    }
+
+    inicializar();
+  </script>
+</body>
+</html>

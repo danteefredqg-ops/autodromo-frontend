@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="#fff" width="22" height="22"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+      </div>
+      <div>
+        <div class="logo-titulo">Autódromo</div>
+        <div class="logo-sub">Monterrey</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="index.html"             class="nav-link activo" data-page="dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="pilotos.html"           class="nav-link" data-page="pilotos">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Pilotos
+      </a>
+      <a href="carreras.html"          class="nav-link" data-page="carreras">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Carreras
+      </a>
+      <a href="inscripciones.html"     class="nav-link" data-page="inscripciones">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Inscripciones
+      </a>
+      <a href="reportes.html"          class="nav-link" data-page="reportes">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reportes
+      </a>
+      <a href="usuarios.html" class="nav-link solo-admin" data-page="usuarios" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><polyline points="16,11 17,12 20,9"/></svg>
+        Usuarios
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div>
+          <div class="usuario-nombre" id="usuarioNombre">—</div>
+          <div class="usuario-rol" id="usuarioRol">—</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()" title="Cerrar sesión">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <p class="bienvenida">Bienvenido,</p>
+        <h1 class="page-titulo" id="tituloNombre">—</h1>
+        <p class="page-sub" id="subtituloCarrera">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Cargando...
+        </p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card clickable" onclick="window.location.href='pilotos.html'">
+        <div class="stat-icon azul">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+        <div class="stat-numero" id="statPilotos">—</div>
+        <div class="stat-label">Pilotos Registrados</div>
+      </div>
+      <div class="stat-card clickable" onclick="window.location.href='inscripciones.html'">
+        <div class="stat-icon amarillo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        </div>
+        <div class="stat-numero" id="statInscripciones">—</div>
+        <div class="stat-label">Inscripciones</div>
+      </div>
+      <div class="stat-card clickable" onclick="window.location.href='inscripciones.html'">
+        <div class="stat-icon verde">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="stat-numero" id="statPagados">—</div>
+        <div class="stat-label">Pagados</div>
+      </div>
+      <div class="stat-card clickable" onclick="window.location.href='inscripciones.html'">
+        <div class="stat-icon rojo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        </div>
+        <div class="stat-numero" id="statPendientes">—</div>
+        <div class="stat-label">Pendientes</div>
+      </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <h2 class="seccion-titulo">Acciones Rápidas</h2>
+    <div class="acciones-grid">
+      <button class="accion-btn" onclick="window.location.href='pilotos.html'">
+        <div class="accion-icono">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        </div>
+        <span>Nuevo Piloto</span>
+      </button>
+      <button class="accion-btn" onclick="window.location.href='inscripciones.html'">
+        <div class="accion-icono">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        </div>
+        <span>Inscribir</span>
+      </button>
+      <button class="accion-btn accion-cobrar" onclick="window.location.href='inscripciones.html#pendientes'">
+        <div class="accion-icono">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <span>Cobrar</span>
+      </button>
+      <button class="accion-btn" onclick="window.location.href='reportes.html'">
+        <div class="accion-icono">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <span>Reportes</span>
+      </button>
+    </div>
+
+    <!-- Últimas inscripciones -->
+    <div class="tabla-header">
+      <h2 class="seccion-titulo" style="margin-bottom:0">Últimas Inscripciones</h2>
+      <a href="inscripciones.html" class="ver-todas">Ver todas →</a>
+    </div>
+    <div class="card tabla-card">
+      <div class="tabla-wrap">
+        <table class="tabla" id="tablaRecientes">
+          <thead>
+            <tr>
+              <th>#</th><th>Piloto</th><th>Categoría</th><th>Vehículo</th><th>Estatus</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRecientes">
+            <tr><td colspan="5" class="td-vacio">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion();
+    const usuario = obtenerUsuario();
+
+    // Mostrar info de usuario
+    document.getElementById('usuarioNombre').textContent  = usuario.nombre;
+    document.getElementById('usuarioRol').textContent     = usuario.rol;
+    document.getElementById('usuarioAvatar').textContent  = usuario.nombre[0].toUpperCase();
+    document.getElementById('tituloNombre').textContent   = usuario.nombre;
+
+    // Mostrar menú admin
+    if (usuario.rol === 'admin') {
+      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    }
+
+    // Cargar datos
+    async function cargarDashboard() {
+      try {
+        const [pilotos, carreras] = await Promise.all([
+          apiFetch('/pilotos'),
+          apiFetch('/carreras'),
+        ]);
+
+        document.getElementById('statPilotos').textContent = pilotos.length;
+
+        if (carreras.length > 0) {
+          const ultima = carreras[0];
+          document.getElementById('subtituloCarrera').innerHTML =
+            `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+             ${ultima.nombre}`;
+
+          const inscripciones = await apiFetch(`/inscripciones?carrera_id=${ultima.id}`);
+          const pagados    = inscripciones.filter(i => i.estatus === 'Pagado');
+          const pendientes = inscripciones.filter(i => i.estatus === 'Pendiente');
+
+          document.getElementById('statInscripciones').textContent = inscripciones.length;
+          document.getElementById('statPagados').textContent    = pagados.length;
+          document.getElementById('statPendientes').textContent = pendientes.length;
+
+          // Tabla recientes
+          const recientes = inscripciones.slice(0, 8);
+          const tbody = document.getElementById('tbodyRecientes');
+          if (recientes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="td-vacio">Sin inscripciones</td></tr>';
+          } else {
+            tbody.innerHTML = recientes.map(r => `
+              <tr>
+                <td><span class="num-piloto">${r.numero_piloto}</span></td>
+                <td><strong>${r.piloto_nombre}</strong></td>
+                <td>
+                  <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
+                    background:${r.categoria_color}22;color:${r.categoria_color};border:1px solid ${r.categoria_color}44">
+                    ${r.categoria_nombre}
+                  </span>
+                </td>
+                <td style="color:#666">${r.vehiculo}</td>
+                <td>${badgeEstatus(r.estatus)}</td>
+              </tr>
+            `).join('');
+          }
+        } else {
+          document.getElementById('subtituloCarrera').textContent = 'Sin carreras registradas';
+          document.getElementById('statInscripciones').textContent = '0';
+          document.getElementById('statPagados').textContent = '0';
+          document.getElementById('statPendientes').textContent = '0';
+        }
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      }
+    }
+
+    cargarDashboard();
+  </script>
+</body>
+</html>
