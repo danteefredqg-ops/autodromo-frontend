@@ -3,7 +3,14 @@
 const API_URL = 'https://autodromo.up.railway.app/api';
 // Para desarrollo local usa: const API_URL = 'http://localhost:3001/api';
 
-// Helpers globales de sesión
+// ─── Seguridad: escapar HTML para evitar XSS ──────────────────────────────────
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+// ─── Sesión ───────────────────────────────────────────────────────────────────
 function obtenerToken() {
   return localStorage.getItem('autodromo_token');
 }
@@ -29,33 +36,74 @@ function requerirSesion(rolesPermitidos) {
     window.location.href = '../dashboard/index.html';
     return false;
   }
+  _iniciarMonitorSesion(token);
   return true;
 }
 
-// Fetch con autenticación
+// Decodifica el JWT y programa advertencia + auto-logout antes de que expire
+function _iniciarMonitorSesion(token) {
+  try {
+    const payload  = JSON.parse(atob(token.split('.')[1]));
+    const ahora    = Math.floor(Date.now() / 1000);
+    const restante = payload.exp - ahora;
+
+    if (restante <= 0) { cerrarSesion(); return; }
+
+    const AVISAR_EN = 15 * 60; // avisar 15 min antes
+    const msHastaAviso  = Math.max(0, restante - AVISAR_EN) * 1000;
+    const msHastaExpiry = restante * 1000;
+
+    // Si ya está en la ventana de aviso, mostrar inmediatamente
+    if (restante <= AVISAR_EN) {
+      mostrarToast(`Tu sesión expira en ${Math.ceil(restante / 60)} min`, 'advertencia');
+    } else {
+      setTimeout(() => mostrarToast('Tu sesión expira en 15 minutos', 'advertencia'), msHastaAviso);
+    }
+
+    // Auto-logout al expirar
+    setTimeout(() => {
+      mostrarToast('Sesión expirada. Vuelve a iniciar sesión.', 'error');
+      setTimeout(cerrarSesion, 2500);
+    }, msHastaExpiry);
+  } catch { /* token malformado — se ignora */ }
+}
+
+// ─── Fetch con autenticación y timeout ───────────────────────────────────────
 async function apiFetch(ruta, opciones = {}) {
   const token = obtenerToken();
   const headers = { 'Content-Type': 'application/json', ...opciones.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${ruta}`, { ...opciones, headers });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
 
-  if (res.status === 401) {
-    cerrarSesion();
-    return;
+  try {
+    const res = await fetch(`${API_URL}${ruta}`, { ...opciones, headers, signal: controller.signal });
+    clearTimeout(timer);
+
+    if (res.status === 401) {
+      cerrarSesion();
+      return;
+    }
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error en la petición');
+    return data;
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error('La solicitud tardó demasiado. Verifica tu conexión.');
+    }
+    throw err;
   }
-
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Error en la petición');
-  return data;
 }
 
-// Toast de notificaciones
+// ─── Toast de notificaciones ──────────────────────────────────────────────────
 function mostrarToast(mensaje, tipo = 'exito') {
   const colores = {
-    exito:    { bg: 'rgba(34,197,94,0.15)',  borde: 'rgba(34,197,94,0.4)',  texto: '#4ade80' },
-    error:    { bg: 'rgba(230,57,70,0.15)',  borde: 'rgba(230,57,70,0.4)',  texto: '#f87171' },
-    info:     { bg: 'rgba(59,130,246,0.15)', borde: 'rgba(59,130,246,0.4)', texto: '#60a5fa' },
+    exito:       { bg: 'rgba(34,197,94,0.15)',  borde: 'rgba(34,197,94,0.4)',  texto: '#4ade80' },
+    error:       { bg: 'rgba(230,57,70,0.15)',  borde: 'rgba(230,57,70,0.4)',  texto: '#f87171' },
+    info:        { bg: 'rgba(59,130,246,0.15)', borde: 'rgba(59,130,246,0.4)', texto: '#60a5fa' },
     advertencia: { bg: 'rgba(245,158,11,0.15)', borde: 'rgba(245,158,11,0.4)', texto: '#fbbf24' },
   };
   const c = colores[tipo] || colores.info;
@@ -69,18 +117,28 @@ function mostrarToast(mensaje, tipo = 'exito') {
     animation: slideIn 0.3s ease-out;
   `;
   toast.textContent = mensaje;
-  document.head.insertAdjacentHTML('beforeend', '<style>@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}</style>');
+  if (!document.getElementById('toast-anim')) {
+    const s = document.createElement('style');
+    s.id = 'toast-anim';
+    s.textContent = '@keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}';
+    document.head.appendChild(s);
+  }
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3500);
 }
 
-// Formatear fecha
+// ─── Formatear fecha ──────────────────────────────────────────────────────────
 function formatFecha(fecha) {
   if (!fecha) return '—';
-  return new Date(fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+  // Fechas tipo "2024-06-15" se parsean como UTC; añadir hora local evita que
+  // en zonas UTC-6 aparezca un día antes.
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(fecha)
+    ? new Date(fecha + 'T00:00:00')
+    : new Date(fecha);
+  return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-// Colores de estatus
+// ─── Badge de estatus ─────────────────────────────────────────────────────────
 function badgeEstatus(estatus) {
   const map = {
     'Pagado':        { bg: 'rgba(34,197,94,0.15)',  borde: 'rgba(34,197,94,0.3)',  color: '#4ade80' },
@@ -91,5 +149,5 @@ function badgeEstatus(estatus) {
     'Suspendida':    { bg: 'rgba(230,57,70,0.15)',  borde: 'rgba(230,57,70,0.3)',  color: '#f87171' },
   };
   const c = map[estatus] || { bg: 'rgba(255,255,255,0.1)', borde: 'rgba(255,255,255,0.2)', color: '#999' };
-  return `<span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:9999px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${c.bg};border:1px solid ${c.borde};color:${c.color}">${estatus}</span>`;
+  return `<span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:9999px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${c.bg};border:1px solid ${c.borde};color:${c.color}">${esc(estatus)}</span>`;
 }

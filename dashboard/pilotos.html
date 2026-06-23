@@ -193,20 +193,20 @@
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:32px;height:32px;border-radius:50%;background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);display:flex;align-items:center;justify-content:center;color:#e63946;font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${p.nombre_completo[0]}</div>
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);display:flex;align-items:center;justify-content:center;color:#e63946;font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${esc(p.nombre_completo[0])}</div>
               <div>
-                <div style="font-weight:600">${p.nombre_completo}</div>
-                ${p.email ? `<div style="font-size:0.75rem;color:#666">${p.email}</div>` : ''}
+                <div style="font-weight:600">${esc(p.nombre_completo)}</div>
+                ${p.email ? `<div style="font-size:0.75rem;color:#666">${esc(p.email)}</div>` : ''}
               </div>
             </div>
           </td>
           <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946;display:flex;align-items:center;gap:4px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            ${p.tipo_sangre}
+            ${esc(p.tipo_sangre)}
           </span></td>
-          <td style="color:#666">${p.telefono || '—'}</td>
-          <td style="color:#666">${p.nacionalidad}</td>
-          <td style="color:#666;font-size:0.8rem">${p.numero_licencia || '—'}</td>
+          <td style="color:#666">${esc(p.telefono || '—')}</td>
+          <td style="color:#666">${esc(p.nacionalidad)}</td>
+          <td style="color:#666;font-size:0.8rem">${esc(p.numero_licencia || '—')}</td>
           <td>${badgeEstatus(p.estatus_licencia)}</td>
           <td style="font-family:'Bebas Neue';font-size:1.1rem;color:#666">${p.total_carreras}</td>
           <td>

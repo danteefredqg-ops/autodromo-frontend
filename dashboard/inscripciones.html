@@ -290,7 +290,7 @@
           <td>
             <div style="display:flex;gap:6px;align-items:center">
               ${(usuario.rol !== 'torre' && i.estatus === 'Pendiente') ? `
-                <button class="btn-exito" style="padding:6px 12px;font-size:0.7rem" onclick="abrirModalCobro(${i.id}, '${i.piloto_nombre}', ${i.numero_piloto}, '${i.categoria_nombre}', '${i.vehiculo}')">
+                <button class="btn-exito" style="padding:6px 12px;font-size:0.7rem" onclick="abrirModalCobro(${i.id})">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                   Cobrar
                 </button>
@@ -373,16 +373,18 @@
     }
 
     // Modal cobro
-    function abrirModalCobro(id, nombre, numero, categoria, vehiculo) {
+    function abrirModalCobro(id) {
+      const i = inscripcionesActuales.find(x => x.id === id);
+      if (!i) return;
       inscripcionCobroId = id;
       metodoPagoSeleccionado = 'Efectivo';
       document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('activo'));
       document.querySelectorAll('.metodo-btn')[0].classList.add('activo');
       document.getElementById('iMonto').value = '';
       document.getElementById('infoCobro').innerHTML = `
-        <div style="font-family:'Bebas Neue';font-size:2rem;color:#e63946">#${numero}</div>
-        <div style="font-weight:700;font-size:1.05rem;margin:4px 0">${nombre}</div>
-        <div style="color:#666;font-size:0.82rem">${categoria} — ${vehiculo}</div>
+        <div style="font-family:'Bebas Neue';font-size:2rem;color:#e63946">#${i.numero_piloto}</div>
+        <div style="font-weight:700;font-size:1.05rem;margin:4px 0">${esc(i.piloto_nombre)}</div>
+        <div style="color:#666;font-size:0.82rem">${esc(i.categoria_nombre)} — ${esc(i.vehiculo)}</div>
       `;
       document.getElementById('modalCobro').style.display = 'flex';
     }
