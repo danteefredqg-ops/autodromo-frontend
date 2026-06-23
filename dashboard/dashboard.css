@@ -46,10 +46,11 @@ body {
   justify-content: center;
 }
 .sidebar-logo-img {
-  height: 62px;
+  height: 64px;
   width: auto;
   display: block;
-  border-radius: 8px;
+  /* Recorta al óvalo del logo, ocultando el fondo blanco rectangular */
+  clip-path: ellipse(46% 42% at 50% 50%);
 }
 
 .nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
