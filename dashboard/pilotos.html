@@ -49,8 +49,14 @@
     <div class="barra-filtros">
       <input class="input" type="text" id="inputBuscar" placeholder="Buscar por nombre, email, teléfono..." oninput="filtrarPilotos()" />
       <select class="select" id="filtroLicencia" onchange="filtrarPilotos()">
-        <option value="">Todos los estatus</option>
+        <option value="">Todos los estatus de licencia</option>
         <option>Vigente</option><option>Vencida</option><option>Suspendida</option>
+      </select>
+      <select class="select" id="filtroActividad" onchange="filtrarPilotos()">
+        <option value="">Toda la actividad</option>
+        <option value="activo">Con actividad reciente</option>
+        <option value="inactivo">Sin actividad reciente</option>
+        <option value="nuevo">Nunca ha competido</option>
       </select>
     </div>
 
@@ -59,7 +65,7 @@
         <table class="tabla">
           <thead>
             <tr>
-              <th>Piloto</th><th>Sangre</th><th>Teléfono</th><th>Nacionalidad</th><th>Licencia</th><th>Estatus</th><th>Carreras</th><th></th>
+              <th>Piloto</th><th>Sangre</th><th>Teléfono</th><th>Nacionalidad</th><th>Licencia</th><th>Estatus</th><th>Última etapa</th><th>Carreras</th><th></th>
             </tr>
           </thead>
           <tbody id="tbodyPilotos">
@@ -189,14 +195,19 @@
         tbody.innerHTML = '<tr><td colspan="8" class="td-vacio">No se encontraron pilotos</td></tr>';
         return;
       }
-      tbody.innerHTML = lista.map(p => `
+      tbody.innerHTML = lista.map(p => {
+        const inactivo  = p.total_carreras > 0 && p.etapas_recientes === 0;
+        const sinEtapas = p.total_carreras === 0;
+        return `
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:32px;height:32px;border-radius:50%;background:rgba(230,57,70,0.15);border:1px solid rgba(230,57,70,0.3);display:flex;align-items:center;justify-content:center;color:#e63946;font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${esc(p.nombre_completo[0])}</div>
+              <div style="width:32px;height:32px;border-radius:50%;background:${inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(230,57,70,0.15)'};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(230,57,70,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? '#f59e0b' : '#e63946'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${esc(p.nombre_completo[0])}</div>
               <div>
                 <div style="font-weight:600">${esc(p.nombre_completo)}</div>
                 ${p.email ? `<div style="font-size:0.75rem;color:#666">${esc(p.email)}</div>` : ''}
+                ${inactivo  ? `<div style="font-size:0.68rem;color:#f59e0b;display:flex;align-items:center;gap:3px;margin-top:2px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Sin actividad reciente</div>` : ''}
+                ${sinEtapas ? `<div style="font-size:0.68rem;color:#555;margin-top:2px">Nunca ha competido</div>` : ''}
               </div>
             </div>
           </td>
@@ -208,17 +219,19 @@
           <td style="color:#666">${esc(p.nacionalidad)}</td>
           <td style="color:#666;font-size:0.8rem">${esc(p.numero_licencia || '—')}</td>
           <td>${badgeEstatus(p.estatus_licencia)}</td>
+          <td style="font-size:0.8rem;color:#666">${formatFecha(p.ultima_carrera_fecha) || '—'}</td>
           <td style="font-family:'Bebas Neue';font-size:1.1rem;color:#666">${p.total_carreras}</td>
           <td>
             ${usuario.rol !== 'torre' ? `<button class="btn-secundario" style="padding:6px 12px;font-size:0.7rem" onclick="editarPiloto(${p.id})">Editar</button>` : ''}
           </td>
-        </tr>
-      `).join('');
+        </tr>`;
+      }).join('');
     }
 
     function filtrarPilotos() {
-      const buscar = document.getElementById('inputBuscar').value.toLowerCase();
-      const estatus = document.getElementById('filtroLicencia').value;
+      const buscar    = document.getElementById('inputBuscar').value.toLowerCase();
+      const estatus   = document.getElementById('filtroLicencia').value;
+      const actividad = document.getElementById('filtroActividad').value;
       const filtrados = pilotos.filter(p => {
         const matchBuscar = !buscar ||
           p.nombre_completo.toLowerCase().includes(buscar) ||
@@ -226,8 +239,15 @@
           (p.telefono || '').includes(buscar) ||
           (p.numero_licencia || '').toLowerCase().includes(buscar);
         const matchEstatus = !estatus || p.estatus_licencia === estatus;
-        return matchBuscar && matchEstatus;
+        const matchActividad =
+          !actividad ||
+          (actividad === 'activo'   && p.etapas_recientes > 0) ||
+          (actividad === 'inactivo' && p.total_carreras > 0 && p.etapas_recientes === 0) ||
+          (actividad === 'nuevo'    && p.total_carreras === 0);
+        return matchBuscar && matchEstatus && matchActividad;
       });
+      document.getElementById('contadorPilotos').textContent =
+        `${filtrados.length} de ${pilotos.length} piloto(s)`;
       renderizarPilotos(filtrados);
     }
 
