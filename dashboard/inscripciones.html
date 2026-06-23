@@ -232,6 +232,17 @@
           filtroCarrera.value = carreras[0].id;
           cargarInscripciones();
         }
+
+        // Si viene ?piloto_id desde la página de pilotos, abrir modal pre-cargado
+        const params   = new URLSearchParams(window.location.search);
+        const pilotoId = params.get('piloto_id');
+        if (pilotoId) {
+          abrirModalInscripcion();
+          document.getElementById('iPiloto').value  = pilotoId;
+          if (carreras.length > 0) {
+            document.getElementById('iCarrera').value = carreras[0].id;
+          }
+        }
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 

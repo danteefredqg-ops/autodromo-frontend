@@ -222,7 +222,15 @@
           <td style="font-size:0.8rem;color:#666">${formatFecha(p.ultima_carrera_fecha) || '—'}</td>
           <td style="font-family:'Bebas Neue';font-size:1.1rem;color:#666">${p.total_carreras}</td>
           <td>
-            ${usuario.rol !== 'torre' ? `<button class="btn-secundario" style="padding:6px 12px;font-size:0.7rem" onclick="editarPiloto(${p.id})">Editar</button>` : ''}
+            <div style="display:flex;gap:6px">
+              ${usuario.rol !== 'torre' ? `
+                <button class="btn-primario" style="padding:6px 12px;font-size:0.7rem" onclick="irAInscribir(${p.id})">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Inscribir
+                </button>
+                <button class="btn-secundario" style="padding:6px 12px;font-size:0.7rem" onclick="editarPiloto(${p.id})">Editar</button>
+              ` : ''}
+            </div>
           </td>
         </tr>`;
       }).join('');
@@ -326,6 +334,10 @@
         btn.disabled = false;
         btn.textContent = id ? 'Guardar Cambios' : 'Registrar Piloto';
       }
+    }
+
+    function irAInscribir(pilotoId) {
+      window.location.href = `inscripciones.html?piloto_id=${pilotoId}`;
     }
 
     // Cerrar modal con Escape
