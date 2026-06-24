@@ -366,11 +366,10 @@
     }
 
     async function eliminarCarrera(id, nombre, totalInscritos) {
-      if (totalInscritos > 0) {
-        mostrarToast(`No se puede eliminar: la carrera tiene ${totalInscritos} inscripción(es) registrada(s).`, 'error');
-        return;
-      }
-      if (!confirm(`¿Eliminar la carrera "${nombre}"? Esta acción no se puede deshacer.`)) return;
+      const aviso = totalInscritos > 0
+        ? `¿Eliminar "${nombre}"? Tiene ${totalInscritos} inscripción(es). Esta acción no se puede deshacer.`
+        : `¿Eliminar la carrera "${nombre}"? Esta acción no se puede deshacer.`;
+      if (!confirm(aviso)) return;
       try {
         await apiFetch(`/carreras/${id}`, { method: 'DELETE' });
         mostrarToast('Carrera eliminada correctamente');
