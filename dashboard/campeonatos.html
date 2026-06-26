@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campeonatos — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    .cat-chip {
+      padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+      border: 1px solid #2a2a2a; background: #0a0a0a; color: #555;
+      transition: all 0.18s; font-family: 'Barlow', sans-serif;
+    }
+    .cat-chip.sel { color: #fff; }
+    .camp-card { border: 1px solid #1e1e1e; border-radius: 12px; margin-bottom: 14px; overflow: hidden; transition: border-color 0.2s; }
+    .camp-card:hover { border-color: rgba(230,57,70,0.3); }
+    .camp-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; cursor: pointer; background: #111; }
+    .camp-header:hover { background: #131313; }
+    .etapas-panel { border-top: 1px solid #1e1e1e; padding: 16px 20px; background: #0a0a0a; }
+    .etapa-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 8px; border: 1px solid #1a1a1a; margin-bottom: 8px; background: #111; transition: border-color 0.18s; }
+    .etapa-row:hover { border-color: #2a2a2a; }
+    .etapa-num { font-family: 'Bebas Neue'; font-size: 2rem; color: #e63946; min-width: 40px; text-align: center; line-height: 1; }
+    .etapa-info { flex: 1; min-width: 0; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" />
+    </div>
+    <nav class="nav">
+      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="pilotos.html"       class="nav-link">Pilotos</a>
+      <a href="campeonatos.html"   class="nav-link activo">Campeonatos</a>
+      <a href="inscripciones.html" class="nav-link">Inscripciones</a>
+      <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div><div class="usuario-nombre" id="usuarioNombre"></div><div class="usuario-rol" id="usuarioRol"></div></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <h1 class="page-titulo">Campeonatos</h1>
+        <p class="page-sub" id="contador">Cargando...</p>
+      </div>
+      <button class="btn-primario solo-admin" id="btnNuevo" style="display:none" onclick="abrirModalCamp()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo Campeonato
+      </button>
+    </div>
+    <div id="listaCamps"></div>
+  </main>
+
+  <!-- Modal Campeonato -->
+  <div class="modal-overlay" id="modalCamp" style="display:none">
+    <div class="modal" style="max-width:520px">
+      <div class="modal-header">
+        <span class="modal-titulo" id="tituloCamp">Nuevo Campeonato</span>
+        <button class="modal-cerrar" onclick="cerrarModalCamp()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="campo">
+          <label class="etiqueta">Nombre del Campeonato *</label>
+          <input class="input" id="cNombre" placeholder="Ej: Campeonato Mexicano 1/4 Milla 2026" />
+        </div>
+        <div class="campo" style="margin-top:12px">
+          <label class="etiqueta">Descripción</label>
+          <textarea class="textarea" id="cDesc" rows="2" placeholder="Descripción breve (opcional)"></textarea>
+        </div>
+        <div class="campo" style="margin-top:16px">
+          <label class="etiqueta">Categorías que participan</label>
+          <div id="catToggle" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
+          <div style="font-size:0.7rem;color:#555;margin-top:6px">Selecciona las categorías válidas para este campeonato</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModalCamp()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnGuardarCamp" onclick="guardarCampeonato()">Crear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Etapa -->
+  <div class="modal-overlay" id="modalEtapa" style="display:none">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-header">
+        <span class="modal-titulo" id="tituloEtapa">Nueva Etapa</span>
+        <button class="modal-cerrar" onclick="cerrarModalEtapa()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:100px 1fr;gap:10px">
+          <div class="campo">
+            <label class="etiqueta">Número</label>
+            <input class="input" type="number" id="eNumero" min="1" placeholder="Auto" />
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Fecha *</label>
+            <input class="input" type="date" id="eFecha" />
+          </div>
+        </div>
+        <div class="campo" style="margin-top:10px">
+          <label class="etiqueta">Nombre de la Etapa</label>
+          <input class="input" id="eNombre" placeholder="Ej: Primera Etapa (opcional, auto-generado)" />
+        </div>
+        <div class="campo" style="margin-top:10px">
+          <label class="etiqueta">Ubicación</label>
+          <input class="input" id="eUbicacion" value="Autódromo Monterrey" />
+        </div>
+        <div class="campo" style="margin-top:10px">
+          <label class="etiqueta">Costo de Inscripción ($)</label>
+          <input class="input" type="number" step="0.01" id="eCosto" placeholder="0.00 — para el corte de caja" />
+        </div>
+        <div class="campo" style="margin-top:10px">
+          <label class="etiqueta">Descripción</label>
+          <textarea class="textarea" id="eDescripcion" rows="2" placeholder="Notas adicionales (opcional)"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModalEtapa()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnGuardarEtapa" onclick="guardarEtapa()">Crear Etapa</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion();
+    const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+    if (usuario.rol === 'admin') {
+      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    }
+
+    let todasCats  = [];
+    let catsSel    = new Set();
+    let campEditId = null;
+    let etapaCampId = null;
+    let etapaEditId = null;
+    const etapasAbiertas = new Set();
+
+    async function cargar() {
+      try {
+        const [camps, cats] = await Promise.all([apiFetch('/campeonatos'), apiFetch('/categorias')]);
+        todasCats = cats;
+        document.getElementById('contador').textContent = `${camps.length} campeonato(s)`;
+        const lista = document.getElementById('listaCamps');
+        if (camps.length === 0) {
+          lista.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555">Sin campeonatos — crea el primero arriba</div>';
+          return;
+        }
+        lista.innerHTML = camps.map(c => `
+          <div class="camp-card" id="campCard-${c.id}">
+            <div class="camp-header" onclick="toggleEtapas(${c.id})">
+              <div style="display:flex;align-items:center;gap:14px">
+                <div style="padding:8px;background:rgba(230,57,70,0.1);border-radius:8px;flex-shrink:0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                </div>
+                <div>
+                  <div style="font-family:'Bebas Neue';font-size:1.4rem;letter-spacing:0.05em;line-height:1.2">${esc(c.nombre)}</div>
+                  <div style="font-size:0.75rem;color:#555;margin-top:2px">
+                    ${c.total_etapas} etapa(s) · ${c.total_inscritos} inscrito(s)
+                    ${c.descripcion ? ' — ' + esc(c.descripcion) : ''}
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                ${usuario.rol === 'admin' ? `
+                  <button class="btn-secundario" style="padding:6px 12px;font-size:0.72rem"
+                    onclick="event.stopPropagation();editarCampeonato(${c.id})">Editar</button>
+                  <button class="btn-primario" style="padding:6px 12px;font-size:0.72rem"
+                    onclick="event.stopPropagation();abrirModalEtapa(${c.id})">+ Etapa</button>
+                ` : ''}
+                <svg id="chev-${c.id}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6,9 12,15 18,9"/></svg>
+              </div>
+            </div>
+            <div class="etapas-panel" id="panel-${c.id}" style="display:none">
+              <div id="etapasList-${c.id}">
+                <div style="color:#555;font-size:0.8rem;padding:4px 0">Cargando etapas...</div>
+              </div>
+              ${usuario.rol === 'admin' ? `
+                <button onclick="abrirModalEtapa(${c.id})" class="btn-secundario" style="margin-top:10px;width:100%;padding:8px;font-size:0.75rem;display:flex;align-items:center;justify-content:center;gap:6px">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Agregar Etapa
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `).join('');
+
+        // Re-abrir paneles que estaban abiertos
+        for (const id of etapasAbiertas) {
+          const panel = document.getElementById(`panel-${id}`);
+          const chev  = document.getElementById(`chev-${id}`);
+          if (panel) { panel.style.display = 'block'; chev.style.transform = 'rotate(180deg)'; }
+          await cargarEtapas(id);
+        }
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    async function toggleEtapas(campId) {
+      const panel = document.getElementById(`panel-${campId}`);
+      const chev  = document.getElementById(`chev-${campId}`);
+      if (etapasAbiertas.has(campId)) {
+        panel.style.display = 'none';
+        chev.style.transform = 'rotate(0deg)';
+        etapasAbiertas.delete(campId);
+      } else {
+        panel.style.display = 'block';
+        chev.style.transform = 'rotate(180deg)';
+        etapasAbiertas.add(campId);
+        await cargarEtapas(campId);
+      }
+    }
+
+    async function cargarEtapas(campId) {
+      const listEl = document.getElementById(`etapasList-${campId}`);
+      try {
+        const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
+        if (etapas.length === 0) {
+          listEl.innerHTML = '<div style="color:#555;font-size:0.8rem;padding:4px 0">Sin etapas — agrega la primera</div>';
+          return;
+        }
+        listEl.innerHTML = etapas.map(e => {
+          const fechaStr = e.fecha ? e.fecha.split('T')[0] : '';
+          const costoStr = e.costo ? `<span style="color:#4ade80;font-weight:700">$${parseFloat(e.costo).toLocaleString('es-MX',{minimumFractionDigits:2})}</span>` : '<span style="color:#444">Sin costo definido</span>';
+          return `
+          <div class="etapa-row">
+            <div class="etapa-num">${e.numero}</div>
+            <div class="etapa-info">
+              <div style="font-weight:600;font-size:0.9rem">${esc(e.nombre)}</div>
+              <div style="font-size:0.75rem;color:#555;margin-top:3px;display:flex;flex-wrap:wrap;gap:8px">
+                <span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  ${formatFecha(fechaStr)}
+                </span>
+                <span>${esc(e.ubicacion)}</span>
+                <span>${costoStr}</span>
+                <span style="color:#888">${e.total_inscritos} inscrito(s)</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <a href="inscripciones.html?campeonato_id=${campId}&etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Inscritos</a>
+              <a href="reportes.html?etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Corte</a>
+              ${usuario.rol === 'admin' ? `
+                <button class="btn-secundario" style="padding:6px 10px;font-size:0.7rem"
+                  onclick="editarEtapa(${campId},${e.id},${e.numero},'${esc(e.nombre).replace(/'/g,"\\'")}','${fechaStr}','${esc(e.ubicacion).replace(/'/g,"\\'")}','${e.costo||''}','${esc(e.descripcion||'').replace(/'/g,"\\'")}')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+              ` : ''}
+            </div>
+          </div>`;
+        }).join('');
+      } catch (err) {
+        listEl.innerHTML = `<div style="color:#e63946;font-size:0.8rem">${err.message}</div>`;
+      }
+    }
+
+    // ── Modal campeonato ──────────────────────────────────────────────────────
+    function abrirModalCamp() {
+      campEditId = null;
+      catsSel = new Set();
+      document.getElementById('tituloCamp').textContent = 'Nuevo Campeonato';
+      document.getElementById('btnGuardarCamp').textContent = 'Crear';
+      document.getElementById('cNombre').value = '';
+      document.getElementById('cDesc').value   = '';
+      renderCatToggle();
+      document.getElementById('modalCamp').style.display = 'flex';
+    }
+
+    async function editarCampeonato(id) {
+      try {
+        const [camp, cats] = await Promise.all([
+          apiFetch(`/campeonatos/${id}`),
+          apiFetch(`/campeonatos/${id}/categorias`),
+        ]);
+        campEditId = id;
+        catsSel = new Set(cats.map(c => c.id));
+        document.getElementById('cNombre').value = camp.nombre;
+        document.getElementById('cDesc').value   = camp.descripcion || '';
+        document.getElementById('tituloCamp').textContent = 'Editar Campeonato';
+        document.getElementById('btnGuardarCamp').textContent = 'Guardar';
+        renderCatToggle();
+        document.getElementById('modalCamp').style.display = 'flex';
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function renderCatToggle() {
+      document.getElementById('catToggle').innerHTML = todasCats.map(c => {
+        const sel = catsSel.has(c.id);
+        return `<button type="button" class="cat-chip ${sel ? 'sel' : ''}"
+          style="${sel ? `background:${c.color}22;border-color:${c.color}66;color:${c.color}` : ''}"
+          onclick="toggleCat(${c.id},'${c.color}',this)">${esc(c.nombre)}</button>`;
+      }).join('');
+    }
+
+    function toggleCat(id, color, btn) {
+      if (catsSel.has(id)) {
+        catsSel.delete(id);
+        btn.classList.remove('sel');
+        btn.style.cssText = '';
+      } else {
+        catsSel.add(id);
+        btn.classList.add('sel');
+        btn.style.background = color + '22';
+        btn.style.borderColor = color + '66';
+        btn.style.color = color;
+      }
+    }
+
+    async function guardarCampeonato() {
+      const nombre = document.getElementById('cNombre').value.trim();
+      if (!nombre) return mostrarToast('El nombre es obligatorio', 'error');
+      const btn = document.getElementById('btnGuardarCamp');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        const payload = {
+          nombre,
+          descripcion:   document.getElementById('cDesc').value || null,
+          categoria_ids: [...catsSel],
+        };
+        if (campEditId) {
+          await apiFetch(`/campeonatos/${campEditId}`, { method: 'PUT', body: JSON.stringify(payload) });
+          mostrarToast('Campeonato actualizado');
+        } else {
+          await apiFetch('/campeonatos', { method: 'POST', body: JSON.stringify(payload) });
+          mostrarToast('Campeonato creado');
+        }
+        cerrarModalCamp();
+        cargar();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = campEditId ? 'Guardar' : 'Crear'; }
+    }
+
+    function cerrarModalCamp() { document.getElementById('modalCamp').style.display = 'none'; }
+
+    // ── Modal etapa ───────────────────────────────────────────────────────────
+    function abrirModalEtapa(campId) {
+      etapaCampId = campId;
+      etapaEditId = null;
+      document.getElementById('tituloEtapa').textContent = 'Nueva Etapa';
+      document.getElementById('btnGuardarEtapa').textContent = 'Crear Etapa';
+      document.getElementById('eNumero').value    = '';
+      document.getElementById('eNombre').value    = '';
+      document.getElementById('eFecha').value     = '';
+      document.getElementById('eUbicacion').value = 'Autódromo Monterrey';
+      document.getElementById('eCosto').value     = '';
+      document.getElementById('eDescripcion').value = '';
+      document.getElementById('modalEtapa').style.display = 'flex';
+    }
+
+    function editarEtapa(campId, etId, numero, nombre, fecha, ubicacion, costo, desc) {
+      etapaCampId = campId;
+      etapaEditId = etId;
+      document.getElementById('tituloEtapa').textContent = 'Editar Etapa';
+      document.getElementById('btnGuardarEtapa').textContent = 'Guardar';
+      document.getElementById('eNumero').value    = numero;
+      document.getElementById('eNombre').value    = nombre;
+      document.getElementById('eFecha').value     = fecha;
+      document.getElementById('eUbicacion').value = ubicacion;
+      document.getElementById('eCosto').value     = costo;
+      document.getElementById('eDescripcion').value = desc;
+      document.getElementById('modalEtapa').style.display = 'flex';
+    }
+
+    async function guardarEtapa() {
+      const fecha = document.getElementById('eFecha').value;
+      if (!fecha) return mostrarToast('La fecha es obligatoria', 'error');
+      const btn = document.getElementById('btnGuardarEtapa');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        const payload = {
+          numero:      parseInt(document.getElementById('eNumero').value) || null,
+          nombre:      document.getElementById('eNombre').value.trim() || null,
+          fecha,
+          ubicacion:   document.getElementById('eUbicacion').value || 'Autódromo Monterrey',
+          costo:       parseFloat(document.getElementById('eCosto').value) || null,
+          descripcion: document.getElementById('eDescripcion').value || null,
+        };
+        if (etapaEditId) {
+          await apiFetch(`/etapas/${etapaEditId}`, { method: 'PUT', body: JSON.stringify({ ...payload, numero: payload.numero || 1 }) });
+          mostrarToast('Etapa actualizada');
+        } else {
+          await apiFetch(`/campeonatos/${etapaCampId}/etapas`, { method: 'POST', body: JSON.stringify(payload) });
+          mostrarToast('Etapa creada');
+        }
+        cerrarModalEtapa();
+        await cargar();
+        // Reabrir el panel del campeonato correspondiente
+        if (!etapasAbiertas.has(etapaCampId)) {
+          etapasAbiertas.add(etapaCampId);
+          const panel = document.getElementById(`panel-${etapaCampId}`);
+          const chev  = document.getElementById(`chev-${etapaCampId}`);
+          if (panel) { panel.style.display = 'block'; chev.style.transform = 'rotate(180deg)'; }
+        }
+        await cargarEtapas(etapaCampId);
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = etapaEditId ? 'Guardar' : 'Crear Etapa'; }
+    }
+
+    function cerrarModalEtapa() { document.getElementById('modalEtapa').style.display = 'none'; }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { cerrarModalCamp(); cerrarModalEtapa(); }
+    });
+
+    cargar();
+  </script>
+</body>
+</html>

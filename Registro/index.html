@@ -1,4 +1,3 @@
-<ndex · HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,21 +12,21 @@
     .blob{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
     .b1{width:500px;height:500px;background:rgba(230,57,70,0.05);top:-150px;right:-150px}
     .b2{width:400px;height:400px;background:rgba(244,80,30,0.04);bottom:-100px;left:-100px}
-    .wrap{position:relative;z-index:1;max-width:540px;margin:0 auto;padding:32px 20px 60px}
+    .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:32px 20px 60px}
     .head{text-align:center;margin-bottom:28px}
     .logo{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--rojo);border-radius:14px;margin-bottom:14px;box-shadow:0 8px 24px rgba(230,57,70,0.3)}
     h1{font-family:'Bebas Neue';font-size:2.8rem;letter-spacing:0.12em;line-height:1}
     .sub{font-size:0.7rem;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;margin-top:4px}
     .line{height:1px;margin-top:14px;background:linear-gradient(to right,transparent,var(--rojo),transparent)}
     /* Stepper */
-    .stepper{display:flex;align-items:flex-start;justify-content:center;gap:8px;margin-bottom:24px}
+    .stepper{display:flex;align-items:flex-start;justify-content:center;gap:6px;margin-bottom:24px}
     .sw{text-align:center}
     .sd{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:0.9rem;background:#1e1e1e;color:var(--muted);border:1px solid #2a2a2a;margin:0 auto 4px;transition:all 0.2s}
     .sd.on{background:var(--rojo);color:#fff;border-color:var(--rojo)}
     .sd.done{background:var(--verde);color:#fff;border-color:var(--verde)}
-    .sl{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em}
+    .sl{font-size:0.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em}
     .sl.on{color:#fff}
-    .sline{width:28px;height:1px;background:#1e1e1e;margin-top:14px}
+    .sline{width:22px;height:1px;background:#1e1e1e;margin-top:14px}
     /* Card */
     .card{background:var(--card);border:1px solid var(--borde);border-radius:14px;padding:24px}
     .sec{font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.15em;color:var(--rojo);margin:16px 0 10px;border-bottom:1px solid var(--borde);padding-bottom:6px}
@@ -69,17 +68,24 @@
     .dato:last-child{border-bottom:none}
     .dk{color:var(--muted)}
     .aviso{background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.25);border-radius:10px;padding:14px;margin-top:16px;font-size:0.82rem;color:#f87171;text-align:center;line-height:1.6}
+    .aviso-amarillo{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px;font-size:0.82rem;color:#fbbf24;line-height:1.6;margin-bottom:14px}
     .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .pie{text-align:center;margin-top:20px;font-size:0.8rem;color:var(--muted)}
     .pie a{color:var(--rojo);text-decoration:none}
+    /* Contrato */
+    .contrato-texto{background:#0a0a0a;border:1px solid var(--borde);border-radius:8px;padding:14px;font-size:0.78rem;color:#888;line-height:1.7;max-height:220px;overflow-y:auto;margin-bottom:14px}
+    .contrato-texto h4{color:#aaa;font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
+    .check-row{display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:6px}
+    .check-row input[type=checkbox]{width:16px;height:16px;flex-shrink:0;margin-top:2px;accent-color:var(--rojo);cursor:pointer}
+    .check-row span{font-size:0.82rem;color:#aaa;line-height:1.5}
   </style>
 </head>
 <body>
 <div class="blob b1"></div>
 <div class="blob b2"></div>
 <div class="wrap">
- 
+
   <!-- Header -->
   <div class="head">
     <div class="logo"><svg viewBox="0 0 24 24" fill="#fff" width="24" height="24"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg></div>
@@ -87,18 +93,20 @@
     <p class="sub">Autódromo Monterrey</p>
     <div class="line"></div>
   </div>
- 
+
   <!-- Stepper -->
   <div class="stepper">
     <div class="sw"><div class="sd on" id="d1">1</div><div class="sl on" id="l1">Inicio</div></div>
     <div class="sline"></div>
     <div class="sw"><div class="sd" id="d2">2</div><div class="sl" id="l2">Datos</div></div>
     <div class="sline"></div>
-    <div class="sw"><div class="sd" id="d3">3</div><div class="sl" id="l3">Carrera</div></div>
+    <div class="sw"><div class="sd" id="d3">3</div><div class="sl" id="l3">Contrato</div></div>
     <div class="sline"></div>
-    <div class="sw"><div class="sd" id="d4">✓</div><div class="sl" id="l4">Listo</div></div>
+    <div class="sw"><div class="sd" id="d4">4</div><div class="sl" id="l4">Campeonato</div></div>
+    <div class="sline"></div>
+    <div class="sw"><div class="sd" id="d5">✓</div><div class="sl" id="l5">Listo</div></div>
   </div>
- 
+
   <!-- ═══ PASO 0: Elegir modo ═══ -->
   <div id="p0">
     <div class="card">
@@ -113,13 +121,13 @@
         <div class="opt-card" onclick="elegir('existente')">
           <div class="opt-icon">🔑</div>
           <div class="opt-titulo">Ya Tengo Cuenta</div>
-          <div class="opt-desc">Ya me registré antes — solo quiero inscribirme a esta carrera</div>
+          <div class="opt-desc">Ya me registré antes — solo quiero inscribirme a este campeonato</div>
         </div>
       </div>
     </div>
   </div>
- 
-  <!-- ═══ PASO 0b: Buscar por email (ya tiene cuenta) ═══ -->
+
+  <!-- ═══ PASO 0b: Buscar por email ═══ -->
   <div id="p0b" style="display:none">
     <div class="card">
       <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Buscar mi Cuenta</h2>
@@ -132,72 +140,159 @@
           Buscar
         </button>
       </div>
-      <!-- Resultado búsqueda -->
       <div id="pilotoBox" style="display:none;margin-top:14px">
         <div class="piloto-box">
           <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--verde);margin-bottom:4px">✓ Piloto encontrado</div>
           <div id="pilotoNombre" style="font-weight:700;font-size:1.05rem"></div>
           <div id="pilotoDatos" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
         </div>
-        <button class="btn" onclick="irPaso3()">Continuar a inscripción <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
+        <button class="btn" onclick="irContrato()">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
       </div>
       <button class="btn2" onclick="volver0()">← Volver</button>
     </div>
   </div>
- 
+
   <!-- ═══ PASO 2: Datos nuevos ═══ -->
   <div id="p2" style="display:none">
     <div class="card">
       <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Tus Datos Personales</h2>
       <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Campos con <span class="req">*</span> son obligatorios</p>
       <div id="a2" class="alert"></div>
-      <div class="f"><label class="lbl">Nombre Completo <span class="req">*</span></label><input class="inp" id="pNombre" placeholder="Tu nombre completo" /></div>
+
+      <div class="sec">Nombre</div>
+      <div class="g2">
+        <div class="f"><label class="lbl">Apellido Paterno <span class="req">*</span></label><input class="inp" id="pAPaterno" placeholder="Ej: García" /></div>
+        <div class="f"><label class="lbl">Apellido Materno</label><input class="inp" id="pAMaterno" placeholder="Ej: López" /></div>
+      </div>
+      <div class="f"><label class="lbl">Nombre(s) <span class="req">*</span></label><input class="inp" id="pNombres" placeholder="Ej: Juan Carlos" /></div>
+
+      <div class="sec">Contacto</div>
       <div class="g2">
         <div class="f"><label class="lbl">Teléfono <span class="req">*</span></label><input class="inp" id="pTel" placeholder="81 1234 5678" /></div>
         <div class="f"><label class="lbl">Tipo de Sangre <span class="req">*</span></label>
-          <select class="sel" id="pSangre"><option value="">Selecciona...</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div>
+          <select class="sel" id="pSangre">
+            <option value="">Selecciona...</option>
+            <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+          </select>
+        </div>
         <div class="f"><label class="lbl">Email</label><input class="inp" id="pEmail" placeholder="correo@ejemplo.com" type="email" /><div class="hint">Recomendado para futuras inscripciones</div></div>
         <div class="f"><label class="lbl">Fecha de Nacimiento</label><input class="inp" id="pNac" type="date" /></div>
       </div>
+
       <div class="sec">Dirección</div>
       <div class="g2">
         <div class="f"><label class="lbl">Ciudad</label><input class="inp" id="pCiudad" value="Monterrey" /></div>
         <div class="f"><label class="lbl">Estado</label><input class="inp" id="pEstado" value="Nuevo León" /></div>
         <div class="f" style="grid-column:span 2"><label class="lbl">Nacionalidad</label>
-          <select class="sel" id="pNac2"><option>Mexicana</option><option>Estadounidense</option><option>Canadiense</option><option>Brasileña</option><option>Argentina</option><option>Otra</option></select></div>
+          <select class="sel" id="pNac2"><option>Mexicana</option><option>Estadounidense</option><option>Canadiense</option><option>Brasileña</option><option>Argentina</option><option>Otra</option></select>
+        </div>
       </div>
+
       <div class="sec">Contacto de Emergencia</div>
       <div class="g2">
         <div class="f"><label class="lbl">Nombre <span class="req">*</span></label><input class="inp" id="pEmerg" placeholder="Nombre del familiar" /></div>
         <div class="f"><label class="lbl">Teléfono <span class="req">*</span></label><input class="inp" id="pTelEmerg" placeholder="81 0000 0000" /></div>
       </div>
-      <button class="btn" onclick="irPaso3()">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
+
+      <button class="btn" onclick="irContrato()">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
       <button class="btn2" onclick="volver0()">← Volver</button>
     </div>
   </div>
- 
-  <!-- ═══ PASO 3: Datos de carrera ═══ -->
+
+  <!-- ═══ PASO 3: Contrato anual ═══ -->
   <div id="p3" style="display:none">
     <div class="card">
-      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Datos de la Carrera</h2>
-      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Selecciona tu categoría y número de piloto</p>
+      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Contrato Anual FEMADAC</h2>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Requerido una vez por año para participar en los campeonatos</p>
       <div id="a3" class="alert"></div>
-      <div class="f"><label class="lbl">Carrera / Etapa <span class="req">*</span></label>
-        <select class="sel" id="iCarrera"><option value="">Selecciona la carrera...</option></select></div>
-      <div class="f" style="margin-top:14px"><label class="lbl">Categoría <span class="req">*</span></label>
-        <div class="g3" id="catGrid" style="margin-top:6px"></div></div>
-      <div class="g2" style="margin-top:14px">
-        <div class="f"><label class="lbl">Número de Piloto <span class="req">*</span></label><input class="inp" type="number" id="iNum" min="1" max="999" placeholder="Ej: 42" /><div class="hint">Único por carrera</div></div>
-        <div class="f"><label class="lbl">Vehículo / Kart <span class="req">*</span></label><input class="inp" id="iVeh" placeholder="Ej: Tony Kart" /></div>
-        <div class="f" style="grid-column:span 2"><label class="lbl">Modelo</label><input class="inp" id="iMod" placeholder="Modelo específico (opcional)" /></div>
+
+      <div id="contratoYaFirmado" style="display:none" class="aviso" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#4ade80;margin-bottom:14px">
+        ✓ Ya tienes el contrato firmado para este año. Puedes continuar.
       </div>
-      <button class="btn" id="btnEnviar" onclick="enviar()">Enviar Pre-inscripción</button>
-      <button class="btn2" onclick="volver2()">← Volver</button>
+
+      <div id="contratoFormulario">
+        <div class="contrato-texto">
+          <h4>Aviso de Privacidad y Contrato de Participación</h4>
+          <p>Con el objeto de poder atender sus necesidades y brindarle un mejor servicio, la <strong>FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C.</strong>, domiciliada en Calle Goethe No. 40, Colonia Anzures, Delegación Miguel Hidalgo, Distrito Federal, código postal 11590, utilizará sus datos personales aquí recabados para proveer nuestra actividad de sancionar, regular y promover el automovilismo deportivo en sus diferentes especialidades, de conformidad con los lineamientos establecidos por la propia FEMADAC y sus Comisiones Nacionales.</p>
+          <p style="margin-top:8px">El solicitante acepta conocer el <strong>Código Deportivo de FEMADAC</strong> y Reglamentos de las Comisiones Nacionales y se compromete a cumplirlos y respetarlos en todo momento.</p>
+          <p style="margin-top:8px">Los únicos datos considerados como sensibles son los relativos a su grupo sanguíneo y alergias, para el caso de su atención médica en caso de accidente debido al riesgo que implica la participación en eventos de automovilismo deportivo.</p>
+          <p style="margin-top:8px"><strong>EL SOLICITANTE SE OBLIGA A PRESENTAR SU RECLAMACIÓN CORRESPONDIENTE AL SIGUIENTE DÍA HÁBIL DE OCURRIDO EL INCIDENTE.</strong></p>
+        </div>
+
+        <label class="check-row">
+          <input type="checkbox" id="chkContrato1" onchange="verificarChecks()" />
+          <span>He leído y acepto el Código Deportivo de FEMADAC y los Reglamentos de las Comisiones Nacionales, y me comprometo a cumplirlos.</span>
+        </label>
+        <label class="check-row" style="margin-top:8px">
+          <input type="checkbox" id="chkContrato2" onchange="verificarChecks()" />
+          <span>Autorizo el tratamiento de mis datos personales para los fines expresamente indicados en el Aviso de Privacidad.</span>
+        </label>
+        <label class="check-row" style="margin-top:8px">
+          <input type="checkbox" id="chkContrato3" onchange="verificarChecks()" />
+          <span>Entiendo que debo presentarme a la ventanilla de inscripciones el día del evento con mi licencia deportiva vigente o en trámite.</span>
+        </label>
+      </div>
+
+      <button class="btn" id="btnFirmar" onclick="firmarContrato()" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+        Firmar y Continuar
+      </button>
+      <button class="btn2" onclick="volverDatos()">← Volver</button>
     </div>
   </div>
- 
-  <!-- ═══ PASO 4: Confirmación ═══ -->
+
+  <!-- ═══ PASO 4: Campeonato ═══ -->
   <div id="p4" style="display:none">
+    <div class="card">
+      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Datos del Campeonato</h2>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Selecciona tu categoría y número de piloto</p>
+      <div id="a4" class="alert"></div>
+
+      <div class="f">
+        <label class="lbl">Campeonato <span class="req">*</span></label>
+        <select class="sel" id="iCampeonato" onchange="onCampeonatoChange()">
+          <option value="">Selecciona el campeonato...</option>
+        </select>
+      </div>
+
+      <div class="f" style="margin-top:12px">
+        <label class="lbl">Etapa <span class="req">*</span></label>
+        <select class="sel" id="iEtapa">
+          <option value="">Selecciona el campeonato primero...</option>
+        </select>
+        <div class="hint">Selecciona la carrera en la que participarás</div>
+      </div>
+
+      <div class="f" style="margin-top:14px">
+        <label class="lbl">Categoría <span class="req">*</span></label>
+        <div class="g3" id="catGrid" style="margin-top:6px">
+          <div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Selecciona un campeonato primero</div>
+        </div>
+      </div>
+
+      <div class="f" style="margin-top:14px">
+        <label class="lbl">Número de Piloto <span class="req">*</span></label>
+        <input class="inp" type="number" id="iNum" min="1" max="9999" placeholder="Ej: 42" />
+        <div class="hint">Tu número permanente — único en el sistema</div>
+      </div>
+
+      <div class="sec">Vehículo / Kart</div>
+      <div class="g2">
+        <div class="f"><label class="lbl">Marca <span class="req">*</span></label><input class="inp" id="iMarca" placeholder="Ej: Tony Kart" /></div>
+        <div class="f"><label class="lbl">Año</label><input class="inp" type="number" id="iAnio" min="1990" max="2030" placeholder="Ej: 2022" /></div>
+        <div class="f"><label class="lbl">Modelo</label><input class="inp" id="iModelo" placeholder="Ej: Rookie EVO" /></div>
+        <div class="f"><label class="lbl">Color</label><input class="inp" id="iColor" placeholder="Ej: Rojo/Blanco" /></div>
+        <div class="f" style="grid-column:span 2"><label class="lbl">Apodo / Referencia</label><input class="inp" id="iApodo" placeholder='Ej: "El Toro" (opcional)' /></div>
+      </div>
+
+      <button class="btn" id="btnEnviar" onclick="enviar()">Enviar Pre-inscripción</button>
+      <button class="btn2" onclick="volverContrato()">← Volver</button>
+    </div>
+  </div>
+
+  <!-- ═══ PASO 5: Confirmación ═══ -->
+  <div id="p5" style="display:none">
     <div class="card" style="text-align:center">
       <div class="check-circle"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg></div>
       <h2 style="font-family:'Bebas Neue';font-size:2.2rem;color:var(--verde);letter-spacing:0.1em;margin-bottom:4px">¡Pre-inscripción Exitosa!</h2>
@@ -205,10 +300,11 @@
       <div class="num-big" id="cNum"></div>
       <p style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--muted);letter-spacing:0.1em">Tu número de piloto</p>
       <div style="background:#0a0a0a;border:1px solid var(--borde);border-radius:10px;padding:16px;margin-top:14px;text-align:left">
-        <div class="dato"><span class="dk">Piloto</span>    <span id="cNombre" style="font-weight:600"></span></div>
-        <div class="dato"><span class="dk">Categoría</span> <span id="cCat"></span></div>
-        <div class="dato"><span class="dk">Carrera</span>   <span id="cCarrera" style="font-size:0.82rem"></span></div>
-        <div class="dato"><span class="dk">Vehículo</span>  <span id="cVeh" style="color:var(--muted)"></span></div>
+        <div class="dato"><span class="dk">Piloto</span>     <span id="cNombre" style="font-weight:600"></span></div>
+        <div class="dato"><span class="dk">Categoría</span>  <span id="cCat"></span></div>
+        <div class="dato"><span class="dk">Campeonato</span> <span id="cCampeonato" style="font-size:0.82rem"></span></div>
+        <div class="dato"><span class="dk">Etapa</span>      <span id="cEtapa" style="font-size:0.82rem;color:var(--muted)"></span></div>
+        <div class="dato"><span class="dk">Vehículo</span>   <span id="cVeh" style="color:var(--muted)"></span></div>
         <div class="dato"><span class="dk">Estatus</span>
           <span style="font-size:0.72rem;padding:2px 10px;border-radius:9999px;font-weight:700;text-transform:uppercase;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">Pendiente de pago</span>
         </div>
@@ -217,59 +313,66 @@
       <button onclick="reiniciar()" style="width:100%;margin-top:12px;padding:11px;border:1px solid var(--borde);border-radius:8px;background:none;color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:all 0.18s" onmouseover="this.style.borderColor='#444';this.style.color='#fff'" onmouseout="this.style.borderColor='var(--borde)';this.style.color='var(--muted)'">Registrar otro piloto</button>
     </div>
   </div>
- 
+
   <div class="pie"><a href="../Login/index.html">Soy staff — Iniciar sesión</a></div>
 </div>
- 
+
 <script src="../admin/config.js"></script>
 <script>
-  let modo = ''; // 'nuevo' o 'existente'
-  let pilotoId = null;
+  let modo = '';       // 'nuevo' | 'existente'
+  let pilotoId  = null;
+  let pilotoNumero = null; // numero_piloto del piloto existente
   let catSel = null;
-  let cats = [], carreras = [];
- 
+  let campeonatoSel = null;
+  let cats = [], campeonatos = [];
+  let contratoFirmado = false;
+
+  // ─── Inicializar ─────────────────────────────────────────────────────────────
   async function init() {
     try {
-      [carreras, cats] = await Promise.all([apiFetch('/carreras'), apiFetch('/categorias')]);
-      const sel = document.getElementById('iCarrera');
-      sel.innerHTML = '<option value="">Selecciona la carrera...</option>' +
-        carreras.map(c => `<option value="${c.id}">${c.nombre} — ${formatFecha(c.fecha)}</option>`).join('');
-      if (carreras.length > 0) sel.value = carreras[0].id;
-      document.getElementById('catGrid').innerHTML = cats.map(c =>
-        `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" onclick="selCat(${c.id},'${c.color}',this)">${c.nombre}</button>`
-      ).join('');
+      campeonatos = await apiFetch('/campeonatos');
+      const sel = document.getElementById('iCampeonato');
+      sel.innerHTML = '<option value="">Selecciona el campeonato...</option>' +
+        campeonatos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+      if (campeonatos.length === 1) {
+        sel.value = campeonatos[0].id;
+        onCampeonatoChange();
+      }
     } catch(e) { console.error(e); }
   }
- 
+
+  // ─── Stepper ─────────────────────────────────────────────────────────────────
   function step(n) {
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       const d = document.getElementById('d'+i);
       const l = document.getElementById('l'+i);
       d.className = 'sd' + (i < n ? ' done' : i === n ? ' on' : '');
       l.className = 'sl' + (i === n ? ' on' : '');
     }
   }
- 
+
   function show(id) {
-    ['p0','p0b','p2','p3','p4'].forEach(p => document.getElementById(p).style.display = 'none');
+    ['p0','p0b','p2','p3','p4','p5'].forEach(p => document.getElementById(p).style.display = 'none');
     document.getElementById(id).style.display = 'block';
     window.scrollTo({top:0,behavior:'smooth'});
   }
- 
+
   function alerta(id, msg) {
     const el = document.getElementById(id);
     el.textContent = msg; el.className = 'alert'; el.style.display = 'block';
     el.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
- 
+
+  // ─── Flujo principal ──────────────────────────────────────────────────────────
   function elegir(m) {
     modo = m;
-    if (m === 'nuevo') { step(2); show('p2'); }
-    else               { step(2); show('p0b'); }
+    step(2);
+    if (m === 'nuevo') show('p2');
+    else               show('p0b');
   }
- 
-  function volver0() { step(1); show('p0'); pilotoId = null; }
- 
+
+  function volver0() { step(1); show('p0'); pilotoId = null; pilotoNumero = null; }
+
   async function buscar() {
     const email = document.getElementById('emailBuscar').value.trim();
     if (!email) return alerta('a0b', 'Ingresa tu email');
@@ -277,44 +380,151 @@
     const btn = document.getElementById('btnBuscar');
     btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
     try {
-      const lista = await apiFetch('/pilotos?buscar=' + encodeURIComponent(email));
-      const match = lista.find(p => p.email?.toLowerCase() === email.toLowerCase());
-      if (match) {
-        pilotoId = match.id;
-        document.getElementById('pilotoNombre').textContent = match.nombre_completo;
-        document.getElementById('pilotoDatos').textContent  = match.nacionalidad + ' · Sangre: ' + match.tipo_sangre;
-        document.getElementById('pilotoBox').style.display  = 'block';
-      } else {
+      const piloto = await apiFetch('/pilotos/buscar-por-email?email=' + encodeURIComponent(email));
+      pilotoId = piloto.id;
+      pilotoNumero = piloto.numero_piloto;
+      const nombre = piloto.nombres
+        ? `${piloto.nombres} ${piloto.apellido_paterno || ''} ${piloto.apellido_materno || ''}`.trim()
+        : piloto.nombre_completo;
+      document.getElementById('pilotoNombre').textContent = nombre;
+      document.getElementById('pilotoDatos').textContent  =
+        (piloto.nacionalidad || '') + ' · Sangre: ' + (piloto.tipo_sangre || '') +
+        (piloto.numero_piloto ? ' · #' + piloto.numero_piloto : '');
+      document.getElementById('pilotoBox').style.display = 'block';
+    } catch(e) {
+      if (e.message.includes('404') || e.message.toLowerCase().includes('no encontrado')) {
         alerta('a0b', 'No encontramos ese email. ¿Eres nuevo? Regresa y selecciona "Soy Nuevo".');
-        document.getElementById('pilotoBox').style.display = 'none';
+      } else {
+        alerta('a0b', e.message);
       }
-    } catch(e) { alerta('a0b', e.message); }
-    finally { btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Buscar'; }
+      document.getElementById('pilotoBox').style.display = 'none';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Buscar';
+    }
   }
- 
-  function irPaso3() {
+
+  async function irContrato() {
+    // Validar datos si es nuevo
     if (modo === 'nuevo') {
       document.getElementById('a2').style.display = 'none';
-      const nombre = document.getElementById('pNombre').value.trim();
-      const tel    = document.getElementById('pTel').value.trim();
+      const ap = document.getElementById('pAPaterno').value.trim();
+      const nb = document.getElementById('pNombres').value.trim();
+      const tel = document.getElementById('pTel').value.trim();
       const sangre = document.getElementById('pSangre').value;
-      const emerg  = document.getElementById('pEmerg').value.trim();
-      const telE   = document.getElementById('pTelEmerg').value.trim();
-      if (!nombre) return alerta('a2', 'El nombre completo es obligatorio');
+      const emerg = document.getElementById('pEmerg').value.trim();
+      const telE = document.getElementById('pTelEmerg').value.trim();
+      if (!ap)     return alerta('a2', 'El apellido paterno es obligatorio');
+      if (!nb)     return alerta('a2', 'El nombre es obligatorio');
       if (!tel)    return alerta('a2', 'El teléfono es obligatorio');
       if (!sangre) return alerta('a2', 'Selecciona tu tipo de sangre');
       if (!emerg)  return alerta('a2', 'El nombre del contacto de emergencia es obligatorio');
       if (!telE)   return alerta('a2', 'El teléfono de emergencia es obligatorio');
     }
-    step(3); show('p3');
+
+    // Verificar si ya tiene contrato este año (solo piloto existente con ID)
+    contratoFirmado = false;
+    if (pilotoId) {
+      try {
+        const anio = new Date().getFullYear();
+        const estado = await apiFetch(`/contratos/estado?piloto_id=${pilotoId}&anio=${anio}`);
+        contratoFirmado = estado.firmado;
+      } catch {}
+    }
+
+    step(3);
+    show('p3');
+
+    // Mostrar estado del contrato
+    document.getElementById('contratoYaFirmado').style.display  = contratoFirmado ? 'block' : 'none';
+    document.getElementById('contratoFormulario').style.display = contratoFirmado ? 'none' : 'block';
+    document.getElementById('btnFirmar').disabled = !contratoFirmado;
+    document.getElementById('btnFirmar').textContent = contratoFirmado ? 'Continuar →' : 'Firmar y Continuar';
+    if (contratoFirmado) {
+      document.getElementById('btnFirmar').innerHTML =
+        'Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>';
+    }
   }
- 
-  function volver2() {
+
+  function volverDatos() {
     step(2);
     if (modo === 'nuevo') show('p2');
     else                  show('p0b');
   }
- 
+
+  function verificarChecks() {
+    const ok = document.getElementById('chkContrato1').checked &&
+               document.getElementById('chkContrato2').checked &&
+               document.getElementById('chkContrato3').checked;
+    const btn = document.getElementById('btnFirmar');
+    btn.disabled = !ok;
+    if (ok) {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg> Firmar y Continuar';
+    }
+  }
+
+  function firmarContrato() {
+    // El contrato se firma al enviar la inscripción para nuevos pilotos
+    // Para pilotos existentes con ID conocido, firmamos ahora
+    contratoFirmado = true;
+    irPaso4();
+  }
+
+  function volverContrato() {
+    step(3); show('p3');
+  }
+
+  function irPaso4() {
+    step(4); show('p4');
+    // Pre-llenar número si el piloto ya tiene uno
+    if (pilotoNumero) {
+      document.getElementById('iNum').value = pilotoNumero;
+      document.getElementById('iNum').readOnly = true;
+    } else {
+      document.getElementById('iNum').readOnly = false;
+    }
+  }
+
+  // ─── Campeonato → Categorías ──────────────────────────────────────────────
+  async function onCampeonatoChange() {
+    campeonatoSel = document.getElementById('iCampeonato').value;
+    catSel = null;
+    const grid = document.getElementById('catGrid');
+    const etapaSel = document.getElementById('iEtapa');
+    etapaSel.innerHTML = '<option value="">Selecciona una etapa...</option>';
+    if (!campeonatoSel) {
+      grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Selecciona un campeonato primero</div>';
+      return;
+    }
+    grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Cargando...</div>';
+    try {
+      const [etapas, catsData] = await Promise.all([
+        apiFetch(`/campeonatos/${campeonatoSel}/etapas`),
+        apiFetch(`/campeonatos/${campeonatoSel}/categorias`),
+      ]);
+      cats = catsData;
+      // Llenar etapas
+      if (etapas.length === 0) {
+        etapaSel.innerHTML = '<option value="">Sin etapas disponibles</option>';
+      } else {
+        etapaSel.innerHTML = '<option value="">Selecciona una etapa...</option>' +
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${e.nombre} (${formatFecha(e.fecha)})</option>`).join('');
+        if (etapas.length === 1) etapaSel.value = etapas[0].id;
+      }
+      // Llenar categorías
+      if (cats.length === 0) {
+        grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Sin categorías asignadas a este campeonato</div>';
+        return;
+      }
+      grid.innerHTML = cats.map(c =>
+        `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
+           onclick="selCat(${c.id},'${c.color}',this)">${c.nombre}</button>`
+      ).join('');
+    } catch(e) {
+      grid.innerHTML = '<div style="grid-column:span 3;color:#f87171;font-size:0.8rem;text-align:center;padding:12px">Error al cargar datos</div>';
+    }
+  }
+
   function selCat(id, color, btn) {
     catSel = id;
     document.querySelectorAll('.cat-btn').forEach(b => {
@@ -322,31 +532,41 @@
     });
     btn.style.background = color+'22'; btn.style.borderColor = color+'66'; btn.style.color = color;
   }
- 
+
+  // ─── Enviar ───────────────────────────────────────────────────────────────
   async function enviar() {
-    document.getElementById('a3').style.display = 'none';
-    const carreraId = document.getElementById('iCarrera').value;
-    const numero    = document.getElementById('iNum').value;
-    const vehiculo  = document.getElementById('iVeh').value.trim();
-    if (!carreraId)       return alerta('a3', 'Selecciona la carrera');
-    if (!catSel)          return alerta('a3', 'Selecciona tu categoría');
-    if (!numero)          return alerta('a3', 'Ingresa tu número de piloto');
-    if (parseInt(numero)<1) return alerta('a3', 'El número debe ser mayor a 0');
-    if (!vehiculo)        return alerta('a3', 'Ingresa el nombre de tu vehículo');
- 
+    document.getElementById('a4').style.display = 'none';
+    const campeonatoId = document.getElementById('iCampeonato').value;
+    const etapaId      = document.getElementById('iEtapa').value;
+    const numero       = document.getElementById('iNum').value;
+    const marca        = document.getElementById('iMarca').value.trim();
+    if (!campeonatoId) return alerta('a4', 'Selecciona el campeonato');
+    if (!etapaId)       return alerta('a4', 'Selecciona la etapa (carrera)');
+    if (!catSel)        return alerta('a4', 'Selecciona tu categoría');
+    if (!numero)        return alerta('a4', 'Ingresa tu número de piloto');
+    if (parseInt(numero) < 1) return alerta('a4', 'El número debe ser mayor a 0');
+    if (!marca)         return alerta('a4', 'Ingresa la marca de tu vehículo');
+
     const btn = document.getElementById('btnEnviar');
     btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Enviando...';
- 
+
     const body = {
-      carrera_id:    parseInt(carreraId),
-      categoria_id:  parseInt(catSel),
-      numero_piloto: parseInt(numero),
-      vehiculo,
-      modelo_vehiculo: document.getElementById('iMod').value.trim() || null,
+      campeonato_id:   parseInt(campeonatoId),
+      etapa_id:        parseInt(etapaId),
+      categoria_id:    parseInt(catSel),
+      numero_piloto:   parseInt(numero),
+      vehiculo:        marca,
+      modelo_vehiculo: document.getElementById('iModelo').value.trim() || null,
+      anio_vehiculo:   parseInt(document.getElementById('iAnio').value) || null,
+      color_vehiculo:  document.getElementById('iColor').value.trim() || null,
+      apodo_vehiculo:  document.getElementById('iApodo').value.trim() || null,
+      contrato_aceptado: contratoFirmado || null,
     };
- 
+
     if (modo === 'nuevo') {
-      body.nombre_completo     = document.getElementById('pNombre').value.trim();
+      body.apellido_paterno    = document.getElementById('pAPaterno').value.trim();
+      body.apellido_materno    = document.getElementById('pAMaterno').value.trim() || null;
+      body.nombres             = document.getElementById('pNombres').value.trim();
       body.telefono            = document.getElementById('pTel').value.trim();
       body.email               = document.getElementById('pEmail').value.trim() || null;
       body.tipo_sangre         = document.getElementById('pSangre').value;
@@ -357,45 +577,74 @@
       body.contacto_emergencia = document.getElementById('pEmerg').value.trim();
       body.telefono_emergencia = document.getElementById('pTelEmerg').value.trim();
     } else {
-      // piloto existente — mandamos su id dentro del campo email para que auto-registro lo ubique
-      const pilotos = await apiFetch('/pilotos/' + pilotoId).catch(() => null);
-      if (pilotos?.email) body.email = pilotos.email;
-      else body.piloto_id_directo = pilotoId; // fallback
+      // Piloto existente: mandar email para que el auto-registro lo ubique
+      const emailBuscar = document.getElementById('emailBuscar').value.trim();
+      if (emailBuscar) body.email = emailBuscar;
     }
- 
+
     try {
       const res  = await fetch(API_URL + '/inscripciones/auto-registro', {
         method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body),
       });
       const data = await res.json();
+      if (res.status === 403 && data.requiere_contrato) {
+        // Volver al paso de contrato
+        alerta('a4', 'Necesitas firmar el contrato anual para continuar.');
+        btn.disabled = false; btn.textContent = 'Enviar Pre-inscripción';
+        volverContrato();
+        return;
+      }
       if (!res.ok) throw new Error(data.error || 'Error al registrar');
+
+      // Firmar contrato para piloto existente si se aceptó
+      if (pilotoId && contratoFirmado) {
+        try {
+          await fetch(API_URL + '/contratos/firmar', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ piloto_id: pilotoId, anio: new Date().getFullYear() }),
+          });
+        } catch {}
+      }
+
       const i = data.inscripcion;
-      document.getElementById('cNum').textContent    = '#' + i.numero_piloto;
-      document.getElementById('cNombre').textContent = i.piloto_nombre;
-      document.getElementById('cCat').textContent    = i.categoria_nombre;
-      document.getElementById('cCarrera').textContent= i.carrera_nombre;
-      document.getElementById('cVeh').textContent    = i.vehiculo;
-      step(4); show('p4');
+      const vehTexto = [i.vehiculo, i.modelo_vehiculo, i.anio_vehiculo, i.color_vehiculo]
+        .filter(Boolean).join(' · ');
+      document.getElementById('cNum').textContent       = '#' + i.numero_piloto;
+      document.getElementById('cNombre').textContent    = i.piloto_nombre;
+      document.getElementById('cCat').textContent       = i.categoria_nombre;
+      document.getElementById('cCampeonato').textContent= i.campeonato_nombre;
+      document.getElementById('cEtapa').textContent     = i.etapa_nombre || '';
+      document.getElementById('cVeh').textContent       = vehTexto || i.vehiculo;
+      step(5); show('p5');
     } catch(e) {
-      alerta('a3', e.message);
+      alerta('a4', e.message);
     } finally {
       btn.disabled = false; btn.textContent = 'Enviar Pre-inscripción';
     }
   }
- 
+
+  // ─── Reiniciar ────────────────────────────────────────────────────────────
   function reiniciar() {
-    modo = ''; pilotoId = null; catSel = null;
-    ['pNombre','pTel','pEmail','pNac','pCiudad','pEstado','pEmerg','pTelEmerg','iNum','iVeh','iMod','emailBuscar'].forEach(id => {
-      const el = document.getElementById(id); if(el) el.value = id==='pCiudad'?'Monterrey':id==='pEstado'?'Nuevo León':'';
+    modo = ''; pilotoId = null; pilotoNumero = null; catSel = null; campeonatoSel = null; contratoFirmado = false;
+    document.getElementById('iEtapa').innerHTML = '<option value="">Selecciona el campeonato primero...</option>';
+    ['pAPaterno','pAMaterno','pNombres','pTel','pEmail','pNac','pEmerg','pTelEmerg',
+     'iNum','iMarca','iAnio','iModelo','iColor','iApodo','emailBuscar'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = id==='pCiudad'?'Monterrey':id==='pEstado'?'Nuevo León':'';
     });
     document.getElementById('pSangre').value = '';
+    document.getElementById('iNum').readOnly = false;
     document.getElementById('pilotoBox').style.display = 'none';
+    document.getElementById('chkContrato1').checked = false;
+    document.getElementById('chkContrato2').checked = false;
+    document.getElementById('chkContrato3').checked = false;
     document.querySelectorAll('.cat-btn').forEach(b => {
       b.style.background='#0a0a0a'; b.style.borderColor='var(--borde)'; b.style.color='var(--muted)';
     });
     step(1); show('p0');
   }
- 
+
   init();
 </script>
 </body>

@@ -13,34 +13,32 @@
     <div class="sidebar-logo">
       <img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" />
     </div>
-
     <nav class="nav">
       <a href="index.html"             class="nav-link activo" data-page="dashboard">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </a>
-      <a href="pilotos.html"           class="nav-link" data-page="pilotos">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <a href="pilotos.html"           class="nav-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         Pilotos
       </a>
-      <a href="carreras.html"          class="nav-link" data-page="carreras">
+      <a href="campeonatos.html"       class="nav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-        Carreras
+        Campeonatos
       </a>
-      <a href="inscripciones.html"     class="nav-link" data-page="inscripciones">
+      <a href="inscripciones.html"     class="nav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Inscripciones
       </a>
-      <a href="reportes.html"          class="nav-link" data-page="reportes">
+      <a href="reportes.html"          class="nav-link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Reportes
       </a>
-      <a href="usuarios.html" class="nav-link solo-admin" data-page="usuarios" style="display:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><polyline points="16,11 17,12 20,9"/></svg>
+      <a href="usuarios.html" class="nav-link solo-admin" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
         Usuarios
       </a>
     </nav>
-
     <div class="sidebar-footer">
       <div class="usuario-info">
         <div class="usuario-avatar" id="usuarioAvatar"></div>
@@ -57,95 +55,117 @@
 
   <!-- Main -->
   <main class="main">
-    <div class="page-header">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
         <p class="bienvenida">Bienvenido,</p>
         <h1 class="page-titulo" id="tituloNombre">—</h1>
-        <p class="page-sub" id="subtituloCarrera">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Cargando...
-        </p>
+        <p class="page-sub" id="usuarioRolSub"></p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn-secundario" style="padding:8px 14px;font-size:0.75rem" onclick="window.location.href='inscripciones.html'">
+          Ver inscripciones completas →
+        </button>
+        <button class="btn-primario" style="padding:8px 14px;font-size:0.75rem" onclick="window.location.href='reportes.html'">
+          Corte de caja →
+        </button>
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card clickable" onclick="window.location.href='pilotos.html'">
-        <div class="stat-icon azul">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    <!-- Selector de campeonato y etapa -->
+    <div class="card" style="margin-bottom:20px;padding:18px 20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end">
+        <div>
+          <label style="display:block;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#555;margin-bottom:6px">Campeonato</label>
+          <select class="select" id="selCampeonato" onchange="onCampChange()" style="width:100%">
+            <option value="">Selecciona un campeonato...</option>
+          </select>
         </div>
-        <div class="stat-numero" id="statPilotos">—</div>
-        <div class="stat-label">Pilotos Registrados</div>
-      </div>
-      <div class="stat-card clickable" onclick="window.location.href='inscripciones.html'">
-        <div class="stat-icon amarillo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        <div>
+          <label style="display:block;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#555;margin-bottom:6px">Etapa</label>
+          <select class="select" id="selEtapa" onchange="onEtapaChange()" style="width:100%">
+            <option value="">Todas las etapas</option>
+          </select>
         </div>
-        <div class="stat-numero" id="statInscripciones">—</div>
-        <div class="stat-label">Inscripciones</div>
-      </div>
-      <div class="stat-card clickable" onclick="window.location.href='inscripciones.html'">
-        <div class="stat-icon verde">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <div class="stat-numero" id="statPagados">—</div>
-        <div class="stat-label">Pagados</div>
-      </div>
-      <div class="stat-card clickable" onclick="window.location.href='inscripciones.html'">
-        <div class="stat-icon rojo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-        </div>
-        <div class="stat-numero" id="statPendientes">—</div>
-        <div class="stat-label">Pendientes</div>
       </div>
     </div>
 
-    <!-- Acciones rápidas -->
-    <h2 class="seccion-titulo">Acciones Rápidas</h2>
-    <div class="acciones-grid">
-      <button class="accion-btn" onclick="window.location.href='pilotos.html'">
-        <div class="accion-icono">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-        </div>
-        <span>Nuevo Piloto</span>
-      </button>
-      <button class="accion-btn" onclick="window.location.href='inscripciones.html'">
-        <div class="accion-icono">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-        </div>
-        <span>Inscribir</span>
-      </button>
-      <button class="accion-btn accion-cobrar" onclick="window.location.href='inscripciones.html#pendientes'">
-        <div class="accion-icono">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <span>Cobrar</span>
-      </button>
-      <button class="accion-btn" onclick="window.location.href='reportes.html'">
-        <div class="accion-icono">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        </div>
-        <span>Reportes</span>
-      </button>
+    <!-- Estado: nada seleccionado -->
+    <div id="estadoVacio" style="text-align:center;padding:48px 20px;color:#555">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5" style="margin-bottom:16px"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      <div style="font-family:'Bebas Neue';font-size:1.4rem;letter-spacing:0.1em;color:#444">Selecciona un campeonato</div>
+      <div style="font-size:0.82rem;margin-top:6px">Elige arriba para ver los pilotos inscritos</div>
     </div>
 
-    <!-- Últimas inscripciones -->
-    <div class="tabla-header">
-      <h2 class="seccion-titulo" style="margin-bottom:0">Últimas Inscripciones</h2>
-      <a href="inscripciones.html" class="ver-todas">Ver todas →</a>
-    </div>
-    <div class="card tabla-card">
-      <div class="tabla-wrap">
-        <table class="tabla" id="tablaRecientes">
-          <thead>
-            <tr>
-              <th>#</th><th>Piloto</th><th>Categoría</th><th>Vehículo</th><th>Estatus</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyRecientes">
-            <tr><td colspan="5" class="td-vacio">Cargando...</td></tr>
-          </tbody>
-        </table>
+    <!-- Contenido del campeonato/etapa -->
+    <div id="contenidoPrincipal" style="display:none">
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:20px">
+        <div class="stat-card">
+          <div class="stat-icon azul">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+          <div class="stat-numero" id="statInscritos">—</div>
+          <div class="stat-label">Inscritos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon verde">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+          </div>
+          <div class="stat-numero" id="statPagados">—</div>
+          <div class="stat-label">Pagados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon rojo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="stat-numero" id="statPendientes">—</div>
+          <div class="stat-label">Pendientes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amarillo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-numero" id="statRecaudado">—</div>
+          <div class="stat-label">Recaudado</div>
+        </div>
+      </div>
+
+      <!-- Filtro de búsqueda -->
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+        <input class="input" type="text" id="inputBuscar" placeholder="Buscar piloto, # o categoría..."
+          oninput="filtrar()" style="flex:1;min-width:180px" />
+        <select class="select" id="filtroEstatus" onchange="filtrar()" style="width:160px">
+          <option value="">Todos los estatus</option>
+          <option value="Pagado">Pagados</option>
+          <option value="Pendiente">Pendientes</option>
+        </select>
+        <select class="select" id="filtroCat" onchange="filtrar()" style="width:160px">
+          <option value="">Todas las categorías</option>
+        </select>
+      </div>
+
+      <!-- Tabla de inscritos -->
+      <div class="card tabla-card">
+        <div class="tabla-wrap">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Piloto</th>
+                <th>Etapa</th>
+                <th>Categoría</th>
+                <th>Vehículo</th>
+                <th>Pago</th>
+                <th>Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyInscritos">
+              <tr><td colspan="7" class="td-vacio">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="contadorTabla" style="padding:10px 16px;font-size:0.75rem;color:#555;border-top:1px solid #1a1a1a"></div>
       </div>
     </div>
   </main>
@@ -154,75 +174,180 @@
   <script>
     requerirSesion();
     const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+    document.getElementById('tituloNombre').textContent  = usuario.nombre;
+    document.getElementById('usuarioRolSub').textContent = ({ admin: 'Administrador', inscripciones: 'Inscripciones', torre: 'Torre de Control' })[usuario.rol] || usuario.rol;
+    if (usuario.rol === 'admin') document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
 
-    // Mostrar info de usuario
-    document.getElementById('usuarioNombre').textContent  = usuario.nombre;
-    document.getElementById('usuarioRol').textContent     = usuario.rol;
-    document.getElementById('usuarioAvatar').textContent  = usuario.nombre[0].toUpperCase();
-    document.getElementById('tituloNombre').textContent   = usuario.nombre;
+    let todasInscritas = [];
+    let campeonatoActual = null;
+    let etapaActual = null;
 
-    // Mostrar menú admin
-    if (usuario.rol === 'admin') {
-      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    // ─── Inicializar campeonatos ──────────────────────────────────────────────
+    async function init() {
+      try {
+        const camps = await apiFetch('/campeonatos');
+        const sel = document.getElementById('selCampeonato');
+        if (camps.length === 0) {
+          sel.innerHTML = '<option value="">Sin campeonatos</option>';
+          return;
+        }
+        sel.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
+          camps.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+        // Auto-seleccionar el primero
+        if (camps.length >= 1) {
+          sel.value = camps[0].id;
+          await onCampChange();
+        }
+      } catch (e) { mostrarToast(e.message, 'error'); }
     }
 
-    // Cargar datos
-    async function cargarDashboard() {
+    // ─── Cambio de campeonato → cargar etapas ────────────────────────────────
+    async function onCampChange() {
+      campeonatoActual = document.getElementById('selCampeonato').value;
+      etapaActual = null;
+      const selEtapa = document.getElementById('selEtapa');
+      selEtapa.innerHTML = '<option value="">Cargando...</option>';
+      selEtapa.disabled = true;
+
+      if (!campeonatoActual) {
+        selEtapa.innerHTML = '<option value="">Todas las etapas</option>';
+        selEtapa.disabled = false;
+        document.getElementById('estadoVacio').style.display = 'block';
+        document.getElementById('contenidoPrincipal').style.display = 'none';
+        return;
+      }
+
       try {
-        const [pilotos, carreras] = await Promise.all([
-          apiFetch('/pilotos'),
-          apiFetch('/carreras'),
-        ]);
-
-        document.getElementById('statPilotos').textContent = pilotos.length;
-
-        if (carreras.length > 0) {
-          const ultima = carreras[0];
-          document.getElementById('subtituloCarrera').innerHTML =
-            `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-             ${ultima.nombre}`;
-
-          const inscripciones = await apiFetch(`/inscripciones?carrera_id=${ultima.id}`);
-          const pagados    = inscripciones.filter(i => i.estatus === 'Pagado');
-          const pendientes = inscripciones.filter(i => i.estatus === 'Pendiente');
-
-          document.getElementById('statInscripciones').textContent = inscripciones.length;
-          document.getElementById('statPagados').textContent    = pagados.length;
-          document.getElementById('statPendientes').textContent = pendientes.length;
-
-          // Tabla recientes
-          const recientes = inscripciones.slice(0, 8);
-          const tbody = document.getElementById('tbodyRecientes');
-          if (recientes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="td-vacio">Sin inscripciones</td></tr>';
-          } else {
-            tbody.innerHTML = recientes.map(r => `
-              <tr>
-                <td><span class="num-piloto">${r.numero_piloto}</span></td>
-                <td><strong>${r.piloto_nombre}</strong></td>
-                <td>
-                  <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
-                    background:${r.categoria_color}22;color:${r.categoria_color};border:1px solid ${r.categoria_color}44">
-                    ${r.categoria_nombre}
-                  </span>
-                </td>
-                <td style="color:#666">${r.vehiculo}</td>
-                <td>${badgeEstatus(r.estatus)}</td>
-              </tr>
-            `).join('');
-          }
-        } else {
-          document.getElementById('subtituloCarrera').textContent = 'Sin carreras registradas';
-          document.getElementById('statInscripciones').textContent = '0';
-          document.getElementById('statPagados').textContent = '0';
-          document.getElementById('statPendientes').textContent = '0';
+        const etapas = await apiFetch(`/campeonatos/${campeonatoActual}/etapas`);
+        selEtapa.innerHTML = '<option value="">Todas las etapas</option>' +
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
+        selEtapa.disabled = false;
+        // Auto-seleccionar última etapa si sólo hay una
+        if (etapas.length === 1) {
+          selEtapa.value = etapas[0].id;
+          etapaActual = etapas[0].id;
         }
-      } catch (err) {
-        mostrarToast(err.message, 'error');
+      } catch {
+        selEtapa.innerHTML = '<option value="">Todas las etapas</option>';
+        selEtapa.disabled = false;
+      }
+      await cargarInscritos();
+    }
+
+    // ─── Cambio de etapa ────────────────────────────────────────────────────
+    async function onEtapaChange() {
+      etapaActual = document.getElementById('selEtapa').value || null;
+      await cargarInscritos();
+    }
+
+    // ─── Cargar inscritos del campeonato/etapa ───────────────────────────────
+    async function cargarInscritos() {
+      if (!campeonatoActual) return;
+      document.getElementById('estadoVacio').style.display = 'none';
+      document.getElementById('contenidoPrincipal').style.display = 'block';
+      document.getElementById('tbodyInscritos').innerHTML =
+        '<tr><td colspan="7" class="td-vacio">Cargando...</td></tr>';
+
+      try {
+        let url = etapaActual
+          ? `/inscripciones?etapa_id=${etapaActual}`
+          : `/inscripciones?campeonato_id=${campeonatoActual}`;
+        todasInscritas = await apiFetch(url);
+
+        // Actualizar stats
+        const pagados    = todasInscritas.filter(i => i.estatus === 'Pagado');
+        const pendientes = todasInscritas.filter(i => i.estatus === 'Pendiente');
+        const recaudado  = pagados.reduce((s, i) => s + (parseFloat(i.monto_pagado) || 0), 0);
+        document.getElementById('statInscritos').textContent  = todasInscritas.length;
+        document.getElementById('statPagados').textContent    = pagados.length;
+        document.getElementById('statPendientes').textContent = pendientes.length;
+        document.getElementById('statRecaudado').textContent  =
+          recaudado > 0 ? '$' + recaudado.toLocaleString('es-MX') : '—';
+
+        // Llenar filtro de categorías
+        const cats = [...new Map(todasInscritas.map(i => [i.categoria_id, { id: i.categoria_id, nombre: i.categoria_nombre }])).values()];
+        const filtroCat = document.getElementById('filtroCat');
+        const catActual = filtroCat.value;
+        filtroCat.innerHTML = '<option value="">Todas las categorías</option>' +
+          cats.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+        if (catActual) filtroCat.value = catActual;
+
+        filtrar();
+      } catch (e) {
+        mostrarToast(e.message, 'error');
+        document.getElementById('tbodyInscritos').innerHTML =
+          '<tr><td colspan="7" class="td-vacio">Error al cargar</td></tr>';
       }
     }
 
-    cargarDashboard();
+    // ─── Filtrar tabla ───────────────────────────────────────────────────────
+    function filtrar() {
+      const buscar  = document.getElementById('inputBuscar').value.toLowerCase();
+      const estatus = document.getElementById('filtroEstatus').value;
+      const catId   = document.getElementById('filtroCat').value;
+
+      const lista = todasInscritas.filter(i => {
+        const matchBuscar = !buscar ||
+          (i.piloto_nombre || '').toLowerCase().includes(buscar) ||
+          String(i.numero_piloto || '').includes(buscar) ||
+          (i.categoria_nombre || '').toLowerCase().includes(buscar) ||
+          (i.etapa_nombre || '').toLowerCase().includes(buscar);
+        const matchEstatus = !estatus || i.estatus === estatus;
+        const matchCat = !catId || String(i.categoria_id) === catId;
+        return matchBuscar && matchEstatus && matchCat;
+      });
+
+      const tbody = document.getElementById('tbodyInscritos');
+      if (lista.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="td-vacio">Sin resultados</td></tr>';
+        document.getElementById('contadorTabla').textContent = '';
+        return;
+      }
+
+      // Ordenar: pagados primero, luego por número
+      lista.sort((a, b) => {
+        if (a.estatus === b.estatus) return (a.numero_piloto || 9999) - (b.numero_piloto || 9999);
+        return a.estatus === 'Pagado' ? -1 : 1;
+      });
+
+      tbody.innerHTML = lista.map(r => `
+        <tr>
+          <td><span class="num-piloto">${r.numero_piloto || '—'}</span></td>
+          <td>
+            <div style="font-weight:600">${esc(r.piloto_nombre)}</div>
+            ${r.piloto_telefono ? `<div style="font-size:0.73rem;color:#555">${esc(r.piloto_telefono)}</div>` : ''}
+          </td>
+          <td style="font-size:0.8rem;color:#888">
+            ${r.etapa_nombre ? `<div>Etapa ${r.etapa_numero} — ${esc(r.etapa_nombre)}</div>
+            <div style="font-size:0.7rem;color:#555">${formatFecha(r.etapa_fecha)}</div>` : '—'}
+          </td>
+          <td>
+            <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.06em;
+              background:${r.categoria_color}22;color:${r.categoria_color};border:1px solid ${r.categoria_color}44">
+              ${esc(r.categoria_nombre)}
+            </span>
+          </td>
+          <td style="color:#666;font-size:0.82rem">${esc(r.vehiculo || '—')}</td>
+          <td style="font-size:0.78rem">
+            ${r.metodo_pago
+              ? `<span style="padding:2px 7px;border-radius:4px;background:${r.metodo_pago==='Efectivo'?'rgba(34,197,94,0.1)':'rgba(99,102,241,0.1)'};color:${r.metodo_pago==='Efectivo'?'#4ade80':'#818cf8'};border:1px solid ${r.metodo_pago==='Efectivo'?'rgba(34,197,94,0.3)':'rgba(99,102,241,0.3)'}">${esc(r.metodo_pago)}</span>`
+              : '<span style="color:#555">—</span>'}
+          </td>
+          <td>${badgeEstatus(r.estatus)}</td>
+        </tr>
+      `).join('');
+
+      const total = todasInscritas.length;
+      document.getElementById('contadorTabla').textContent =
+        lista.length === total
+          ? `${total} inscripción${total !== 1 ? 'es' : ''}`
+          : `Mostrando ${lista.length} de ${total}`;
+    }
+
+    init();
   </script>
 </body>
 </html>

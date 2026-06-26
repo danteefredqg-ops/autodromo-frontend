@@ -6,6 +6,17 @@
   <title>Reportes — Autódromo Monterrey</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    .corte-pill {
+      display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+      border-radius: 9999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .corte-pagado      { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+    .corte-pendiente   { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .corte-desc        { background: rgba(239,68,68,0.12);   color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .metodo-tag { font-size:0.68rem;color:#888;padding:2px 6px;border:1px solid #1e1e1e;border-radius:4px }
+    .stat-corte { background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:16px 18px;text-align:center }
+  </style>
 </head>
 <body>
   <aside class="sidebar">
@@ -15,7 +26,7 @@
     <nav class="nav">
       <a href="index.html"         class="nav-link">Dashboard</a>
       <a href="pilotos.html"       class="nav-link">Pilotos</a>
-      <a href="carreras.html"      class="nav-link">Carreras</a>
+      <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link">Inscripciones</a>
       <a href="reportes.html"      class="nav-link activo">Reportes</a>
       <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
@@ -43,21 +54,35 @@
       </button>
     </div>
 
-    <!-- Controles -->
+    <!-- Controles en cascada: campeonato → etapa -->
     <div class="card" style="padding:20px;margin-bottom:24px">
       <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
-        <div style="flex:1;min-width:200px">
-          <label class="etiqueta">Etapa / Carrera</label>
-          <select class="select" id="selCarrera"></select>
+        <div style="flex:1;min-width:180px">
+          <label class="etiqueta">Campeonato</label>
+          <select class="select" id="selCampeonato" onchange="onCampChange()"></select>
         </div>
-        <button class="btn-primario" onclick="cargarReporteCategoria()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          Reporte por Categoría
-        </button>
-        <button class="btn-secundario" id="btnCorteGeneral" style="display:none;border-color:rgba(230,57,70,0.5);color:#e63946" onclick="cargarCorteGeneral()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Corte General
-        </button>
+        <div style="flex:1;min-width:180px">
+          <label class="etiqueta">Etapa</label>
+          <select class="select" id="selEtapa">
+            <option value="">Todas las etapas</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:140px">
+          <label class="etiqueta">Categoría (opcional)</label>
+          <select class="select" id="selCategoria">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-primario" onclick="cargarReporteCategoria()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Por Categoría
+          </button>
+          <button class="btn-secundario" id="btnCorte" style="border-color:rgba(74,222,128,0.5);color:#4ade80" onclick="cargarCorteGeneral()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Corte de Caja
+          </button>
+        </div>
       </div>
     </div>
 
@@ -74,57 +99,124 @@
     if (usuario.rol === 'admin') {
       document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
     }
-    if (usuario.rol === 'admin' || usuario.rol === 'inscripciones') {
-      document.getElementById('btnCorteGeneral').style.display = 'flex';
+    if (usuario.rol === 'torre') {
+      document.getElementById('btnCorte').style.display = 'none';
     }
 
+    let todasCats = [];
+
     async function inicializar() {
-      const carreras = await apiFetch('/carreras');
-      document.getElementById('selCarrera').innerHTML =
-        carreras.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+      const [camps, cats] = await Promise.all([apiFetch('/campeonatos'), apiFetch('/categorias')]);
+      todasCats = cats;
+
+      const selCamp = document.getElementById('selCampeonato');
+      selCamp.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
+        camps.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+
+      document.getElementById('selCategoria').innerHTML = '<option value="">Todas</option>' +
+        cats.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+
+      // URL params: si viene etapa_id, seleccionar automáticamente
+      const params  = new URLSearchParams(window.location.search);
+      const etapaId = params.get('etapa_id');
+      if (etapaId) {
+        // Buscar el campeonato de esta etapa en los camps y pre-seleccionar
+        // Intentamos cargando la etapa, luego auto-cargar
+        try {
+          // Buscar a cual campeonato pertenece
+          for (const c of camps) {
+            const etapas = await apiFetch(`/campeonatos/${c.id}/etapas`);
+            const et = etapas.find(e => String(e.id) === etapaId);
+            if (et) {
+              selCamp.value = c.id;
+              await onCampChange();
+              document.getElementById('selEtapa').value = etapaId;
+              cargarCorteGeneral();
+              return;
+            }
+          }
+        } catch {}
+      }
+
+      if (camps.length > 0) {
+        selCamp.value = camps[0].id;
+        await onCampChange();
+      }
+    }
+
+    async function onCampChange() {
+      const campId = document.getElementById('selCampeonato').value;
+      const selEtapa = document.getElementById('selEtapa');
+      selEtapa.innerHTML = '<option value="">Todas las etapas</option>';
+      if (!campId) return;
+      try {
+        const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
+        selEtapa.innerHTML = '<option value="">Todas las etapas</option>' +
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
+      } catch {}
+    }
+
+    function getQueryParams() {
+      const campId  = document.getElementById('selCampeonato').value;
+      const etapaId = document.getElementById('selEtapa').value;
+      const catId   = document.getElementById('selCategoria').value;
+      let qs = '';
+      if (etapaId)      qs = `etapa_id=${etapaId}`;
+      else if (campId)  qs = `campeonato_id=${campId}`;
+      if (catId) qs += (qs ? '&' : '') + `categoria_id=${catId}`;
+      return { campId, etapaId, catId, qs };
     }
 
     async function cargarReporteCategoria() {
-      const carreraId = document.getElementById('selCarrera').value;
-      if (!carreraId) return mostrarToast('Selecciona una carrera', 'advertencia');
+      const { qs } = getQueryParams();
+      if (!qs) return mostrarToast('Selecciona un campeonato o etapa', 'advertencia');
       try {
-        const data = await apiFetch(`/reportes/por-categoria?carrera_id=${carreraId}`);
-        const contenido = document.getElementById('contenidoReporte');
+        const data = await apiFetch(`/reportes/por-categoria?${qs}`);
         const grupos = Object.entries(data.agrupado);
+        const div = document.getElementById('contenidoReporte');
         if (grupos.length === 0) {
-          contenido.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555">Sin inscripciones para esta carrera</div>';
+          div.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555">Sin inscripciones</div>';
           return;
         }
-        contenido.innerHTML = `
+        const costo = data.costo_etapa || 0;
+        div.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
             <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em">Reporte por Categoría</h2>
-            <span style="font-size:0.75rem;padding:3px 12px;border-radius:9999px;background:rgba(230,57,70,0.15);color:#e63946;border:1px solid rgba(230,57,70,0.3)">${data.total} total</span>
+            <div style="display:flex;gap:10px;align-items:center">
+              ${costo > 0 ? `<span style="font-size:0.78rem;color:#4ade80">Costo: $${costo.toLocaleString('es-MX',{minimumFractionDigits:2})}/inscripción</span>` : ''}
+              <span style="font-size:0.75rem;padding:3px 12px;border-radius:9999px;background:rgba(230,57,70,0.15);color:#e63946;border:1px solid rgba(230,57,70,0.3)">${data.total} total</span>
+            </div>
           </div>
-          ${grupos.map(([nombre, grupo]) => `
+          ${grupos.map(([nombre, g]) => `
             <div class="card" style="margin-bottom:14px;padding:0;overflow:hidden">
               <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #1e1e1e">
                 <div style="display:flex;align-items:center;gap:10px">
-                  <span style="width:10px;height:10px;border-radius:50%;background:${grupo.categoria.color};flex-shrink:0"></span>
-                  <span style="font-family:'Bebas Neue';font-size:1.5rem;color:${grupo.categoria.color}">${nombre}</span>
-                  ${grupo.categoria.descripcion ? `<span style="font-size:0.75rem;color:#555">${grupo.categoria.descripcion}</span>` : ''}
+                  <span style="width:10px;height:10px;border-radius:50%;background:${g.categoria.color};flex-shrink:0"></span>
+                  <span style="font-family:'Bebas Neue';font-size:1.5rem;color:${g.categoria.color}">${esc(nombre)}</span>
+                  ${g.categoria.descripcion ? `<span style="font-size:0.75rem;color:#555">${esc(g.categoria.descripcion)}</span>` : ''}
                 </div>
-                <div style="display:flex;gap:16px;font-size:0.78rem;font-family:'Barlow',sans-serif">
-                  <span style="color:#4ade80">✓ ${grupo.pagados} pagados</span>
-                  <span style="color:#fbbf24">⏳ ${grupo.total - grupo.pagados} pendientes</span>
-                  <span style="color:#fff;font-weight:700">${grupo.total} total</span>
+                <div style="display:flex;gap:16px;font-size:0.78rem;align-items:center;flex-wrap:wrap">
+                  <span style="color:#4ade80">✓ ${g.pagados} pagados</span>
+                  <span style="color:#fbbf24">⏳ ${g.total - g.pagados} pendientes</span>
+                  <span style="color:#fff;font-weight:700">${g.total} total</span>
+                  ${costo > 0 ? `
+                    <span style="color:#4ade80;font-weight:700">$${g.total_cobrado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
+                    <span style="color:#555">/ $${g.total_esperado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
+                  ` : ''}
                 </div>
               </div>
               <div class="tabla-wrap">
                 <table class="tabla">
-                  <thead><tr><th>#</th><th>Piloto</th><th>Sangre</th><th>Vehículo</th><th>Estatus</th></tr></thead>
+                  <thead><tr><th>#</th><th>Piloto</th><th>Sangre</th><th>Vehículo</th><th>Estatus</th><th>Método</th></tr></thead>
                   <tbody>
-                    ${grupo.pilotos.map(r => `
+                    ${g.pilotos.map(r => `
                       <tr>
                         <td><span class="num-piloto">${r.numero_piloto}</span></td>
-                        <td><strong>${r.piloto_nombre}</strong></td>
+                        <td><strong>${esc(r.piloto_nombre)}</strong></td>
                         <td style="font-family:'Bebas Neue';font-size:1rem;color:#e63946">${r.tipo_sangre}</td>
-                        <td style="color:#666">${r.vehiculo}</td>
+                        <td style="color:#666">${esc(r.vehiculo)}${r.modelo_vehiculo ? ' '+esc(r.modelo_vehiculo) : ''}</td>
                         <td>${badgeEstatus(r.estatus)}</td>
+                        <td>${r.metodo_pago ? `<span class="metodo-tag">${esc(r.metodo_pago)}</span>` : '<span style="color:#333">—</span>'}</td>
                       </tr>
                     `).join('')}
                   </tbody>
@@ -137,44 +229,100 @@
     }
 
     async function cargarCorteGeneral() {
-      const carreraId = document.getElementById('selCarrera').value;
-      if (!carreraId) return mostrarToast('Selecciona una carrera', 'advertencia');
+      const { qs } = getQueryParams();
+      if (!qs) return mostrarToast('Selecciona un campeonato o etapa', 'advertencia');
       try {
-        const data = await apiFetch(`/reportes/corte-general?carrera_id=${carreraId}`);
-        const c = data.contenido;
+        const data = await apiFetch(`/reportes/corte-general?${qs}`);
+        const c = data.resumen;
+        const costo = data.costo || 0;
+        const nombreContexto = data.etapa
+          ? `${data.campeonato?.nombre || ''} — Etapa ${data.etapa.numero}: ${data.etapa.nombre}`
+          : (data.campeonato?.nombre || '');
+
         document.getElementById('contenidoReporte').innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
-            <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em">Corte General</h2>
-            <div style="text-align:right">
-              <div style="font-size:0.72rem;color:#555">Generado: ${new Date(data.generado_en).toLocaleString('es-MX')}</div>
-              <div style="font-size:0.72rem;color:#555">Por: ${data.generado_por}</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <div>
+              <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em">Corte de Caja</h2>
+              <div style="font-size:0.8rem;color:#555;margin-top:2px">${esc(nombreContexto)}</div>
+            </div>
+            <div style="text-align:right;font-size:0.72rem;color:#444">
+              <div>Generado: ${new Date(data.generado_en).toLocaleString('es-MX')}</div>
+              <div>Por: ${esc(data.generado_por)}</div>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+
+          <!-- Stats principales -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px">
             ${[
-              ['Total Inscritos', data.resumen.total, '#fff'],
-              ['Pagados',         data.resumen.pagados, '#4ade80'],
-              ['Pendientes',      data.resumen.pendientes, '#fbbf24'],
-              ['Ingresos',        '$' + data.resumen.ingresos.toLocaleString('es-MX', {minimumFractionDigits:2}), '#e63946'],
+              ['Total',           c.total,                          '#fff'],
+              ['Pagados',         c.pagados,                        '#4ade80'],
+              ['Pendientes',      c.pendientes,                     '#fbbf24'],
+              ['Efectivo',        c.efectivo,                       '#60a5fa'],
+              ['Transferencia',   c.transferencia,                  '#a78bfa'],
+              ['Recaudado',       '$'+c.ingresos.toLocaleString('es-MX',{minimumFractionDigits:2}), '#4ade80'],
+              ...(costo > 0 ? [['Esperado', '$'+c.esperado.toLocaleString('es-MX',{minimumFractionDigits:2}), '#555']] : []),
             ].map(([label, val, color]) => `
-              <div class="stat-card">
-                <div style="font-family:'Bebas Neue';font-size:2.2rem;color:${color}">${val}</div>
-                <div style="font-size:0.68rem;color:#555;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px">${label}</div>
+              <div class="stat-corte">
+                <div style="font-family:'Bebas Neue';font-size:1.9rem;color:${color};line-height:1.1">${val}</div>
+                <div style="font-size:0.65rem;color:#444;letter-spacing:0.1em;text-transform:uppercase;margin-top:4px">${label}</div>
               </div>
             `).join('')}
           </div>
-          <div class="card tabla-card">
-            <div style="padding:14px 18px;border-bottom:1px solid #1e1e1e;font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:0.06em">Por Categoría</div>
+
+          <!-- Por categoría -->
+          <div class="card" style="margin-bottom:16px;padding:0;overflow:hidden">
+            <div style="padding:12px 18px;border-bottom:1px solid #1e1e1e;font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:0.06em">Resumen por Categoría</div>
             <div class="tabla-wrap">
               <table class="tabla">
                 <thead><tr><th>Categoría</th><th>Total</th><th>Pagados</th><th>Pendientes</th></tr></thead>
                 <tbody>
                   ${Object.entries(data.por_categoria).map(([nombre, g]) => `
                     <tr>
-                      <td><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${g.categoria.color}"></span><strong>${nombre}</strong></span></td>
+                      <td><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${g.categoria.color}"></span><strong>${esc(nombre)}</strong></span></td>
                       <td style="font-family:'Bebas Neue';font-size:1.1rem">${g.total}</td>
                       <td style="color:#4ade80;font-family:'Bebas Neue';font-size:1.1rem">${g.pagados}</td>
                       <td style="color:#fbbf24;font-family:'Bebas Neue';font-size:1.1rem">${g.total - g.pagados}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Lista completa: pagados primero, luego pendientes -->
+          <div class="card" style="padding:0;overflow:hidden">
+            <div style="padding:12px 18px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between">
+              <span style="font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:0.06em">Lista de Pilotos</span>
+              <div style="display:flex;gap:10px;font-size:0.72rem">
+                <span class="corte-pill corte-pagado">${c.pagados} pagados</span>
+                <span class="corte-pill corte-pendiente">${c.pendientes} pendientes</span>
+              </div>
+            </div>
+            <div class="tabla-wrap">
+              <table class="tabla">
+                <thead><tr><th>#</th><th>Piloto</th><th>Sangre</th><th>Categoría</th><th>Estatus</th><th>Método</th><th>Monto</th><th>Fecha Pago</th></tr></thead>
+                <tbody>
+                  ${[...data.inscripciones].sort((a,b) => {
+                    if (a.estatus === 'Pagado' && b.estatus !== 'Pagado') return -1;
+                    if (a.estatus !== 'Pagado' && b.estatus === 'Pagado') return 1;
+                    return a.numero_piloto - b.numero_piloto;
+                  }).map(r => `
+                    <tr>
+                      <td><span class="num-piloto">${r.numero_piloto}</span></td>
+                      <td><strong>${esc(r.piloto_nombre)}</strong></td>
+                      <td style="font-family:'Bebas Neue';font-size:1rem;color:#e63946">${r.tipo_sangre}</td>
+                      <td><span style="padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;text-transform:uppercase;background:${r.categoria_color}22;color:${r.categoria_color};border:1px solid ${r.categoria_color}44">${esc(r.categoria_nombre)}</span></td>
+                      <td>
+                        ${r.estatus === 'Pagado'
+                          ? '<span class="corte-pill corte-pagado">✓ Pagado</span>'
+                          : r.estatus === 'Descalificado'
+                            ? '<span class="corte-pill corte-desc">Descalif.</span>'
+                            : '<span class="corte-pill corte-pendiente">Pendiente</span>'
+                        }
+                      </td>
+                      <td>${r.metodo_pago ? `<span class="metodo-tag">${esc(r.metodo_pago)}</span>` : '<span style="color:#333">—</span>'}</td>
+                      <td style="font-size:0.82rem;color:#4ade80">${r.monto_pago ? '$'+parseFloat(r.monto_pago).toLocaleString('es-MX',{minimumFractionDigits:2}) : (r.estatus === 'Pagado' && costo > 0 ? '$'+costo.toLocaleString('es-MX',{minimumFractionDigits:2}) : '—')}</td>
+                      <td style="font-size:0.75rem;color:#555">${r.pagado_en ? new Date(r.pagado_en).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}) : '—'}</td>
                     </tr>
                   `).join('')}
                 </tbody>

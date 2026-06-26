@@ -15,7 +15,7 @@
     <nav class="nav">
       <a href="index.html"         class="nav-link">Dashboard</a>
       <a href="pilotos.html"       class="nav-link">Pilotos</a>
-      <a href="carreras.html"      class="nav-link">Carreras</a>
+      <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link activo">Inscripciones</a>
       <a href="reportes.html"      class="nav-link">Reportes</a>
       <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
@@ -35,7 +35,7 @@
     <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
       <div>
         <h1 class="page-titulo">Inscripciones</h1>
-        <p class="page-sub" id="contadorInsc">Cargando...</p>
+        <p class="page-sub" id="contadorInsc">Selecciona una etapa para ver inscripciones</p>
       </div>
       <button class="btn-primario" id="btnNuevaInsc" onclick="abrirModalInscripcion()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -43,10 +43,13 @@
       </button>
     </div>
 
-    <!-- Filtros -->
+    <!-- Filtros en cascada: campeonato → etapa -->
     <div class="barra-filtros">
-      <select class="select" id="filtroCarrera" onchange="cargarInscripciones()">
-        <option value="">Selecciona una carrera...</option>
+      <select class="select" id="filtroCampeonato" onchange="onFiltroCampChange()">
+        <option value="">Selecciona un campeonato...</option>
+      </select>
+      <select class="select" id="filtroEtapa" onchange="cargarInscripciones()">
+        <option value="">Todas las etapas</option>
       </select>
       <select class="select" id="filtroCategoria" onchange="cargarInscripciones()">
         <option value="">Todas las categorías</option>
@@ -55,7 +58,7 @@
         <option value="">Todos los estatus</option>
         <option>Pendiente</option><option>Pagado</option><option>Descalificado</option>
       </select>
-      <input class="input" type="text" id="inputBuscar" placeholder="Buscar por nombre o número..." oninput="filtrarTabla()" />
+      <input class="input" type="text" id="inputBuscar" placeholder="Buscar nombre o número..." oninput="filtrarTabla()" />
     </div>
 
     <div class="card tabla-card">
@@ -63,11 +66,11 @@
         <table class="tabla">
           <thead>
             <tr>
-              <th>#</th><th>Piloto</th><th>Sangre</th><th>Categoría</th><th>Vehículo</th><th>Estatus</th><th>Acciones</th>
+              <th>#</th><th>Piloto</th><th>Sangre</th><th>Categoría</th><th>Etapa</th><th>Vehículo</th><th>Estatus</th><th>Acciones</th>
             </tr>
           </thead>
           <tbody id="tbodyInsc">
-            <tr><td colspan="7" class="td-vacio">Selecciona una carrera para ver las inscripciones</td></tr>
+            <tr><td colspan="8" class="td-vacio">Selecciona un campeonato para ver las inscripciones</td></tr>
           </tbody>
         </table>
       </div>
@@ -92,27 +95,47 @@
         </div>
         <div class="grid-2" style="margin-top:12px">
           <div class="campo">
-            <label class="etiqueta">Carrera *</label>
-            <select class="select" id="iCarrera" required>
-              <option value="">Seleccionar...</option>
+            <label class="etiqueta">Campeonato *</label>
+            <select class="select" id="iCampeonato" onchange="onModalCampChange()" required>
+              <option value="">Seleccionar campeonato...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Etapa *</label>
+            <select class="select" id="iEtapa" required>
+              <option value="">Seleccionar etapa...</option>
             </select>
           </div>
           <div class="campo">
             <label class="etiqueta">Número de Piloto *</label>
             <input class="input" type="number" id="iNumero" min="1" max="999" placeholder="Ej: 42" required />
-            <div style="font-size:0.7rem;color:#666;margin-top:4px">Único por carrera</div>
+          </div>
+          <div class="campo">
+            <div style="font-size:0.7rem;color:#555;margin-top:22px">Un piloto puede inscribirse en varias categorías</div>
           </div>
           <div class="campo col-2">
             <label class="etiqueta">Categoría *</label>
             <div id="gridCategorias" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px"></div>
           </div>
           <div class="campo">
-            <label class="etiqueta">Vehículo / Kart *</label>
+            <label class="etiqueta">Marca *</label>
             <input class="input" id="iVehiculo" placeholder="Ej: Tony Kart" required />
           </div>
           <div class="campo">
+            <label class="etiqueta">Año</label>
+            <input class="input" type="number" id="iAnio" placeholder="Ej: 2022" />
+          </div>
+          <div class="campo">
             <label class="etiqueta">Modelo</label>
-            <input class="input" id="iModelo" placeholder="Modelo específico" />
+            <input class="input" id="iModelo" placeholder="Ej: Rookie EVO" />
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Color</label>
+            <input class="input" id="iColor" placeholder="Ej: Rojo/Blanco" />
+          </div>
+          <div class="campo col-2">
+            <label class="etiqueta">Apodo / Referencia</label>
+            <input class="input" id="iApodo" placeholder='Ej: "El Toro" (opcional)' />
           </div>
         </div>
       </div>
@@ -123,7 +146,7 @@
     </div>
   </div>
 
-  <!-- Modal cobro -->
+  <!-- Modal cobro (solo Efectivo / Transferencia) -->
   <div class="modal-overlay" id="modalCobro" style="display:none">
     <div class="modal" style="max-width:380px">
       <div class="modal-header">
@@ -136,13 +159,18 @@
         <div id="infoCobro" style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:16px"></div>
         <div class="campo">
           <label class="etiqueta">Método de Pago</label>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="metodoPago">
-            <button class="metodo-btn activo" onclick="seleccionarMetodo('Efectivo',this)">Efectivo</button>
-            <button class="metodo-btn" onclick="seleccionarMetodo('Transferencia',this)">Transferencia</button>
-            <button class="metodo-btn" onclick="seleccionarMetodo('Tarjeta',this)">Tarjeta</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="gridMetodoPago">
+            <button class="metodo-btn activo" onclick="seleccionarMetodo('Efectivo',this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Efectivo
+            </button>
+            <button class="metodo-btn" onclick="seleccionarMetodo('Transferencia',this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><polyline points="17,1 21,5 17,9"/><path d="M3,11V9a4,4,0,0,1,4-4h14"/><polyline points="7,23 3,19 7,15"/><path d="M21,13v2a4,4,0,0,1-4,4H3"/></svg>
+              Transferencia
+            </button>
           </div>
         </div>
-        <div class="campo">
+        <div class="campo" style="margin-top:12px">
           <label class="etiqueta">Monto (opcional)</label>
           <input class="input" type="number" step="0.01" id="iMonto" placeholder="0.00" />
         </div>
@@ -159,10 +187,10 @@
 
   <style>
     .metodo-btn {
-      padding: 8px 6px; border-radius: 8px; font-family: 'Barlow',sans-serif;
+      padding: 10px 8px; border-radius: 8px; font-family: 'Barlow',sans-serif;
       font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
       cursor: pointer; border: 1px solid #1e1e1e; background: #0a0a0a; color: #666;
-      transition: all 0.18s;
+      transition: all 0.18s; display: flex; align-items: center; justify-content: center;
     }
     .metodo-btn.activo { background: rgba(230,57,70,0.15); border-color: rgba(230,57,70,0.4); color: #e63946; }
     .cat-btn {
@@ -188,7 +216,7 @@
       document.getElementById('btnNuevaInsc').style.display = 'none';
     }
 
-    let categorias = [], carreras = [], pilotos = [];
+    let todasCategorias = [], campeonatos = [], pilotos = [];
     let inscripcionesActuales = [];
     let categoriaSeleccionada = '';
     let metodoPagoSeleccionado = 'Efectivo';
@@ -196,68 +224,120 @@
 
     async function inicializar() {
       try {
-        [carreras, categorias, pilotos] = await Promise.all([
-          apiFetch('/carreras'),
+        [campeonatos, todasCategorias, pilotos] = await Promise.all([
+          apiFetch('/campeonatos'),
           apiFetch('/categorias'),
           apiFetch('/pilotos'),
         ]);
 
-        // Selectores de filtro
-        const filtroCarrera = document.getElementById('filtroCarrera');
-        filtroCarrera.innerHTML = '<option value="">Selecciona una carrera...</option>' +
-          carreras.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        // Filtro: selector campeonato
+        const filtroCamp = document.getElementById('filtroCampeonato');
+        filtroCamp.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
+          campeonatos.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
 
-        const filtroCategoria = document.getElementById('filtroCategoria');
-        filtroCategoria.innerHTML = '<option value="">Todas las categorías</option>' +
-          categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        // Filtro: categorías
+        document.getElementById('filtroCategoria').innerHTML =
+          '<option value="">Todas las categorías</option>' +
+          todasCategorias.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
 
-        // Selectores del modal
-        document.getElementById('iCarrera').innerHTML = '<option value="">Seleccionar...</option>' +
-          carreras.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        // Modal: campeonatos
+        document.getElementById('iCampeonato').innerHTML =
+          '<option value="">Seleccionar campeonato...</option>' +
+          campeonatos.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
 
-        document.getElementById('iPiloto').innerHTML = '<option value="">Seleccionar piloto...</option>' +
-          pilotos.map(p => `<option value="${p.id}">${p.nombre_completo}</option>`).join('');
+        // Modal: pilotos
+        document.getElementById('iPiloto').innerHTML =
+          '<option value="">Seleccionar piloto...</option>' +
+          pilotos.map(p => `<option value="${p.id}">${esc(p.nombre_completo)}${p.numero_piloto ? ' #'+p.numero_piloto : ''}</option>`).join('');
 
-        // Grid categorías
-        document.getElementById('gridCategorias').innerHTML = categorias.map(c => `
-          <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
-            onclick="seleccionarCategoria(${c.id}, '${c.color}', this)">
-            ${c.nombre}
-          </button>
-        `).join('');
+        // Leer URL params
+        const params = new URLSearchParams(window.location.search);
+        const campId = params.get('campeonato_id');
+        const etapaId = params.get('etapa_id');
+        const pilotoId = params.get('piloto_id');
 
-        // Si hay carrera en URL, pre-seleccionar
-        if (carreras.length > 0) {
-          filtroCarrera.value = carreras[0].id;
+        if (campId) {
+          filtroCamp.value = campId;
+          await onFiltroCampChange();
+          if (etapaId) {
+            document.getElementById('filtroEtapa').value = etapaId;
+          }
+          cargarInscripciones();
+        } else if (campeonatos.length > 0) {
+          filtroCamp.value = campeonatos[0].id;
+          await onFiltroCampChange();
           cargarInscripciones();
         }
 
-        // Si viene ?piloto_id desde la página de pilotos, abrir modal pre-cargado
-        const params   = new URLSearchParams(window.location.search);
-        const pilotoId = params.get('piloto_id');
         if (pilotoId) {
           abrirModalInscripcion();
-          document.getElementById('iPiloto').value  = pilotoId;
-          if (carreras.length > 0) {
-            document.getElementById('iCarrera').value = carreras[0].id;
+          document.getElementById('iPiloto').value = pilotoId;
+          if (campeonatos.length > 0) {
+            document.getElementById('iCampeonato').value = campeonatos[0].id;
+            await onModalCampChange();
           }
         }
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
+    async function onFiltroCampChange() {
+      const campId = document.getElementById('filtroCampeonato').value;
+      const etapaSelect = document.getElementById('filtroEtapa');
+      etapaSelect.innerHTML = '<option value="">Todas las etapas</option>';
+      if (!campId) return;
+      try {
+        const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
+        etapaSelect.innerHTML = '<option value="">Todas las etapas</option>' +
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
+      } catch {}
+      cargarInscripciones();
+    }
+
+    async function onModalCampChange() {
+      const campId = document.getElementById('iCampeonato').value;
+      categoriaSeleccionada = '';
+      document.getElementById('gridCategorias').innerHTML = '';
+      const etapaSelect = document.getElementById('iEtapa');
+      etapaSelect.innerHTML = '<option value="">Seleccionar etapa...</option>';
+      if (!campId) return;
+      try {
+        const [etapas, cats] = await Promise.all([
+          apiFetch(`/campeonatos/${campId}/etapas`),
+          apiFetch(`/campeonatos/${campId}/categorias`),
+        ]);
+        etapaSelect.innerHTML = '<option value="">Seleccionar etapa...</option>' +
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
+        renderCatGrid(cats);
+      } catch {}
+    }
+
+    function renderCatGrid(cats) {
+      const grid = document.getElementById('gridCategorias');
+      grid.innerHTML = cats.length === 0
+        ? '<div style="grid-column:span 3;color:#555;font-size:0.8rem">Sin categorías para este campeonato</div>'
+        : cats.map(c => `
+            <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
+              onclick="seleccionarCategoria(${c.id},'${c.color}',this)">
+              ${esc(c.nombre)}
+            </button>`).join('');
+    }
+
     async function cargarInscripciones() {
-      const carreraId  = document.getElementById('filtroCarrera').value;
-      const categoriaId = document.getElementById('filtroCategoria').value;
-      const estatus    = document.getElementById('filtroEstatus').value;
-      if (!carreraId) {
+      const campId  = document.getElementById('filtroCampeonato').value;
+      const etapaId = document.getElementById('filtroEtapa').value;
+      const catId   = document.getElementById('filtroCategoria').value;
+      const estatus = document.getElementById('filtroEstatus').value;
+      if (!campId) {
         document.getElementById('tbodyInsc').innerHTML =
-          '<tr><td colspan="7" class="td-vacio">Selecciona una carrera</td></tr>';
+          '<tr><td colspan="8" class="td-vacio">Selecciona un campeonato</td></tr>';
         return;
       }
       try {
-        let url = `/inscripciones?carrera_id=${carreraId}`;
-        if (categoriaId) url += `&categoria_id=${categoriaId}`;
-        if (estatus)     url += `&estatus=${estatus}`;
+        let url = etapaId
+          ? `/inscripciones?etapa_id=${etapaId}`
+          : `/inscripciones?campeonato_id=${campId}`;
+        if (catId)   url += `&categoria_id=${catId}`;
+        if (estatus) url += `&estatus=${estatus}`;
         inscripcionesActuales = await apiFetch(url);
         filtrarTabla();
         const pagados    = inscripcionesActuales.filter(i => i.estatus === 'Pagado').length;
@@ -272,7 +352,7 @@
       const filtrados = inscripcionesActuales.filter(i =>
         !buscar ||
         i.piloto_nombre.toLowerCase().includes(buscar) ||
-        i.numero_piloto.toString().includes(buscar)
+        String(i.numero_piloto).includes(buscar)
       );
       renderizarTabla(filtrados);
     }
@@ -280,23 +360,27 @@
     function renderizarTabla(lista) {
       const tbody = document.getElementById('tbodyInsc');
       if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="td-vacio">Sin inscripciones</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="td-vacio">Sin inscripciones</td></tr>';
         return;
       }
       tbody.innerHTML = lista.map(i => `
         <tr id="fila-${i.id}">
           <td><span class="num-piloto">${i.numero_piloto}</span></td>
           <td>
-            <div style="font-weight:600">${i.piloto_nombre}</div>
+            <div style="font-weight:600">${esc(i.piloto_nombre)}</div>
             ${i.auto_registro ? '<div style="font-size:0.72rem;color:#3b82f6">auto-registro</div>' : ''}
           </td>
-          <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946;display:flex;align-items:center;gap:4px">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            ${i.tipo_sangre}
-          </span></td>
-          <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${i.categoria_color}22;color:${i.categoria_color};border:1px solid ${i.categoria_color}44">${i.categoria_nombre}</span></td>
-          <td style="color:#666">${i.vehiculo}</td>
-          <td>${badgeEstatus(i.estatus)}</td>
+          <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946">${i.tipo_sangre}</span></td>
+          <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${i.categoria_color}22;color:${i.categoria_color};border:1px solid ${i.categoria_color}44">${esc(i.categoria_nombre)}</span></td>
+          <td style="font-size:0.78rem;color:#555">${i.etapa_nombre ? `Etapa ${i.etapa_numero} — ${esc(i.etapa_nombre)}` : '—'}</td>
+          <td style="color:#666;font-size:0.82rem">
+            <div>${esc(i.vehiculo)}${i.modelo_vehiculo ? ' ' + esc(i.modelo_vehiculo) : ''}</div>
+            ${i.apodo_vehiculo ? `<div style="font-size:0.7rem;color:#555">"${esc(i.apodo_vehiculo)}"</div>` : ''}
+          </td>
+          <td>
+            ${badgeEstatus(i.estatus)}
+            ${i.estatus === 'Pagado' && i.metodo_pago ? `<div style="font-size:0.68rem;color:#555;margin-top:2px">${esc(i.metodo_pago)}</div>` : ''}
+          </td>
           <td>
             <div style="display:flex;gap:6px;align-items:center">
               ${(usuario.rol !== 'torre' && i.estatus === 'Pendiente') ? `
@@ -306,7 +390,7 @@
                 </button>
               ` : ''}
               ${usuario.rol === 'admin' ? `
-                <button class="btn-peligro" style="padding:6px 10px;font-size:0.7rem" onclick="eliminarInscripcion(${i.id})">
+                <button class="btn-peligro" style="padding:6px 10px;font-size:0.7rem" onclick="eliminarInscripcion(${i.id})" title="Eliminar">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14H6L5,6"/></svg>
                 </button>
               ` : ''}
@@ -316,15 +400,19 @@
       `).join('');
     }
 
-    // Modal inscripción
+    // ── Modal inscripción ─────────────────────────────────────────────────────
     function abrirModalInscripcion() {
       categoriaSeleccionada = '';
-      document.getElementById('iPiloto').value  = '';
-      document.getElementById('iCarrera').value = carreras.length > 0 ? carreras[0].id : '';
-      document.getElementById('iNumero').value  = '';
+      document.getElementById('iPiloto').value   = '';
+      document.getElementById('iCampeonato').value = '';
+      document.getElementById('iEtapa').innerHTML = '<option value="">Seleccionar etapa...</option>';
+      document.getElementById('iNumero').value   = '';
       document.getElementById('iVehiculo').value = '';
-      document.getElementById('iModelo').value  = '';
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
+      document.getElementById('iAnio').value     = '';
+      document.getElementById('iModelo').value   = '';
+      document.getElementById('iColor').value    = '';
+      document.getElementById('iApodo').value    = '';
+      document.getElementById('gridCategorias').innerHTML = '';
       document.getElementById('modalInsc').style.display = 'flex';
     }
 
@@ -345,35 +433,42 @@
     }
 
     async function guardarInscripcion() {
-      const pilotoId   = document.getElementById('iPiloto').value;
-      const carreraId  = document.getElementById('iCarrera').value;
-      const numero     = document.getElementById('iNumero').value;
-      const vehiculo   = document.getElementById('iVehiculo').value.trim();
+      const pilotoId  = document.getElementById('iPiloto').value;
+      const campId    = document.getElementById('iCampeonato').value;
+      const etapaId   = document.getElementById('iEtapa').value;
+      const numero    = document.getElementById('iNumero').value;
+      const vehiculo  = document.getElementById('iVehiculo').value.trim();
 
-      if (!pilotoId)            return mostrarToast('Selecciona un piloto', 'error');
-      if (!carreraId)           return mostrarToast('Selecciona una carrera', 'error');
-      if (!numero)              return mostrarToast('Ingresa el número de piloto', 'error');
+      if (!pilotoId)              return mostrarToast('Selecciona un piloto', 'error');
+      if (!campId)                return mostrarToast('Selecciona un campeonato', 'error');
+      if (!etapaId)               return mostrarToast('Selecciona una etapa', 'error');
+      if (!numero)                return mostrarToast('Ingresa el número de piloto', 'error');
       if (!categoriaSeleccionada) return mostrarToast('Selecciona una categoría', 'error');
-      if (!vehiculo)            return mostrarToast('Ingresa el vehículo', 'error');
+      if (!vehiculo)              return mostrarToast('Ingresa la marca del vehículo', 'error');
 
       const btn = document.getElementById('btnInscribir');
       btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
-
       try {
         await apiFetch('/inscripciones', {
           method: 'POST',
           body: JSON.stringify({
             piloto_id:       parseInt(pilotoId),
-            carrera_id:      parseInt(carreraId),
+            campeonato_id:   parseInt(campId),
+            etapa_id:        parseInt(etapaId),
             categoria_id:    parseInt(categoriaSeleccionada),
             numero_piloto:   parseInt(numero),
             vehiculo,
+            anio_vehiculo:   parseInt(document.getElementById('iAnio').value) || null,
             modelo_vehiculo: document.getElementById('iModelo').value || null,
+            color_vehiculo:  document.getElementById('iColor').value || null,
+            apodo_vehiculo:  document.getElementById('iApodo').value || null,
           }),
         });
         mostrarToast('Piloto inscrito exitosamente');
         cerrarModalInsc();
-        document.getElementById('filtroCarrera').value = carreraId;
+        document.getElementById('filtroCampeonato').value = campId;
+        await onFiltroCampChange();
+        document.getElementById('filtroEtapa').value = etapaId;
         cargarInscripciones();
       } catch (err) {
         mostrarToast(err.message, 'error');
@@ -382,7 +477,7 @@
       }
     }
 
-    // Modal cobro
+    // ── Modal cobro ───────────────────────────────────────────────────────────
     function abrirModalCobro(id) {
       const i = inscripcionesActuales.find(x => x.id === id);
       if (!i) return;
@@ -392,9 +487,14 @@
       document.querySelectorAll('.metodo-btn')[0].classList.add('activo');
       document.getElementById('iMonto').value = '';
       document.getElementById('infoCobro').innerHTML = `
-        <div style="font-family:'Bebas Neue';font-size:2rem;color:#e63946">#${i.numero_piloto}</div>
-        <div style="font-weight:700;font-size:1.05rem;margin:4px 0">${esc(i.piloto_nombre)}</div>
-        <div style="color:#666;font-size:0.82rem">${esc(i.categoria_nombre)} — ${esc(i.vehiculo)}</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-family:'Bebas Neue';font-size:2.4rem;color:#e63946;line-height:1">#${i.numero_piloto}</div>
+          <div>
+            <div style="font-weight:700;font-size:1rem">${esc(i.piloto_nombre)}</div>
+            <div style="color:#666;font-size:0.82rem">${esc(i.categoria_nombre)}${i.etapa_nombre ? ' — Etapa '+i.etapa_numero : ''}</div>
+            <div style="color:#555;font-size:0.78rem">${esc(i.vehiculo)}</div>
+          </div>
+        </div>
       `;
       document.getElementById('modalCobro').style.display = 'flex';
     }
@@ -418,7 +518,7 @@
             monto_pago:  parseFloat(document.getElementById('iMonto').value) || null,
           }),
         });
-        mostrarToast('✅ Pago registrado correctamente');
+        mostrarToast('Pago registrado correctamente');
         cerrarModalCobro();
         cargarInscripciones();
       } catch (err) {
@@ -438,7 +538,9 @@
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { cerrarModalInsc(); cerrarModalCobro(); } });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { cerrarModalInsc(); cerrarModalCobro(); }
+    });
 
     inicializar();
   </script>

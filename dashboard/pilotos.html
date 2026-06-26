@@ -16,7 +16,7 @@
     <nav class="nav">
       <a href="index.html"         class="nav-link">Dashboard</a>
       <a href="pilotos.html"       class="nav-link activo">Pilotos</a>
-      <a href="carreras.html"      class="nav-link">Carreras</a>
+      <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link">Inscripciones</a>
       <a href="reportes.html"      class="nav-link">Reportes</a>
       <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
@@ -203,7 +203,10 @@
             <div style="display:flex;align-items:center;gap:10px">
               <div style="width:32px;height:32px;border-radius:50%;background:${inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(230,57,70,0.15)'};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(230,57,70,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? '#f59e0b' : '#e63946'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${esc(p.nombre_completo[0])}</div>
               <div>
-                <div style="font-weight:600">${esc(p.nombre_completo)}</div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span style="font-weight:600">${esc(p.nombre_completo)}</span>
+                  ${p.numero_piloto ? `<span style="font-family:'Bebas Neue';font-size:0.85rem;padding:1px 7px;border-radius:5px;${p.numero_piloto===1?'background:rgba(230,57,70,0.2);color:#e63946;border:1px solid rgba(230,57,70,0.4)':'background:#1a1a1a;color:#888;border:1px solid #2a2a2a'}">#${p.numero_piloto}</span>` : ''}
+                </div>
                 ${p.email ? `<div style="font-size:0.75rem;color:#666">${esc(p.email)}</div>` : ''}
                 ${inactivo  ? `<div style="font-size:0.68rem;color:#f59e0b;display:flex;align-items:center;gap:3px;margin-top:2px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Sin actividad reciente</div>` : ''}
                 ${sinEtapas ? `<div style="font-size:0.68rem;color:#555;margin-top:2px">Nunca ha competido</div>` : ''}
@@ -221,7 +224,15 @@
           <td style="font-size:0.8rem;color:#666">${formatFecha(p.ultima_carrera_fecha) || '—'}</td>
           <td style="font-family:'Bebas Neue';font-size:1.1rem;color:#666">${p.total_carreras}</td>
           <td>
-            <div style="display:flex;gap:6px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${p.numero_piloto ? `
+                <button class="btn-secundario" style="padding:6px 10px;font-size:0.68rem;${p.numero_piloto===1?'border-color:rgba(230,57,70,0.5);color:#e63946':''}"
+                  onclick="toggleNum1(${p.id},${p.numero_piloto===1})">
+                  ${p.numero_piloto===1
+                    ? `↩ Restaurar #${p.numero_piloto_anterior||'?'}`
+                    : `🏆 Asignar #1`}
+                </button>
+              ` : ''}
               ${usuario.rol !== 'torre' ? `
                 <button class="btn-primario" style="padding:6px 12px;font-size:0.7rem" onclick="irAInscribir(${p.id})">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -333,6 +344,16 @@
         btn.disabled = false;
         btn.textContent = id ? 'Guardar Cambios' : 'Registrar Piloto';
       }
+    }
+
+    async function toggleNum1(id, esActual1) {
+      const accion = esActual1 ? 'restaurar su número anterior' : 'asignar el #1 a este piloto';
+      if (!confirm(`¿Confirmar ${accion}?`)) return;
+      try {
+        const res = await apiFetch(`/pilotos/${id}/numero-uno`, { method: 'PATCH' });
+        mostrarToast(res.mensaje || 'Número actualizado');
+        cargarPilotos();
+      } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
     function irAInscribir(pilotoId) {
