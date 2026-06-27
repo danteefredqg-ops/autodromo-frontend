@@ -127,26 +127,36 @@
     </div>
   </div>
 
-  <!-- ═══ PASO 0b: Buscar por email ═══ -->
+  <!-- ═══ PASO 0b: Buscar por email + número ═══ -->
   <div id="p0b" style="display:none">
     <div class="card">
-      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Buscar mi Cuenta</h2>
-      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Ingresa el email con el que te registraste</p>
+      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Verificar mi Cuenta</h2>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Ingresa tu email y número de piloto para continuar</p>
       <div id="a0b" class="alert"></div>
-      <div style="display:flex;gap:8px">
-        <input class="inp" type="email" id="emailBuscar" placeholder="tucorreo@email.com" style="flex:1" onkeydown="if(event.key==='Enter')buscar()" />
-        <button id="btnBuscar" onclick="buscar()" style="padding:10px 16px;background:var(--rojo);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:background 0.18s" onmouseover="this.style.background='#c1121f'" onmouseout="this.style.background='var(--rojo)'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Buscar
-        </button>
+      <div class="g2" style="margin-bottom:10px">
+        <div class="f">
+          <label class="lbl">Email <span class="req">*</span></label>
+          <input class="inp" type="email" id="emailBuscar" placeholder="tucorreo@email.com" onkeydown="if(event.key==='Enter')buscar()" />
+        </div>
+        <div class="f">
+          <label class="lbl">Número de Piloto <span class="req">*</span></label>
+          <input class="inp" type="number" id="numeroBuscar" placeholder="Ej: 42" min="1" max="9999" onkeydown="if(event.key==='Enter')buscar()" />
+        </div>
       </div>
+      <button id="btnBuscar" onclick="buscar()" style="width:100%;padding:11px;background:var(--rojo);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.18s" onmouseover="this.style.background='#c1121f'" onmouseout="this.style.background='var(--rojo)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Verificar datos
+      </button>
       <div id="pilotoBox" style="display:none;margin-top:14px">
         <div class="piloto-box">
-          <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--verde);margin-bottom:4px">✓ Piloto encontrado</div>
+          <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--verde);margin-bottom:4px">✓ Piloto verificado</div>
           <div id="pilotoNombre" style="font-weight:700;font-size:1.05rem"></div>
           <div id="pilotoDatos" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
         </div>
-        <button class="btn" onclick="irContrato()">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
+        <button class="btn" onclick="irContrato()">Continuar — elegir etapa y categoría <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
+      </div>
+      <div class="aviso-amarillo" style="margin-top:12px;display:block">
+        ¿No recuerdas tu número de piloto? Pregunta en la ventanilla de inscripciones o selecciona <strong>"Soy Nuevo"</strong> si aún no tienes uno.
       </div>
       <button class="btn2" onclick="volver0()">← Volver</button>
     </div>
@@ -374,14 +384,25 @@
   function volver0() { step(1); show('p0'); pilotoId = null; pilotoNumero = null; }
 
   async function buscar() {
-    const email = document.getElementById('emailBuscar').value.trim();
-    if (!email) return alerta('a0b', 'Ingresa tu email');
+    const email  = document.getElementById('emailBuscar').value.trim();
+    const numero = parseInt(document.getElementById('numeroBuscar').value);
+    document.getElementById('pilotoBox').style.display = 'none';
     document.getElementById('a0b').style.display = 'none';
+    if (!email)           return alerta('a0b', 'Ingresa tu email');
+    if (!numero || numero < 1) return alerta('a0b', 'Ingresa tu número de piloto');
+
     const btn = document.getElementById('btnBuscar');
-    btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+    btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verificando...';
     try {
       const piloto = await apiFetch('/pilotos/buscar-por-email?email=' + encodeURIComponent(email));
-      pilotoId = piloto.id;
+
+      // Verificar que el número coincida con el registrado
+      if (piloto.numero_piloto !== numero) {
+        alerta('a0b', 'El número de piloto no coincide con el email. Si eres nuevo, selecciona "Soy Nuevo".');
+        return;
+      }
+
+      pilotoId     = piloto.id;
       pilotoNumero = piloto.numero_piloto;
       const nombre = piloto.nombres
         ? `${piloto.nombres} ${piloto.apellido_paterno || ''} ${piloto.apellido_materno || ''}`.trim()
@@ -389,18 +410,17 @@
       document.getElementById('pilotoNombre').textContent = nombre;
       document.getElementById('pilotoDatos').textContent  =
         (piloto.nacionalidad || '') + ' · Sangre: ' + (piloto.tipo_sangre || '') +
-        (piloto.numero_piloto ? ' · #' + piloto.numero_piloto : '');
+        ' · #' + piloto.numero_piloto;
       document.getElementById('pilotoBox').style.display = 'block';
     } catch(e) {
       if (e.message.includes('404') || e.message.toLowerCase().includes('no encontrado')) {
-        alerta('a0b', 'No encontramos ese email. ¿Eres nuevo? Regresa y selecciona "Soy Nuevo".');
+        alerta('a0b', 'No encontramos ese email. Si eres nuevo, selecciona "Soy Nuevo".');
       } else {
         alerta('a0b', e.message);
       }
-      document.getElementById('pilotoBox').style.display = 'none';
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Buscar';
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Verificar datos';
     }
   }
 
@@ -629,7 +649,7 @@
     modo = ''; pilotoId = null; pilotoNumero = null; catSel = null; campeonatoSel = null; contratoFirmado = false;
     document.getElementById('iEtapa').innerHTML = '<option value="">Selecciona el campeonato primero...</option>';
     ['pAPaterno','pAMaterno','pNombres','pTel','pEmail','pNac','pEmerg','pTelEmerg',
-     'iNum','iMarca','iAnio','iModelo','iColor','iApodo','emailBuscar'].forEach(id => {
+     'iNum','iMarca','iAnio','iModelo','iColor','iApodo','emailBuscar','numeroBuscar'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = id==='pCiudad'?'Monterrey':id==='pEstado'?'Nuevo León':'';
     });
