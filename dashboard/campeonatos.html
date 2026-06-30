@@ -36,6 +36,7 @@
       <a href="campeonatos.html"   class="nav-link activo">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link">Inscripciones</a>
       <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="formularios.html"   class="nav-link">Formularios</a>
       <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
     </nav>
     <div class="sidebar-footer">
@@ -166,7 +167,14 @@
           lista.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555">Sin campeonatos — crea el primero arriba</div>';
           return;
         }
-        lista.innerHTML = camps.map(c => `
+        lista.innerHTML = camps.map(c => {
+          const etapaLabel = c.etapa_actual_num
+            ? `Etapa ${c.etapa_actual_num} de ${c.total_etapas}`
+            : c.total_etapas > 0 ? `${c.total_etapas} etapa(s) · sin iniciar` : 'Sin etapas';
+          const catChips = (c.categorias || []).map(cat =>
+            `<span style="padding:2px 9px;border-radius:20px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:${cat.color}22;border:1px solid ${cat.color}55;color:${cat.color}">${esc(cat.nombre)}</span>`
+          ).join('');
+          return `
           <div class="camp-card" id="campCard-${c.id}">
             <div class="camp-header" onclick="toggleEtapas(${c.id})">
               <div style="display:flex;align-items:center;gap:14px">
@@ -174,10 +182,14 @@
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
                 </div>
                 <div>
-                  <div style="font-family:'Bebas Neue';font-size:1.4rem;letter-spacing:0.05em;line-height:1.2">${esc(c.nombre)}</div>
-                  <div style="font-size:0.75rem;color:#555;margin-top:2px">
-                    ${c.total_etapas} etapa(s) · ${c.total_inscritos} inscrito(s)
-                    ${c.descripcion ? ' — ' + esc(c.descripcion) : ''}
+                  <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;color:#e63946;text-transform:uppercase;margin-bottom:1px">Campeonato</div>
+                  <div style="font-family:'Bebas Neue';font-size:1.45rem;letter-spacing:0.05em;line-height:1.1">${esc(c.nombre)}</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap">
+                    <span style="font-size:0.7rem;color:#666;display:flex;align-items:center;gap:4px">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                      ${etapaLabel}
+                    </span>
+                    ${catChips ? `<span style="color:#2a2a2a">|</span>${catChips}` : ''}
                   </div>
                 </div>
               </div>
@@ -203,7 +215,7 @@
               ` : ''}
             </div>
           </div>
-        `).join('');
+        `}).join('');
 
         // Re-abrir paneles que estaban abiertos
         for (const id of etapasAbiertas) {

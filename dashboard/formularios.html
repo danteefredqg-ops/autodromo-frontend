@@ -132,6 +132,7 @@
               </select>
             </div>
             <div class="campo"><label class="etiqueta">Lugar de nacimiento</label><input class="input" id="xNacimiento" placeholder="Ciudad, Estado" /></div>
+            <div class="campo" style="grid-column:span 2"><label class="etiqueta">Calle</label><input class="input" id="xCalle" placeholder="Ej: Av. Constitución" /></div>
             <div class="campo"><label class="etiqueta">Colonia</label><input class="input" id="xColonia" placeholder="Colonia" /></div>
             <div class="campo"><label class="etiqueta">C.P.</label><input class="input" id="xCp" placeholder="64000" /></div>
             <div class="campo"><label class="etiqueta">Núm. Ext</label><input class="input" id="xNumExt" placeholder="Ej: 42" /></div>
@@ -311,6 +312,7 @@
       document.getElementById('xLicAnio').value     = d.anio_licencia_anterior || '';
       document.getElementById('xEscolaridad').value = d.escolaridad || '';
       document.getElementById('xNacimiento').value  = d.lugar_nacimiento || '';
+      document.getElementById('xCalle').value       = d.calle || '';
       document.getElementById('xColonia').value     = d.colonia || '';
       document.getElementById('xCp').value          = d.cp || '';
       document.getElementById('xNumExt').value      = d.num_ext || '';
@@ -335,6 +337,7 @@
             anio_licencia_anterior:document.getElementById('xLicAnio').value||null,
             escolaridad:           document.getElementById('xEscolaridad').value||null,
             lugar_nacimiento:      document.getElementById('xNacimiento').value.trim()||null,
+            calle:                 document.getElementById('xCalle').value.trim()||null,
             colonia:               document.getElementById('xColonia').value.trim()||null,
             cp:                    document.getElementById('xCp').value.trim()||null,
             num_ext:               document.getElementById('xNumExt').value.trim()||null,
@@ -352,6 +355,7 @@
           datosEtapa[idx].curp                  = document.getElementById('xCurp').value.trim()||null;
           datosEtapa[idx].escolaridad            = document.getElementById('xEscolaridad').value||null;
           datosEtapa[idx].lugar_nacimiento       = document.getElementById('xNacimiento').value.trim()||null;
+          datosEtapa[idx].calle                  = document.getElementById('xCalle').value.trim()||null;
           datosEtapa[idx].colonia                = document.getElementById('xColonia').value.trim()||null;
           datosEtapa[idx].cp                     = document.getElementById('xCp').value.trim()||null;
           datosEtapa[idx].num_ext                = document.getElementById('xNumExt').value.trim()||null;
@@ -420,7 +424,7 @@
         campo('Nombre(s)',         d.nombres,          150, 201, y);
         y += 14;
 
-        campo('Calle',    d.ciudad,    15,  80,  y);
+        campo('Calle',    d.calle,      15,  80,  y);
         campo('Núm. Ext', d.num_ext,   85,  110, y);
         campo('Núm. Int', d.num_int,   115, 145, y);
         campo('Colonia',  d.colonia,   150, 185, y);
@@ -478,7 +482,7 @@
         doc.setFont('helvetica','bold'); doc.setFontSize(7);
         doc.text('COMISIÓN NACIONAL', 15, y - 1);
         doc.setFont('helvetica','normal'); doc.setFontSize(8);
-        const comisiones = ['PISTA','KARTISMO','RALLIES','ACELERACIÓN','OFF-ROAD','VINTAGE','CLÁSICOS DE COMPETENCIA'];
+        const comisiones = ['PISTA','KARTISMO','RALLIES','ACELERACIÓN','OFF-ROAD','VINTAGE','CLÁSICOS'];
         const selCom = (d.comision_nacional || '').split(',').map(s => s.trim());
         ex = 15;
         comisiones.forEach(op => {
