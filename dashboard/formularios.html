@@ -6,10 +6,8 @@
   <title>Formularios — Autódromo Monterrey</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="dashboard.css" />
-  <!-- jsPDF + AutoTable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-  <!-- SheetJS para Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
@@ -41,89 +39,111 @@
     <div class="page-header">
       <div>
         <h1 class="page-titulo">Formularios Oficiales</h1>
-        <p class="page-sub">Genera documentos a partir de los datos de inscripción</p>
+        <p class="page-sub">Selecciona un piloto y genera el documento oficial en PDF</p>
       </div>
     </div>
 
-    <!-- Selectores -->
+    <!-- ── Selector de piloto ── -->
     <div class="card" style="padding:20px;margin-bottom:20px">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end">
         <div>
-          <label class="etiqueta">Campeonato</label>
-          <select class="select" id="selCampeonato" onchange="onCampChange()" style="width:100%">
-            <option value="">Selecciona campeonato...</option>
+          <label class="etiqueta">Piloto *</label>
+          <select class="select" id="selPiloto" onchange="onPilotoChange()" style="width:100%">
+            <option value="">— Selecciona un piloto —</option>
           </select>
         </div>
         <div>
-          <label class="etiqueta">Etapa</label>
-          <select class="select" id="selEtapa" onchange="onEtapaChange()" disabled style="width:100%">
-            <option value="">Selecciona etapa...</option>
-          </select>
-        </div>
-        <div>
-          <label class="etiqueta">Piloto</label>
-          <select class="select" id="selPiloto" onchange="onPilotoChange()" disabled style="width:100%">
-            <option value="">Todos los pilotos</option>
+          <label class="etiqueta">Inscripción / Evento (opcional)</label>
+          <select class="select" id="selInscripcion" onchange="onInscripcionChange()" disabled style="width:100%">
+            <option value="">— Más reciente —</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Estado vacío -->
-    <div id="estadoVacio" style="text-align:center;padding:48px;color:#555">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5" style="margin-bottom:14px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-      <div style="font-family:'Bebas Neue';font-size:1.4rem;color:#444">Selecciona una etapa para comenzar</div>
-      <div style="font-size:0.82rem;margin-top:6px">Los formularios se generan con los datos registrados en la inscripción</div>
-    </div>
+    <!-- ── 3 tarjetas de formulario ── -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
 
-    <!-- Panel de formularios -->
-    <div id="panelFormularios" style="display:none">
-
-      <!-- Tabs de tipo de formulario -->
-      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
-        <button class="tab-btn activo" onclick="setTab('femadac',this)">📋 FEMADAC</button>
-        <button class="tab-btn" onclick="setTab('liberacion',this)">📄 Liberación</button>
-        <button class="tab-btn" onclick="setTab('fjo1',this)">🔧 Inspección FJO1</button>
+      <div class="form-card" id="cardFemadac" onclick="generarPDF('femadac')">
+        <div class="form-card-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+        </div>
+        <div class="form-card-nombre">FEMADAC</div>
+        <div class="form-card-desc">Solicitud de licencia / Registro de Piloto</div>
+        <div class="form-card-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Generar PDF
+        </div>
       </div>
 
-      <!-- Acciones de exportación -->
-      <div class="card" style="padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-        <div style="font-size:0.82rem;color:#666" id="infoSeleccion">Cargando...</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-secundario" style="padding:8px 16px;font-size:0.78rem;display:flex;align-items:center;gap:6px" onclick="exportarExcel()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            Excel (todos)
+      <div class="form-card" id="cardLiberacion" onclick="generarPDF('liberacion')">
+        <div class="form-card-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><path d="M9 15l2 2 4-4"/></svg>
+        </div>
+        <div class="form-card-nombre">Liberación</div>
+        <div class="form-card-desc">Liberación de Responsabilidades — FJO Deportes</div>
+        <div class="form-card-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Generar PDF
+        </div>
+      </div>
+
+      <div class="form-card" id="cardFjo1" onclick="generarPDF('fjo1')">
+        <div class="form-card-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><circle cx="9" cy="14" r="1"/><circle cx="12" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
+        </div>
+        <div class="form-card-nombre">Inspección FJO1</div>
+        <div class="form-card-desc">Formato de Inspección Técnica Oficial</div>
+        <div class="form-card-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Generar PDF
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Preview del piloto ── -->
+    <div id="previewVacio" class="card" style="padding:40px;text-align:center;color:#555">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5" style="margin-bottom:12px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <div style="font-family:'Bebas Neue';font-size:1.3rem;color:#444">Selecciona un piloto para ver sus datos</div>
+      <div style="font-size:0.8rem;margin-top:4px">Los formularios se auto-rellenan con la información del piloto</div>
+    </div>
+
+    <div id="previewPiloto" style="display:none">
+      <div class="card" style="padding:20px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+          <div id="pvAvatar" style="width:52px;height:52px;border-radius:50%;background:#e6394622;border:2px solid #e6394644;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:1.6rem;color:#e63946"></div>
+          <div>
+            <div id="pvNombre" style="font-weight:700;font-size:1.1rem"></div>
+            <div id="pvSub" style="font-size:0.8rem;color:#666;margin-top:2px"></div>
+          </div>
+          <button class="btn-secundario" style="margin-left:auto;padding:7px 14px;font-size:0.75rem" onclick="abrirModalExtra()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Completar datos
           </button>
-          <button class="btn-primario" style="padding:8px 16px;font-size:0.78rem;display:flex;align-items:center;gap:6px" onclick="exportarPDF()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-            PDF
-          </button>
         </div>
-      </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="pvGrid"></div>
 
-      <!-- Lista de pilotos / preview -->
-      <div class="card tabla-card">
-        <div class="tabla-wrap">
-          <table class="tabla" id="tablaPreview">
-            <thead id="theadPreview"></thead>
-            <tbody id="tbodyPreview"></tbody>
-          </table>
+        <!-- Inscripción activa -->
+        <div id="pvInscripcion" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #1e1e1e">
+          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:8px">Inscripción seleccionada</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="pvInscGrid"></div>
         </div>
       </div>
     </div>
 
-    <!-- Modal datos extra del piloto -->
-    <div class="modal-overlay" id="modalDatosExtra" style="display:none">
-      <div class="modal" style="max-width:600px">
+    <!-- Modal datos extra -->
+    <div class="modal-overlay" id="modalExtra" style="display:none">
+      <div class="modal" style="max-width:580px">
         <div class="modal-header">
-          <h2 class="modal-titulo">Datos adicionales del piloto</h2>
+          <h2 class="modal-titulo">Completar datos del piloto</h2>
           <button class="modal-cerrar" onclick="cerrarModalExtra()">✕</button>
         </div>
         <div class="modal-body">
-          <p style="font-size:0.8rem;color:#666;margin-bottom:16px">Estos datos complementan el formulario FEMADAC. Se guardan en el perfil del piloto.</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="campo"><label class="etiqueta">CURP / RFC</label><input class="input" id="xCurp" placeholder="CURP o RFC" /></div>
-            <div class="campo"><label class="etiqueta">Año licencia anterior</label><input class="input" type="number" id="xLicAnio" placeholder="Ej: 2023" min="2000" max="2030" /></div>
+          <p style="font-size:0.78rem;color:#666;margin-bottom:14px">Estos datos se guardan en el perfil y se usan para rellenar los formularios automáticamente.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="campo"><label class="etiqueta">CURP / RFC</label><input class="input" id="xCurp" placeholder="Ej: GAMJ850101HNLRCN04" /></div>
+            <div class="campo"><label class="etiqueta">Año licencia anterior</label><input class="input" type="number" id="xLicAnio" placeholder="2024" min="2000" max="2030" /></div>
             <div class="campo"><label class="etiqueta">Escolaridad</label>
               <select class="select" id="xEscolaridad">
                 <option value="">— selecciona —</option>
@@ -133,40 +153,78 @@
             </div>
             <div class="campo"><label class="etiqueta">Lugar de nacimiento</label><input class="input" id="xNacimiento" placeholder="Ciudad, Estado" /></div>
             <div class="campo" style="grid-column:span 2"><label class="etiqueta">Calle</label><input class="input" id="xCalle" placeholder="Ej: Av. Constitución" /></div>
-            <div class="campo"><label class="etiqueta">Colonia</label><input class="input" id="xColonia" placeholder="Colonia" /></div>
+            <div class="campo"><label class="etiqueta">Colonia</label><input class="input" id="xColonia" /></div>
             <div class="campo"><label class="etiqueta">C.P.</label><input class="input" id="xCp" placeholder="64000" /></div>
-            <div class="campo"><label class="etiqueta">Núm. Ext</label><input class="input" id="xNumExt" placeholder="Ej: 42" /></div>
-            <div class="campo"><label class="etiqueta">Núm. Int</label><input class="input" id="xNumInt" placeholder="Ej: 3A" /></div>
-            <div class="campo"><label class="etiqueta">Parentesco contacto emerg.</label><input class="input" id="xParentesco" placeholder="Ej: Padre" /></div>
-            <div class="campo"><label class="etiqueta">Nombre equipo / club</label><input class="input" id="xEquipo" placeholder="Ej: Racing Team MTY" /></div>
+            <div class="campo"><label class="etiqueta">Núm. Ext</label><input class="input" id="xNumExt" /></div>
+            <div class="campo"><label class="etiqueta">Núm. Int</label><input class="input" id="xNumInt" /></div>
+            <div class="campo"><label class="etiqueta">Parentesco contacto emerg.</label><input class="input" id="xParentesco" placeholder="Padre / Madre / Esposo(a)" /></div>
+            <div class="campo"><label class="etiqueta">Nombre equipo / club</label><input class="input" id="xEquipo" /></div>
             <div class="campo" style="grid-column:span 2"><label class="etiqueta">Alergias</label><input class="input" id="xAlergias" placeholder="Ninguna / descripción" /></div>
             <div class="campo" style="grid-column:span 2"><label class="etiqueta">Condiciones médicas especiales</label><input class="input" id="xCondiciones" placeholder="Ninguna / descripción" /></div>
             <div class="campo" style="grid-column:span 2">
               <label class="etiqueta">Comisión Nacional</label>
               <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="PISTA" class="chkComision" />Pista</label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="KARTISMO" class="chkComision" />Kartismo</label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="RALLIES" class="chkComision" />Rallies</label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="ACELERACIÓN" class="chkComision" />Aceleración</label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="OFF-ROAD" class="chkComision" />Off-Road</label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="VINTAGE" class="chkComision" />Vintage</label>
-                <label style="display:flex;align-items:center;gap:5px;font-size:0.82rem;cursor:pointer"><input type="checkbox" value="CLÁSICOS" class="chkComision" />Clásicos</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="PISTA" class="chkComision" />Pista</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="KARTISMO" class="chkComision" />Kartismo</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="RALLIES" class="chkComision" />Rallies</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="ACELERACIÓN" class="chkComision" />Aceleración</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="OFF-ROAD" class="chkComision" />Off-Road</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="VINTAGE" class="chkComision" />Vintage</label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="CLÁSICOS" class="chkComision" />Clásicos</label>
               </div>
             </div>
           </div>
-          <div style="display:flex;gap:10px;margin-top:18px">
-            <button class="btn-primario flex-1" onclick="guardarDatosExtra()">Guardar y continuar</button>
-            <button class="btn-secundario" onclick="cerrarModalExtra()">Cancelar</button>
-          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secundario flex-1" onclick="cerrarModalExtra()">Cancelar</button>
+          <button class="btn-primario flex-1" onclick="guardarDatosExtra()">Guardar</button>
         </div>
       </div>
     </div>
   </main>
 
   <style>
-    .tab-btn{padding:8px 18px;border:1px solid #2a2a2a;border-radius:8px;background:#111;color:#666;font-family:'Barlow',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.18s}
-    .tab-btn:hover{border-color:#444;color:#fff}
-    .tab-btn.activo{background:var(--accent,#e63946);border-color:var(--accent,#e63946);color:#fff}
+    .form-card {
+      background: #0d0d0d;
+      border: 1px solid #1e1e1e;
+      border-radius: 14px;
+      padding: 28px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      user-select: none;
+    }
+    .form-card:hover { border-color: #e63946; background: rgba(230,57,70,0.06); transform: translateY(-2px); }
+    .form-card-icon { color: #e63946; opacity: 0.8; }
+    .form-card:hover .form-card-icon { opacity: 1; }
+    .form-card-nombre { font-family: 'Bebas Neue'; font-size: 1.5rem; letter-spacing: 0.06em; color: #fff; }
+    .form-card-desc { font-size: 0.75rem; color: #555; line-height: 1.4; }
+    .form-card-btn {
+      margin-top: 8px;
+      background: #e63946;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.18s;
+    }
+    .form-card:hover .form-card-btn { background: #c1121f; }
+    .pv-campo { font-size: 0.8rem; }
+    .pv-lbl { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #444; margin-bottom: 2px; }
+    .pv-val { color: #ccc; }
+    .pv-val.missing { color: #f59e0b; font-style: italic; }
   </style>
 
   <script src="../admin/config.js"></script>
@@ -176,161 +234,150 @@
     document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
     document.getElementById('usuarioNombre').textContent = usuario.nombre;
     document.getElementById('usuarioRol').textContent    = usuario.rol;
-    if (usuario.rol === 'admin') document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    if (usuario.rol === 'admin') document.querySelectorAll('.solo-admin').forEach(el => el.style.display='flex');
 
-    let tabActual = 'femadac';
-    let etapaActual = null;
-    let pilotoActual = null; // null = todos
-    let datosEtapa   = [];  // array de {piloto, inscripcion} con todos los pilotos de la etapa
-    let pilotoExtraId = null; // para el modal de datos extra
+    let todosLosPilotos = [];
+    let pilotoActual    = null; // datos completos del piloto
+    let inscripcionActual = null; // inscripción seleccionada
+    let todasLasInscripciones = []; // inscripciones del piloto actual
 
-    // ── Init ────────────────────────────────────────────────────────────────────
+    // ── Init ──────────────────────────────────────────────────────────────────
     async function init() {
       try {
-        const camps = await apiFetch('/campeonatos');
-        const sel = document.getElementById('selCampeonato');
-        sel.innerHTML = '<option value="">Selecciona campeonato...</option>' +
-          camps.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
-        if (camps.length === 1) { sel.value = camps[0].id; await onCampChange(); }
-      } catch (e) { mostrarToast(e.message, 'error'); }
+        todosLosPilotos = await apiFetch('/pilotos');
+        const sel = document.getElementById('selPiloto');
+        sel.innerHTML = '<option value="">— Selecciona un piloto —</option>' +
+          todosLosPilotos
+            .filter(p => p.activo !== 0)
+            .map(p => `<option value="${p.id}">#${p.numero_piloto||'?'} ${esc(p.nombre_completo)}</option>`)
+            .join('');
+      } catch(e) { mostrarToast(e.message, 'error'); }
     }
 
-    async function onCampChange() {
-      const campId = document.getElementById('selCampeonato').value;
-      const selE = document.getElementById('selEtapa');
-      selE.innerHTML = '<option value="">Selecciona etapa...</option>';
-      selE.disabled = true;
-      document.getElementById('selPiloto').disabled = true;
-      document.getElementById('selPiloto').innerHTML = '<option value="">Todos los pilotos</option>';
-      document.getElementById('estadoVacio').style.display = 'block';
-      document.getElementById('panelFormularios').style.display = 'none';
-      if (!campId) return;
+    async function onPilotoChange() {
+      const id = document.getElementById('selPiloto').value;
+      pilotoActual = null; inscripcionActual = null; todasLasInscripciones = [];
+      document.getElementById('selInscripcion').innerHTML = '<option value="">— Más reciente —</option>';
+      document.getElementById('selInscripcion').disabled = true;
+      if (!id) {
+        document.getElementById('previewVacio').style.display = 'block';
+        document.getElementById('previewPiloto').style.display = 'none';
+        return;
+      }
       try {
-        const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
-        selE.innerHTML = '<option value="">Selecciona etapa...</option>' +
-          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
-        selE.disabled = false;
-        if (etapas.length === 1) { selE.value = etapas[0].id; await onEtapaChange(); }
-      } catch {}
+        // Obtener datos del piloto y sus inscripciones en paralelo
+        const [datos, insc] = await Promise.all([
+          apiFetch(`/formularios/piloto/${id}`),
+          apiFetch(`/inscripciones?piloto_id=${id}`).catch(() => []),
+        ]);
+        pilotoActual = datos.piloto;
+        todasLasInscripciones = Array.isArray(insc) ? insc : [];
+
+        // Llenar selector de inscripciones
+        if (todasLasInscripciones.length > 0) {
+          const selI = document.getElementById('selInscripcion');
+          selI.disabled = false;
+          selI.innerHTML = '<option value="">— Más reciente —</option>' +
+            todasLasInscripciones.map(i =>
+              `<option value="${i.id}">${esc(i.categoria_nombre)} · Etapa ${i.etapa_numero||'?'} (${formatFecha(i.etapa_fecha||i.creado_en)}) · #${i.numero_piloto}</option>`
+            ).join('');
+          // Auto-seleccionar la más reciente
+          inscripcionActual = todasLasInscripciones[0];
+        }
+        renderPreview();
+      } catch(e) { mostrarToast(e.message, 'error'); }
     }
 
-    async function onEtapaChange() {
-      etapaActual = document.getElementById('selEtapa').value;
-      if (!etapaActual) return;
-      try {
-        datosEtapa = await apiFetch(`/formularios/etapa/${etapaActual}`);
-        const selP = document.getElementById('selPiloto');
-        selP.disabled = false;
-        selP.innerHTML = '<option value="">Todos los pilotos</option>' +
-          datosEtapa.map(d => `<option value="${d.piloto_id}">#${d.numero_piloto||'?'} ${esc(d.nombre_completo)}</option>`).join('');
-        pilotoActual = null;
-        document.getElementById('estadoVacio').style.display = 'none';
-        document.getElementById('panelFormularios').style.display = 'block';
-        renderTabla();
-      } catch (e) { mostrarToast(e.message, 'error'); }
+    function onInscripcionChange() {
+      const id = document.getElementById('selInscripcion').value;
+      if (!id) {
+        inscripcionActual = todasLasInscripciones[0] || null;
+      } else {
+        inscripcionActual = todasLasInscripciones.find(i => String(i.id) === id) || null;
+      }
+      renderPreview();
     }
 
-    function onPilotoChange() {
-      pilotoActual = document.getElementById('selPiloto').value || null;
-      renderTabla();
+    // ── Preview ────────────────────────────────────────────────────────────────
+    function renderPreview() {
+      if (!pilotoActual) return;
+      const p = pilotoActual;
+      document.getElementById('previewVacio').style.display = 'none';
+      document.getElementById('previewPiloto').style.display = 'block';
+
+      document.getElementById('pvAvatar').textContent = (p.nombres||p.nombre_completo||'?')[0].toUpperCase();
+      document.getElementById('pvNombre').textContent = p.nombre_completo;
+      document.getElementById('pvSub').textContent =
+        [p.tipo_sangre ? 'Sangre '+p.tipo_sangre : null, p.email, p.telefono].filter(Boolean).join(' · ');
+
+      const campos = [
+        ['Teléfono',      p.telefono],
+        ['Email',         p.email],
+        ['Fecha nacim.',  p.fecha_nacimiento ? new Date(p.fecha_nacimiento).toLocaleDateString('es-MX') : null],
+        ['Tipo de sangre',p.tipo_sangre],
+        ['Núm. Licencia', p.numero_licencia],
+        ['CURP / RFC',    p.curp],
+        ['Escolaridad',   p.escolaridad],
+        ['Lugar nacim.',  p.lugar_nacimiento],
+        ['Alergias',      p.alergias],
+        ['Contacto emerg.',p.contacto_emergencia],
+        ['Tel. emergencia',p.telefono_emergencia],
+        ['Equipo / Club', p.nombre_equipo],
+      ];
+      document.getElementById('pvGrid').innerHTML = campos.map(([lbl, val]) => `
+        <div class="pv-campo">
+          <div class="pv-lbl">${lbl}</div>
+          <div class="pv-val ${!val ? 'missing' : ''}">${val || '—'}</div>
+        </div>`).join('');
+
+      // Inscripción
+      if (inscripcionActual) {
+        const i = inscripcionActual;
+        document.getElementById('pvInscripcion').style.display = 'block';
+        const camposInsc = [
+          ['Número piloto', '#' + i.numero_piloto],
+          ['Categoría',     i.categoria_nombre],
+          ['Vehículo',      [i.vehiculo, i.modelo_vehiculo, i.anio_vehiculo].filter(Boolean).join(' ')],
+          ['Etapa',         `Etapa ${i.etapa_numero||'?'} — ${i.etapa_nombre||''}`],
+        ];
+        document.getElementById('pvInscGrid').innerHTML = camposInsc.map(([lbl, val]) => `
+          <div class="pv-campo">
+            <div class="pv-lbl">${lbl}</div>
+            <div class="pv-val">${esc(val||'—')}</div>
+          </div>`).join('');
+      } else {
+        document.getElementById('pvInscripcion').style.display = 'none';
+      }
     }
 
-    function setTab(tab, btn) {
-      tabActual = tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
-      btn.classList.add('activo');
-      renderTabla();
-    }
-
-    // ── Render preview table ────────────────────────────────────────────────────
-    function renderTabla() {
-      const lista = pilotoActual
-        ? datosEtapa.filter(d => String(d.piloto_id) === String(pilotoActual))
-        : datosEtapa;
-
-      const etapaNombre = document.getElementById('selEtapa').options[document.getElementById('selEtapa').selectedIndex]?.text || '';
-      document.getElementById('infoSeleccion').textContent =
-        `${lista.length} piloto(s) · ${etapaNombre}` + (pilotoActual ? ' · Piloto individual' : ' · Todos');
-
-      if (tabActual === 'femadac') renderFemadac(lista);
-      else if (tabActual === 'liberacion') renderLiberacion(lista);
-      else renderFjo1(lista);
-    }
-
-    function renderFemadac(lista) {
-      document.getElementById('theadPreview').innerHTML = `<tr>
-        <th>#</th><th>Piloto</th><th>CURP</th><th>Sangre</th><th>Alergias</th><th>Cond. Médicas</th><th>Comisión</th><th></th>
-      </tr>`;
-      document.getElementById('tbodyPreview').innerHTML = lista.map(d => `
-        <tr>
-          <td><span class="num-piloto">${d.numero_piloto||'—'}</span></td>
-          <td><strong>${esc(d.nombre_completo)}</strong><div style="font-size:0.72rem;color:#555">${esc(d.email||'')}</div></td>
-          <td style="font-size:0.8rem;color:#666">${d.curp||'<span style="color:#f59e0b">—</span>'}</td>
-          <td>${esc(d.tipo_sangre||'—')}</td>
-          <td style="font-size:0.8rem;color:#666">${esc(d.alergias||'—')}</td>
-          <td style="font-size:0.8rem;color:#666">${esc(d.condiciones_medicas||'—')}</td>
-          <td style="font-size:0.75rem;color:#666">${esc(d.comision_nacional||'—')}</td>
-          <td><button class="btn-secundario" style="padding:4px 10px;font-size:0.68rem" onclick="completarDatos(${d.piloto_id})">Completar</button></td>
-        </tr>`).join('');
-    }
-
-    function renderLiberacion(lista) {
-      document.getElementById('theadPreview').innerHTML = `<tr>
-        <th>#</th><th>Piloto</th><th>Categoría</th><th>Vehículo</th><th>Etapa</th><th>Estatus</th>
-      </tr>`;
-      document.getElementById('tbodyPreview').innerHTML = lista.map(d => `
-        <tr>
-          <td><span class="num-piloto">${d.numero_piloto||'—'}</span></td>
-          <td><strong>${esc(d.nombre_completo)}</strong></td>
-          <td><span style="padding:2px 8px;border-radius:4px;font-size:0.72rem;font-weight:700;background:${d.categoria_color}22;color:${d.categoria_color};border:1px solid ${d.categoria_color}44">${esc(d.categoria_nombre)}</span></td>
-          <td style="font-size:0.8rem;color:#666">${esc([d.vehiculo,d.modelo_vehiculo,d.anio_vehiculo].filter(Boolean).join(' '))}</td>
-          <td style="font-size:0.8rem;color:#666">Etapa ${d.etapa_numero||''} — ${esc(d.etapa_nombre||'')}</td>
-          <td>${badgeEstatus(d.estatus)}</td>
-        </tr>`).join('');
-    }
-
-    function renderFjo1(lista) {
-      document.getElementById('theadPreview').innerHTML = `<tr>
-        <th>#</th><th>Piloto</th><th>Categoría</th><th>Modelo del Auto</th><th>Etapa / Fecha</th>
-      </tr>`;
-      document.getElementById('tbodyPreview').innerHTML = lista.map(d => `
-        <tr>
-          <td><span class="num-piloto">${d.numero_piloto||'—'}</span></td>
-          <td><strong>${esc(d.nombre_completo)}</strong></td>
-          <td><span style="padding:2px 8px;border-radius:4px;font-size:0.72rem;font-weight:700;background:${d.categoria_color}22;color:${d.categoria_color};border:1px solid ${d.categoria_color}44">${esc(d.categoria_nombre)}</span></td>
-          <td style="font-size:0.8rem;color:#666">${esc([d.vehiculo,d.modelo_vehiculo,d.anio_vehiculo].filter(Boolean).join(' '))}</td>
-          <td style="font-size:0.8rem;color:#666">Etapa ${d.etapa_numero||''} · ${formatFecha(d.etapa_fecha)}</td>
-        </tr>`).join('');
-    }
-
-    // ── Modal datos extra ───────────────────────────────────────────────────────
-    function completarDatos(pilotoId) {
-      const d = datosEtapa.find(x => x.piloto_id === pilotoId);
-      if (!d) return;
-      pilotoExtraId = pilotoId;
-      document.getElementById('xCurp').value        = d.curp || '';
-      document.getElementById('xLicAnio').value     = d.anio_licencia_anterior || '';
-      document.getElementById('xEscolaridad').value = d.escolaridad || '';
-      document.getElementById('xNacimiento').value  = d.lugar_nacimiento || '';
-      document.getElementById('xCalle').value       = d.calle || '';
-      document.getElementById('xColonia').value     = d.colonia || '';
-      document.getElementById('xCp').value          = d.cp || '';
-      document.getElementById('xNumExt').value      = d.num_ext || '';
-      document.getElementById('xNumInt').value      = d.num_int || '';
-      document.getElementById('xParentesco').value  = d.parentesco_emergencia || '';
-      document.getElementById('xEquipo').value      = d.nombre_equipo || '';
-      document.getElementById('xAlergias').value    = d.alergias || '';
-      document.getElementById('xCondiciones').value = d.condiciones_medicas || '';
-      const comisiones = (d.comision_nacional || '').split(',').map(s => s.trim());
+    // ── Modal datos extra ──────────────────────────────────────────────────────
+    function abrirModalExtra() {
+      if (!pilotoActual) return mostrarToast('Selecciona un piloto primero', 'error');
+      const p = pilotoActual;
+      document.getElementById('xCurp').value        = p.curp || '';
+      document.getElementById('xLicAnio').value     = p.anio_licencia_anterior || '';
+      document.getElementById('xEscolaridad').value = p.escolaridad || '';
+      document.getElementById('xNacimiento').value  = p.lugar_nacimiento || '';
+      document.getElementById('xCalle').value       = p.calle || '';
+      document.getElementById('xColonia').value     = p.colonia || '';
+      document.getElementById('xCp').value          = p.cp || '';
+      document.getElementById('xNumExt').value      = p.num_ext || '';
+      document.getElementById('xNumInt').value      = p.num_int || '';
+      document.getElementById('xParentesco').value  = p.parentesco_emergencia || '';
+      document.getElementById('xEquipo').value      = p.nombre_equipo || '';
+      document.getElementById('xAlergias').value    = p.alergias || '';
+      document.getElementById('xCondiciones').value = p.condiciones_medicas || '';
+      const comisiones = (p.comision_nacional || '').split(',').map(s => s.trim());
       document.querySelectorAll('.chkComision').forEach(c => { c.checked = comisiones.includes(c.value); });
-      document.getElementById('modalDatosExtra').style.display = 'flex';
+      document.getElementById('modalExtra').style.display = 'flex';
     }
-    function cerrarModalExtra() { document.getElementById('modalDatosExtra').style.display = 'none'; }
+    function cerrarModalExtra() { document.getElementById('modalExtra').style.display = 'none'; }
 
     async function guardarDatosExtra() {
+      if (!pilotoActual) return;
       const comisiones = [...document.querySelectorAll('.chkComision:checked')].map(c => c.value).join(',');
       try {
-        await apiFetch(`/pilotos/${pilotoExtraId}/datos-formulario`, {
+        const updated = await apiFetch(`/pilotos/${pilotoActual.id}/datos-formulario`, {
           method: 'PATCH',
           body: JSON.stringify({
             curp:                  document.getElementById('xCurp').value.trim()||null,
@@ -349,266 +396,239 @@
             comision_nacional:     comisiones||null,
           }),
         });
-        // Actualizar datos en memoria
-        const idx = datosEtapa.findIndex(x => x.piloto_id === pilotoExtraId);
-        if (idx >= 0) {
-          datosEtapa[idx].curp                  = document.getElementById('xCurp').value.trim()||null;
-          datosEtapa[idx].escolaridad            = document.getElementById('xEscolaridad').value||null;
-          datosEtapa[idx].lugar_nacimiento       = document.getElementById('xNacimiento').value.trim()||null;
-          datosEtapa[idx].calle                  = document.getElementById('xCalle').value.trim()||null;
-          datosEtapa[idx].colonia                = document.getElementById('xColonia').value.trim()||null;
-          datosEtapa[idx].cp                     = document.getElementById('xCp').value.trim()||null;
-          datosEtapa[idx].num_ext                = document.getElementById('xNumExt').value.trim()||null;
-          datosEtapa[idx].num_int                = document.getElementById('xNumInt').value.trim()||null;
-          datosEtapa[idx].parentesco_emergencia  = document.getElementById('xParentesco').value.trim()||null;
-          datosEtapa[idx].nombre_equipo          = document.getElementById('xEquipo').value.trim()||null;
-          datosEtapa[idx].alergias               = document.getElementById('xAlergias').value.trim()||null;
-          datosEtapa[idx].condiciones_medicas    = document.getElementById('xCondiciones').value.trim()||null;
-          datosEtapa[idx].comision_nacional      = comisiones||null;
-          datosEtapa[idx].anio_licencia_anterior = document.getElementById('xLicAnio').value||null;
-        }
+        pilotoActual = updated;
         cerrarModalExtra();
-        renderTabla();
-        mostrarToast('Datos guardados correctamente');
-      } catch (e) { mostrarToast(e.message, 'error'); }
+        renderPreview();
+        mostrarToast('Datos guardados');
+      } catch(e) { mostrarToast(e.message, 'error'); }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // EXPORTAR PDF
+    // GENERAR PDF
     // ═══════════════════════════════════════════════════════════════════════════
-    function exportarPDF() {
-      const lista = pilotoActual
-        ? datosEtapa.filter(d => String(d.piloto_id) === String(pilotoActual))
-        : datosEtapa;
-      if (lista.length === 0) return mostrarToast('No hay pilotos seleccionados', 'error');
-
-      if (tabActual === 'femadac')    generarPDFFemadac(lista);
-      else if (tabActual === 'liberacion') generarPDFLiberacion(lista);
-      else                             generarPDFFjo1(lista);
+    function generarPDF(tipo) {
+      if (!pilotoActual) return mostrarToast('Selecciona un piloto primero', 'error');
+      if (tipo === 'femadac')    pdfFemadac();
+      else if (tipo === 'liberacion') pdfLiberacion();
+      else pdfFjo1();
     }
 
-    // ── PDF FEMADAC ─────────────────────────────────────────────────────────────
-    function generarPDFFemadac(lista) {
+    // ── FEMADAC ───────────────────────────────────────────────────────────────
+    function pdfFemadac() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
-
-      lista.forEach((d, idx) => {
-        if (idx > 0) doc.addPage();
-        const etapaNombre = d.etapa_nombre ? `Etapa ${d.etapa_numero} — ${d.etapa_nombre}` : '';
-        const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
-
-        // Encabezado
-        doc.setFont('helvetica','bold');
-        doc.setFontSize(14);
-        doc.text('FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO', 108, 18, {align:'center'});
-        doc.setFontSize(10);
-        doc.setFont('helvetica','normal');
-        doc.text('Solicitud de Licencia / Registro de Piloto', 108, 24, {align:'center'});
-
-        // Línea separadora
-        doc.setLineWidth(0.5); doc.setDrawColor(200,200,200);
-        doc.line(15, 27, 201, 27);
-
-        let y = 34;
-        const campo = (label, valor, x1, x2, yPos) => {
-          doc.setFont('helvetica','bold'); doc.setFontSize(7);
-          doc.text(label.toUpperCase(), x1, yPos - 1);
-          doc.setFont('helvetica','normal'); doc.setFontSize(9);
-          doc.text(String(valor || '—'), x1, yPos + 4);
-          doc.setLineWidth(0.2); doc.setDrawColor(180,180,180);
-          doc.line(x1, yPos + 5.5, x2, yPos + 5.5);
-        };
-
-        campo('Apellido Paterno',  d.apellido_paterno || d.nombre_completo, 15, 80,  y);
-        campo('Apellido Materno',  d.apellido_materno, 85, 145, y);
-        campo('Nombre(s)',         d.nombres,          150, 201, y);
-        y += 14;
-
-        campo('Calle',    d.calle,      15,  80,  y);
-        campo('Núm. Ext', d.num_ext,   85,  110, y);
-        campo('Núm. Int', d.num_int,   115, 145, y);
-        campo('Colonia',  d.colonia,   150, 185, y);
-        campo('C.P.',     d.cp,        187, 201, y);
-        y += 14;
-
-        campo('Ciudad',            d.ciudad,      15,  80,  y);
-        campo('Estado',            d.estado,      85,  145, y);
-        campo('Teléfono',          d.telefono,    150, 201, y);
-        y += 14;
-
-        campo('Email',             d.email,       15,  110, y);
-        campo('Celular',           d.telefono,    115, 201, y);
-        y += 14;
-
-        // Escolaridad checkboxes
-        doc.setFont('helvetica','bold'); doc.setFontSize(7);
-        doc.text('ESCOLARIDAD', 15, y - 1);
-        doc.setFont('helvetica','normal'); doc.setFontSize(8);
-        const escOpciones = ['Primaria','Secundaria','Media Superior','Superior Cursando','Superior Terminada'];
-        let ex = 15;
-        escOpciones.forEach(op => {
-          const marcado = (d.escolaridad || '') === op;
-          doc.rect(ex, y + 1, 3.5, 3.5);
-          if (marcado) { doc.setFont('helvetica','bold'); doc.text('✓', ex + 0.5, y + 4.2); doc.setFont('helvetica','normal'); }
-          doc.text(op, ex + 5, y + 4.2);
-          ex += 35;
-        });
-        doc.line(15, y + 7, 201, y + 7);
-        y += 14;
-
-        campo('Lugar de nacimiento', d.lugar_nacimiento, 15, 110, y);
-        campo('Nacionalidad',        d.nacionalidad,     115, 201, y);
-        y += 14;
-
-        campo('Fecha de nacimiento', d.fecha_nacimiento ? new Date(d.fecha_nacimiento).toLocaleDateString('es-MX') : '', 15, 70, y);
-        campo('CURP o RFC',          d.curp,             75, 145, y);
-        campo('Núm. Licencia',       d.numero_licencia,  150, 201, y);
-        y += 14;
-
-        campo('Contacto emergencia', d.contacto_emergencia, 15, 110, y);
-        campo('Parentesco',          d.parentesco_emergencia, 115, 160, y);
-        campo('Teléfono emergencia', d.telefono_emergencia, 162, 201, y);
-        y += 14;
-
-        campo('Año licencia anterior', d.anio_licencia_anterior, 15, 80, y);
-        campo('Tipo de Sangre',        d.tipo_sangre,             85, 130, y);
-        campo('Alergias',              d.alergias,                135, 201, y);
-        y += 14;
-
-        campo('Condiciones médicas especiales', d.condiciones_medicas, 15, 201, y);
-        y += 14;
-
-        // Comisión Nacional
-        doc.setFont('helvetica','bold'); doc.setFontSize(7);
-        doc.text('COMISIÓN NACIONAL', 15, y - 1);
-        doc.setFont('helvetica','normal'); doc.setFontSize(8);
-        const comisiones = ['PISTA','KARTISMO','RALLIES','ACELERACIÓN','OFF-ROAD','VINTAGE','CLÁSICOS'];
-        const selCom = (d.comision_nacional || '').split(',').map(s => s.trim());
-        ex = 15;
-        comisiones.forEach(op => {
-          const marcado = selCom.includes(op);
-          doc.rect(ex, y + 1, 3.5, 3.5);
-          if (marcado) { doc.setFont('helvetica','bold'); doc.text('✓', ex + 0.5, y + 4.2); doc.setFont('helvetica','normal'); }
-          doc.text(op, ex + 5, y + 4.2);
-          ex += 27;
-        });
-        doc.line(15, y + 7, 201, y + 7);
-        y += 14;
-
-        campo('Serie / Evento',   etapaNombre,         15, 110, y);
-        campo('Categoría',        d.categoria_nombre,  115, 165, y);
-        campo('Nombre del equipo',d.nombre_equipo,     168, 201, y);
-        y += 18;
-
-        // Texto de aceptación
-        doc.setFontSize(7); doc.setFont('helvetica','normal');
-        const texto = 'El solicitante declara y acepta conocer el Código Deportivo de FEMADAC y se compromete a cumplirlos y respetarlos en todo momento. Los datos son verídicos y vigentes. FEMADAC y las Comisiones Nacionales se consideran oficiales los datos manifestados.';
-        const lines = doc.splitTextToSize(texto, 186);
-        doc.text(lines, 15, y);
-        y += lines.length * 3.5 + 8;
-
-        // Firma
-        doc.setLineWidth(0.3);
-        doc.line(15, y, 90, y);
-        doc.line(115, y, 201, y);
-        doc.setFontSize(7);
-        doc.text('NOMBRE Y FIRMA DEL PADRE O TUTOR (SI ES MENOR)', 52, y + 4, {align:'center'});
-        doc.text('FIRMA DEL SOLICITANTE', 158, y + 4, {align:'center'});
-        y += 12;
-
-        doc.text(`Fecha: ${hoy}`, 15, y);
-        doc.setFont('helvetica','bold');
-        doc.text(`#${d.numero_piloto || '—'}`, 195, y, {align:'right'});
-      });
-
-      const etapaLabel = document.getElementById('selEtapa').options[document.getElementById('selEtapa').selectedIndex]?.text?.replace(/[^a-zA-Z0-9]/g,'_') || 'etapa';
-      doc.save(`FEMADAC_${etapaLabel}_${lista.length > 1 ? 'todos' : lista[0].nombre_completo.replace(/ /g,'_')}.pdf`);
-    }
-
-    // ── PDF LIBERACIÓN ──────────────────────────────────────────────────────────
-    function generarPDFLiberacion(lista) {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+      const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'letter' });
+      const p   = pilotoActual;
+      const i   = inscripcionActual;
       const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
 
-      lista.forEach((d, idx) => {
-        if (idx > 0) doc.addPage();
+      doc.setFont('helvetica','bold'); doc.setFontSize(13);
+      doc.text('FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO', 108, 16, {align:'center'});
+      doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      doc.text('Solicitud de Licencia / Registro de Piloto', 108, 22, {align:'center'});
+      doc.setLineWidth(0.4); doc.line(15, 25, 201, 25);
 
-        doc.setFont('helvetica','bold'); doc.setFontSize(13);
-        doc.text('FJO DEPORTES S.A DE C.V', 108, 18, {align:'center'});
-        doc.text('LIBERACIÓN DE RESPONSABILIDADES', 108, 25, {align:'center'});
-        doc.setLineWidth(0.5); doc.setDrawColor(0,0,0);
-        doc.line(15, 28, 201, 28);
+      let y = 32;
+      const campo = (lbl, val, x1, x2, yp) => {
+        doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+        doc.text(lbl.toUpperCase(), x1, yp - 1);
+        doc.setFont('helvetica','normal'); doc.setFontSize(9);
+        doc.text(String(val||''), x1, yp + 4);
+        doc.setLineWidth(0.2); doc.setDrawColor(160,160,160);
+        doc.line(x1, yp + 5.5, x2, yp + 5.5);
+      };
 
-        doc.setFont('helvetica','normal'); doc.setFontSize(8);
-        let y = 34;
-        const clausulas = [
-          '1.- POR MEDIO DE LA PRESENTE ACREDITO QUE NO EXISTE CAUSA O RAZÓN POR LA CUAL SE GENERARA UNA DEMANDA O RECLAMACIÓN ALGUNA EN CONTRA DE NINGUNA PERSONA RELACIONADA CON LA ORGANIZACIÓN DE LOS EVENTOS CON RESPECTO A CUALQUIER INCIDENTE INCLUIDO DAÑOS O LESIONES EN GENERAL ASÍ COMO LA MUERTE, QUE DERIVADO DE LA PARTICIPACIÓN DEL MISMO PUDIERA PROVOCARME.',
-          '2.- POR ESTE MEDIO RECONOZCO EXPRESAMENTE Y ACEPTO QUE LAS ACTIVIDADES RELACIONADAS CON LOS EVENTOS TIENEN UN ALTO ÍNDICE DE PELIGROSIDAD, ASÍ COMO QUE REPRESENTA EL RIESGO DE SUFRIR, TANTO EN LO PERSONAL COMO EN TERCERAS PERSONAS, DAÑOS A LA PROPIEDAD, LESIONES SERIAS O LA MUERTE.',
-          '3.- DE LA MISMA MANERA DE LIBERAR DE RESPONSABILIDAD Y COSTOS A LOS ORGANIZADORES Y PROMOTORES DE DICHOS EVENTOS POR CUALQUIER DAÑO O COSTO QUE PUDIERA INCURRIR DERIVADO DE MI PARTICIPACIÓN DEL SUSCRITO EN LOS MISMOS.',
-          '4.- EL COMPETIDOR RECONOCE Y ACEPTA QUE ES OBLIGATORIO EL USO DE PAÑAL DE CARRERAS. EN CASO DE QUE EL PILOTO DERRAME ACEITE O CUALQUIER OTRO FLUIDO EN PISTA, SE HARÁ ACREEDOR A UNA SANCIÓN ECONÓMICA DE $6,000.00 (SEIS MIL PESOS 00/100 M.N.).',
-        ];
-        clausulas.forEach(c => {
-          const lines = doc.splitTextToSize(c, 186);
-          doc.text(lines, 15, y);
-          y += lines.length * 4 + 4;
-        });
+      campo('Apellido Paterno',  p.apellido_paterno, 15,  80,  y);
+      campo('Apellido Materno',  p.apellido_materno, 85,  145, y);
+      campo('Nombre(s)',         p.nombres,          150, 201, y);
+      y += 14;
 
-        doc.setFont('helvetica','bold'); doc.setFontSize(8);
-        doc.text(`EN LA CIUDAD DE APODACA, NUEVO LEÓN A ${hoy}`, 108, y, {align:'center'});
-        y += 10;
+      campo('Calle',    p.calle,    15,  90,  y);
+      campo('Núm. Ext', p.num_ext,  95,  120, y);
+      campo('Núm. Int', p.num_int,  125, 150, y);
+      campo('Colonia',  p.colonia,  155, 185, y);
+      campo('C.P.',     p.cp,       187, 201, y);
+      y += 14;
 
-        doc.setFontSize(10);
-        doc.text('NOMBRE DEL PILOTO:', 15, y);
-        doc.setFont('helvetica','normal');
-        doc.text(d.nombre_completo, 65, y);
-        doc.setLineWidth(0.3); doc.line(65, y + 1, 201, y + 1);
-        y += 10;
+      campo('Ciudad',    p.ciudad,    15, 80,  y);
+      campo('Estado',    p.estado,    85, 145, y);
+      campo('Teléfono',  p.telefono,  150, 201, y);
+      y += 14;
 
-        doc.setFont('helvetica','bold');
-        doc.text('CATEGORÍA:', 15, y);
-        doc.setFont('helvetica','normal');
-        doc.text(d.categoria_nombre, 45, y);
-        doc.line(45, y + 1, 130, y + 1);
-        doc.setFont('helvetica','bold');
-        doc.text('NO.:', 140, y);
-        doc.setFont('helvetica','normal');
-        doc.text(String(d.numero_piloto || '—'), 152, y);
-        doc.line(152, y + 1, 201, y + 1);
-        y += 12;
+      campo('Email',  p.email,     15,  110, y);
+      campo('Celular',p.telefono,  115, 201, y);
+      y += 14;
 
-        doc.setFont('helvetica','bold');
-        doc.text('PREPARADORES', 108, y, {align:'center'});
-        y += 6;
-        [1,2,3,4].forEach(n => {
-          doc.setFont('helvetica','normal');
-          doc.text(`${n}._________________________________________`, 15, y);
-          doc.text('FIRMA:____________________', 130, y);
-          y += 9;
-        });
-        y += 4;
-
-        doc.setFontSize(8);
-        doc.text('ASUMO LA RESPONSABILIDAD DE TODAS LAS PERSONAS QUE AQUÍ SE DETALLAN', 108, y, {align:'center'});
-        y += 14;
-
-        doc.setLineWidth(0.3);
-        doc.line(40, y, 110, y);
-        doc.line(130, y, 200, y);
-        doc.setFontSize(8);
-        doc.text('FIRMA DEL PILOTO A PARTICIPAR', 75, y + 4, {align:'center'});
-        doc.text('HUELLA DIGITAL', 165, y + 4, {align:'center'});
+      // Escolaridad
+      doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+      doc.text('ESCOLARIDAD', 15, y - 1);
+      const escOps = ['Primaria','Secundaria','Media Superior','Superior Cursando','Superior Terminada'];
+      let ex = 15;
+      escOps.forEach(op => {
+        doc.rect(ex, y + 1, 3.5, 3.5);
+        if ((p.escolaridad||'') === op) { doc.setFont('helvetica','bold'); doc.text('✓', ex+0.4, y+4); doc.setFont('helvetica','normal'); }
+        doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
+        doc.text(op, ex + 5, y + 4.2);
+        ex += 36;
       });
+      doc.setLineWidth(0.2); doc.line(15, y + 7, 201, y + 7);
+      y += 14;
 
-      const etapaLabel = document.getElementById('selEtapa').options[document.getElementById('selEtapa').selectedIndex]?.text?.replace(/[^a-zA-Z0-9]/g,'_') || 'etapa';
-      doc.save(`Liberacion_${etapaLabel}_${lista.length > 1 ? 'todos' : lista[0].nombre_completo.replace(/ /g,'_')}.pdf`);
+      campo('Lugar de nacimiento', p.lugar_nacimiento, 15, 110, y);
+      campo('Nacionalidad',        p.nacionalidad,     115, 201, y);
+      y += 14;
+
+      const fechaNac = p.fecha_nacimiento ? new Date(p.fecha_nacimiento).toLocaleDateString('es-MX') : '';
+      campo('Fecha de nacimiento', fechaNac,     15, 70,  y);
+      campo('CURP o RFC',          p.curp,        75, 145, y);
+      campo('Núm. Licencia',       p.numero_licencia, 150, 201, y);
+      y += 14;
+
+      campo('Contacto emergencia', p.contacto_emergencia, 15, 100, y);
+      campo('Parentesco',          p.parentesco_emergencia, 105, 155, y);
+      campo('Tel. emergencia',     p.telefono_emergencia,   158, 201, y);
+      y += 14;
+
+      campo('Año lic. anterior',   p.anio_licencia_anterior, 15, 60, y);
+      campo('Tipo de Sangre',      p.tipo_sangre,             65, 110, y);
+      campo('Alergias',            p.alergias,                115, 201, y);
+      y += 14;
+
+      campo('Condiciones médicas especiales', p.condiciones_medicas, 15, 201, y);
+      y += 14;
+
+      // Comisión nacional
+      doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+      doc.text('COMISIÓN NACIONAL', 15, y - 1);
+      const comOps = ['PISTA','KARTISMO','RALLIES','ACELERACIÓN','OFF-ROAD','VINTAGE','CLÁSICOS DE COMPETENCIA'];
+      const selCom = (p.comision_nacional||'').split(',').map(s=>s.trim());
+      ex = 15;
+      comOps.forEach(op => {
+        doc.rect(ex, y + 1, 3.5, 3.5);
+        if (selCom.includes(op)) { doc.setFont('helvetica','bold'); doc.text('✓', ex+0.4, y+4); doc.setFont('helvetica','normal'); }
+        doc.setFont('helvetica','normal'); doc.setFontSize(7);
+        doc.text(op, ex + 5, y + 4.2);
+        ex += 27;
+      });
+      doc.line(15, y + 7, 201, y + 7);
+      y += 14;
+
+      const catNombre = i?.categoria_nombre || '';
+      const etapaNom  = i ? `Etapa ${i.etapa_numero||''} — ${i.etapa_nombre||''}` : '';
+      campo('Serie / Evento',    etapaNom,       15, 110, y);
+      campo('Categoría',         catNombre,      115, 165, y);
+      campo('Nombre del equipo', p.nombre_equipo, 168, 201, y);
+      y += 18;
+
+      doc.setFontSize(7);
+      const txt = 'El solicitante declara y acepta conocer el Código Deportivo de FEMADAC y se compromete a cumplirlos y respetarlos. Los datos manifestados son verídicos y vigentes.';
+      doc.text(doc.splitTextToSize(txt, 186), 15, y);
+      y += 12;
+
+      doc.setLineWidth(0.3);
+      doc.line(15, y, 90, y);  doc.line(115, y, 201, y);
+      doc.setFontSize(7);
+      doc.text('NOMBRE Y FIRMA DEL PADRE O TUTOR (MENOR DE EDAD)', 52, y+4, {align:'center'});
+      doc.text('FIRMA DEL SOLICITANTE', 158, y+4, {align:'center'});
+      y += 10;
+      doc.text(`Fecha: ${hoy}`, 15, y);
+
+      doc.save(`FEMADAC_${p.nombre_completo.replace(/ /g,'_')}.pdf`);
     }
 
-    // ── PDF FJO1 ────────────────────────────────────────────────────────────────
-    function generarPDFFjo1(lista) {
+    // ── LIBERACIÓN ────────────────────────────────────────────────────────────
+    function pdfLiberacion() {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+      const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'letter' });
+      const p   = pilotoActual;
+      const i   = inscripcionActual;
       const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(13);
+      doc.text('FJO DEPORTES S.A DE C.V', 108, 16, {align:'center'});
+      doc.text('LIBERACIÓN DE RESPONSABILIDADES', 108, 23, {align:'center'});
+      doc.setLineWidth(0.5); doc.line(15, 26, 201, 26);
+
+      doc.setFont('helvetica','normal'); doc.setFontSize(8);
+      let y = 32;
+      const clausulas = [
+        '1.- POR MEDIO DE LA PRESENTE ACREDITO QUE NO EXISTE CAUSA O RAZÓN POR LA CUAL SE GENERARA UNA DEMANDA O RECLAMACIÓN ALGUNA EN CONTRA DE NINGUNA PERSONA RELACIONADA CON LA ORGANIZACIÓN DE LOS EVENTOS CON RESPECTO A CUALQUIER INCIDENTE INCLUIDO DAÑOS O LESIONES EN GENERAL ASÍ COMO LA MUERTE, QUE DERIVADO DE LA PARTICIPACIÓN DEL MISMO PUDIERA PROVOCARME.',
+        '2.- POR ESTE MEDIO RECONOZCO EXPRESAMENTE Y ACEPTO QUE LAS ACTIVIDADES RELACIONADAS CON LOS EVENTOS TIENEN UN ALTO ÍNDICE DE PELIGROSIDAD, ASÍ COMO QUE REPRESENTA EL RIESGO DE SUFRIR, TANTO EN LO PERSONAL COMO EN TERCERAS PERSONAS, DAÑOS A LA PROPIEDAD, LESIONES SERIAS O LA MUERTE.',
+        '3.- DE LA MISMA MANERA DE LIBERAR DE RESPONSABILIDAD Y COSTOS A LOS ORGANIZADORES Y PROMOTORES DE DICHOS EVENTOS POR CUALQUIER DAÑO O COSTO QUE PUDIERA INCURRIR DERIVADO DE MI PARTICIPACIÓN DEL SUSCRITO EN LOS MISMOS.',
+        '4.- EL COMPETIDOR RECONOCE Y ACEPTA QUE ES OBLIGATORIO EL USO DE PAÑAL DE CARRERAS. EN CASO DE QUE EL PILOTO DERRAME ACEITE O CUALQUIER OTRO FLUIDO EN PISTA, SE HARÁ ACREEDOR A UNA SANCIÓN ECONÓMICA DE $6,000.00 (SEIS MIL PESOS 00/100 M.N.).',
+      ];
+      clausulas.forEach(c => {
+        const lines = doc.splitTextToSize(c, 186);
+        doc.text(lines, 15, y); y += lines.length * 4 + 4;
+      });
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(8);
+      doc.text(`EN LA CIUDAD DE APODACA, NUEVO LEÓN A ${hoy}`, 108, y, {align:'center'});
+      y += 10;
+
+      doc.setFontSize(10);
+      doc.text('NOMBRE DEL PILOTO:', 15, y);
+      doc.setFont('helvetica','normal');
+      doc.text(p.nombre_completo, 65, y);
+      doc.setLineWidth(0.3); doc.line(65, y+1, 201, y+1);
+      y += 10;
+
+      doc.setFont('helvetica','bold');
+      doc.text('CATEGORÍA:', 15, y);
+      doc.setFont('helvetica','normal');
+      doc.text(i?.categoria_nombre || '_______________', 45, y);
+      doc.line(45, y+1, 130, y+1);
+      doc.setFont('helvetica','bold');
+      doc.text('NO.:', 140, y);
+      doc.setFont('helvetica','normal');
+      doc.text(String(i?.numero_piloto || '____'), 152, y);
+      doc.line(152, y+1, 201, y+1);
+      y += 14;
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      doc.text('PREPARADORES', 108, y, {align:'center'});
+      y += 6;
+      [1,2,3,4].forEach(n => {
+        doc.setFont('helvetica','normal'); doc.setFontSize(8);
+        doc.text(`${n}.________________________________________`, 15, y);
+        doc.text('FIRMA:____________________', 130, y);
+        y += 9;
+      });
+      y += 4;
+
+      doc.setFontSize(7.5);
+      doc.text('ASUMO LA RESPONSABILIDAD DE TODAS LAS PERSONAS QUE AQUÍ SE DETALLAN', 108, y, {align:'center'});
+      y += 14;
+
+      doc.setLineWidth(0.3);
+      doc.line(40, y, 110, y); doc.line(130, y, 200, y);
+      doc.setFontSize(7);
+      doc.text('FIRMA DEL PILOTO A PARTICIPAR', 75, y+4, {align:'center'});
+      doc.text('HUELLA DIGITAL', 165, y+4, {align:'center'});
+
+      doc.save(`Liberacion_${p.nombre_completo.replace(/ /g,'_')}.pdf`);
+    }
+
+    // ── FJO1 ──────────────────────────────────────────────────────────────────
+    function pdfFjo1() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'letter' });
+      const p   = pilotoActual;
+      const i   = inscripcionActual;
+      const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
+      const fechaEvento = i?.etapa_fecha ? new Date(i.etapa_fecha).toLocaleDateString('es-MX') : hoy;
+
+      doc.setFont('helvetica','bold'); doc.setFontSize(14);
+      doc.text('FORMATO DE INSPECCIÓN "FJO1"', 148, 14, {align:'center'});
+
+      doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+      const etapaNom = i ? `Etapa ${i.etapa_numero||''} — ${i.etapa_nombre||''}` : '';
+      doc.text(`Fecha: ${fechaEvento}`, 20, 24);
+      doc.text(etapaNom.toUpperCase(), 272, 24, {align:'right'});
+      doc.text(`Nombre: ${p.nombre_completo}`, 20, 30);
+      doc.text(`Modelo del Auto: ${[i?.vehiculo,i?.modelo_vehiculo,i?.anio_vehiculo].filter(Boolean).join(' ')||''}`, 20, 36);
+      doc.text(`Categoría: ${i?.categoria_nombre||''}`, 148, 36);
+      doc.text(`No: ${i?.numero_piloto||''}`, 248, 36);
+      doc.setLineWidth(0.3); doc.line(15, 39, 272, 39);
 
       const conceptos = [
         'Nº CAT Y NOMBRE EN EL AUTO','VOLANTE Y CLUTCH','CAMPANA','VOLANTE P/T .A.',
@@ -616,141 +636,44 @@
         'ROLL BAR','MALLA DE VENTANA','TIRANTES P/BRAZOS','CINTURÓN DE SEGURIDAD',
         'CASCO','PROTECTOR DE CUELLO','ROPA ANTI-FUEGO','PARED DE FUEGO',
         'TUERCAS DE RINES METÁLICAS','VÁLVULAS DE RINES METÁLICAS','MASTER ELÉCTRICO',
-        'SWITCH DE SEGURIDAD','"O" PARA BARRA / GUARDA CADENA','PARACAÍDAS',
+        'SWITCH DE SEGURIDAD','"O" GUARDA CADENA','PARACAÍDAS',
       ];
-      const columnas = ['MA','JRA','BN','BA','BS','BR','S/SST','S/G','DGE','PC','S/Q'];
+      const cols = ['MA','JRA','BN','BA','BS','BR','S/SST','S/G','DGE','PC','S/Q'];
 
-      lista.forEach((d, idx) => {
-        if (idx > 0) doc.addPage();
-
-        doc.setFont('helvetica','bold'); doc.setFontSize(14);
-        doc.text('FORMATO DE INSPECCIÓN "FJO1"', 148, 16, {align:'center'});
-
-        doc.setFont('helvetica','normal'); doc.setFontSize(9);
-        const etapaNombre = d.etapa_nombre ? `Etapa ${d.etapa_numero} — ${d.etapa_nombre}` : '';
-        doc.text(`Fecha: ${formatFecha(d.etapa_fecha) || hoy}`, 20, 26);
-        doc.text(etapaNombre.toUpperCase(), 200, 26, {align:'right'});
-        doc.text(`Nombre: ${d.nombre_completo}`, 20, 32);
-        doc.text(`Modelo del Auto: ${[d.vehiculo,d.modelo_vehiculo,d.anio_vehiculo].filter(Boolean).join(' ')}`, 20, 38);
-        doc.text(`Categoría: ${d.categoria_nombre}`, 148, 38);
-        doc.text(`No: ${d.numero_piloto||'—'}`, 240, 38);
-        doc.line(15, 41, 272, 41);
-
-        // Tabla de conceptos
-        doc.autoTable({
-          startY: 44,
-          head: [['CONCEPTO', ...columnas]],
-          body: conceptos.map(c => [c, ...columnas.map(() => '')]),
-          styles: { fontSize: 7, cellPadding: 1.8, lineColor: [100,100,100], lineWidth: 0.2 },
-          headStyles: { fillColor: [50,50,50], textColor: 255, fontStyle: 'bold', fontSize: 7, halign: 'center' },
-          columnStyles: {
-            0: { cellWidth: 60 },
-            ...Object.fromEntries(columnas.map((_, i) => [i+1, { cellWidth: 18, halign: 'center' }])),
-          },
-          alternateRowStyles: { fillColor: [245,245,245] },
-          didDrawCell: (data) => {
-            // Sombrear celdas que no aplican (MA no tiene algunas)
-            const noAplica = { 0: [10,11,12,13,14,15,16,17,18,19,20,21], 1: [16,17,18,19,20,21] };
-            if (data.section === 'body' && noAplica[data.column.index]) {
-              if (noAplica[data.column.index].includes(data.row.index)) {
-                doc.setFillColor(200, 200, 200);
-                doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
-              }
-            }
-          },
-        });
-
-        const finalY = doc.lastAutoTable.finalY + 6;
-        doc.setFontSize(7);
-        doc.text('EL PILOTO LIBERA Y ACUERDA NO RESERVARSE NINGUNA ACCIÓN TIPO LEGAL. ESTOY DE ACUERDO EN SEGUIR Y RESPETAR EL REGLAMENTO OFICIAL Y LOS COMUNICADOS OFICIALES.', 20, finalY, {maxWidth: 140});
-
-        // Modificaciones requeridas
-        doc.setFont('helvetica','bold'); doc.setFontSize(8);
-        doc.text('MODIFICACIONES REQUERIDAS', 210, finalY, {align:'center'});
-        doc.text('FECHA LÍMITE', 258, finalY, {align:'center'});
-        doc.setFont('helvetica','normal');
-        [0,1,2,3].forEach(i => {
-          doc.line(170, finalY + 6 + i*8, 248, finalY + 6 + i*8);
-          doc.line(252, finalY + 6 + i*8, 272, finalY + 6 + i*8);
-        });
-
-        const firmaY = finalY + 38;
-        doc.line(20, firmaY, 80, firmaY);
-        doc.line(100, firmaY, 160, firmaY);
-        doc.setFontSize(7);
-        doc.text('FIRMA DEL PILOTO', 50, firmaY + 4, {align:'center'});
-        doc.text('FIRMA DEL OFICIAL', 130, firmaY + 4, {align:'center'});
+      doc.autoTable({
+        startY: 42,
+        head: [['CONCEPTO', ...cols]],
+        body: conceptos.map(c => [c, ...cols.map(() => '')]),
+        styles: { fontSize: 6.5, cellPadding: 1.6, lineColor:[120,120,120], lineWidth:0.2 },
+        headStyles: { fillColor:[40,40,40], textColor:255, fontStyle:'bold', fontSize:7, halign:'center' },
+        columnStyles: {
+          0: { cellWidth: 58 },
+          ...Object.fromEntries(cols.map((_,k) => [k+1, { cellWidth:17, halign:'center' }])),
+        },
+        alternateRowStyles: { fillColor:[248,248,248] },
       });
 
-      const etapaLabel = document.getElementById('selEtapa').options[document.getElementById('selEtapa').selectedIndex]?.text?.replace(/[^a-zA-Z0-9]/g,'_') || 'etapa';
-      doc.save(`FJO1_${etapaLabel}_${lista.length > 1 ? 'todos' : lista[0].nombre_completo.replace(/ /g,'_')}.pdf`);
-    }
+      const fy = doc.lastAutoTable.finalY + 6;
+      doc.setFontSize(6.5);
+      doc.text('EL PILOTO LIBERA Y ACUERDA NO RESERVARSE NINGUNA ACCIÓN TIPO LEGAL. ESTOY DE ACUERDO EN SEGUIR Y RESPETAR EL REGLAMENTO OFICIAL Y LOS COMUNICADOS OFICIALES.', 20, fy, {maxWidth:135});
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // EXPORTAR EXCEL
-    // ═══════════════════════════════════════════════════════════════════════════
-    function exportarExcel() {
-      if (datosEtapa.length === 0) return mostrarToast('No hay datos para exportar', 'error');
-      const etapaLabel = document.getElementById('selEtapa').options[document.getElementById('selEtapa').selectedIndex]?.text || 'etapa';
-
-      const wb = XLSX.utils.book_new();
-
-      // Hoja 1: Pilotos generales
-      const generales = datosEtapa.map(d => ({
-        '#': d.numero_piloto || '',
-        'Nombre Completo': d.nombre_completo,
-        'Apellido Paterno': d.apellido_paterno || '',
-        'Apellido Materno': d.apellido_materno || '',
-        'Nombre(s)': d.nombres || '',
-        'Categoría': d.categoria_nombre,
-        'Etapa': `Etapa ${d.etapa_numero} — ${d.etapa_nombre}`,
-        'Fecha Etapa': d.etapa_fecha ? new Date(d.etapa_fecha).toLocaleDateString('es-MX') : '',
-        'Vehículo': [d.vehiculo, d.modelo_vehiculo, d.anio_vehiculo, d.color_vehiculo].filter(Boolean).join(' '),
-        'Estatus Pago': d.estatus,
-        'Método Pago': d.metodo_pago || '',
-        'Monto Pagado': d.monto_pagado || '',
-        'Teléfono': d.telefono || '',
-        'Email': d.email || '',
-        'Tipo de Sangre': d.tipo_sangre || '',
-        'Alergias': d.alergias || '',
-        'Condiciones Médicas': d.condiciones_medicas || '',
-        'Contacto Emergencia': d.contacto_emergencia || '',
-        'Tel. Emergencia': d.telefono_emergencia || '',
-        'Parentesco': d.parentesco_emergencia || '',
-        'Ciudad': d.ciudad || '',
-        'Estado': d.estado || '',
-        'Colonia': d.colonia || '',
-        'C.P.': d.cp || '',
-        'CURP/RFC': d.curp || '',
-        'Escolaridad': d.escolaridad || '',
-        'Lugar Nacimiento': d.lugar_nacimiento || '',
-        'Fecha Nacimiento': d.fecha_nacimiento ? new Date(d.fecha_nacimiento).toLocaleDateString('es-MX') : '',
-        'Núm. Licencia': d.numero_licencia || '',
-        'Año Lic. Anterior': d.anio_licencia_anterior || '',
-        'Comisión Nacional': d.comision_nacional || '',
-        'Equipo / Club': d.nombre_equipo || '',
-      }));
-      const ws1 = XLSX.utils.json_to_sheet(generales);
-      ws1['!cols'] = Object.keys(generales[0] || {}).map((k, i) => ({ wch: i === 1 ? 30 : 18 }));
-      XLSX.utils.book_append_sheet(wb, ws1, 'Pilotos');
-
-      // Hoja 2: Inspección FJO1 (lista de conceptos por piloto)
-      const conceptos = ['Nº CAT Y NOMBRE EN EL AUTO','VOLANTE Y CLUTCH','CAMPANA','VOLANTE P/T .A.','PROTECTOR DE VOLANTE P/T .A.','PROTECTOR DE T.A.','DIAPER OIL','ROLL CAGE','ROLL BAR','MALLA DE VENTANA','TIRANTES P/BRAZOS','CINTURÓN DE SEGURIDAD','CASCO','PROTECTOR DE CUELLO','ROPA ANTI-FUEGO','PARED DE FUEGO','TUERCAS DE RINES','VÁLVULAS DE RINES','MASTER ELÉCTRICO','SWITCH DE SEGURIDAD','"O" GUARDA CADENA','PARACAÍDAS'];
-      const columnas = ['MA','JRA','BN','BA','BS','BR','S/SST','S/G','DGE','PC','S/Q'];
-      const fjo1Rows = [];
-      datosEtapa.forEach(d => {
-        conceptos.forEach(c => {
-          const row = { 'Piloto': d.nombre_completo, '#': d.numero_piloto||'', 'Categoría': d.categoria_nombre, 'Concepto': c };
-          columnas.forEach(col => { row[col] = ''; });
-          fjo1Rows.push(row);
-        });
-        fjo1Rows.push({}); // separador
+      doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+      doc.text('MODIFICACIONES REQUERIDAS', 210, fy, {align:'center'});
+      doc.text('FECHA LÍMITE', 258, fy, {align:'center'});
+      doc.setFont('helvetica','normal');
+      [0,1,2,3].forEach(k => {
+        doc.setLineWidth(0.2);
+        doc.line(170, fy+6+k*8, 248, fy+6+k*8);
+        doc.line(252, fy+6+k*8, 272, fy+6+k*8);
       });
-      const ws2 = XLSX.utils.json_to_sheet(fjo1Rows);
-      XLSX.utils.book_append_sheet(wb, ws2, 'FJO1 Inspección');
 
-      XLSX.writeFile(wb, `Formularios_${etapaLabel.replace(/[^a-zA-Z0-9]/g,'_')}.xlsx`);
-      mostrarToast('Excel generado correctamente');
+      const sy = fy + 38;
+      doc.line(20, sy, 80, sy); doc.line(100, sy, 160, sy);
+      doc.setFontSize(7);
+      doc.text('FIRMA DEL PILOTO', 50, sy+4, {align:'center'});
+      doc.text('FIRMA DEL OFICIAL TÉCNICO', 130, sy+4, {align:'center'});
+
+      doc.save(`FJO1_${p.nombre_completo.replace(/ /g,'_')}.pdf`);
     }
 
     init();
