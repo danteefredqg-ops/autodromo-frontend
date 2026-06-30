@@ -111,7 +111,9 @@
       todasCats = cats;
 
       const selCamp = document.getElementById('selCampeonato');
-      selCamp.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
+      selCamp.innerHTML =
+        '<option value="">Selecciona un campeonato...</option>' +
+        '<option value="todos">⬛ Todos los campeonatos</option>' +
         camps.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
 
       document.getElementById('selCategoria').innerHTML = '<option value="">Todas</option>' +
@@ -149,7 +151,8 @@
       const campId = document.getElementById('selCampeonato').value;
       const selEtapa = document.getElementById('selEtapa');
       selEtapa.innerHTML = '<option value="">Todas las etapas</option>';
-      if (!campId) return;
+      selEtapa.disabled = (campId === 'todos' || !campId);
+      if (!campId || campId === 'todos') return;
       try {
         const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
         selEtapa.innerHTML = '<option value="">Todas las etapas</option>' +
@@ -162,8 +165,9 @@
       const etapaId = document.getElementById('selEtapa').value;
       const catId   = document.getElementById('selCategoria').value;
       let qs = '';
-      if (etapaId)      qs = `etapa_id=${etapaId}`;
-      else if (campId)  qs = `campeonato_id=${campId}`;
+      if (campId === 'todos')  qs = 'todos=true';
+      else if (etapaId)        qs = `etapa_id=${etapaId}`;
+      else if (campId)         qs = `campeonato_id=${campId}`;
       if (catId) qs += (qs ? '&' : '') + `categoria_id=${catId}`;
       return { campId, etapaId, catId, qs };
     }
@@ -236,9 +240,12 @@
         const data = await apiFetch(`/reportes/corte-general?${qs}`);
         const c = data.resumen;
         const costo = data.costo || 0;
-        const nombreContexto = data.etapa
-          ? `${data.campeonato?.nombre || ''} — Etapa ${data.etapa.numero}: ${data.etapa.nombre}`
-          : (data.campeonato?.nombre || '');
+        const campId = document.getElementById('selCampeonato').value;
+        const nombreContexto = campId === 'todos'
+          ? 'Todos los campeonatos'
+          : data.etapa
+            ? `${data.campeonato?.nombre || ''} — Etapa ${data.etapa.numero}: ${data.etapa.nombre}`
+            : (data.campeonato?.nombre || '');
 
         document.getElementById('contenidoReporte').innerHTML = `
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:8px">

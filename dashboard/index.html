@@ -264,12 +264,12 @@
         // Actualizar stats
         const pagados    = todasInscritas.filter(i => i.estatus === 'Pagado');
         const pendientes = todasInscritas.filter(i => i.estatus === 'Pendiente');
-        const recaudado  = pagados.reduce((s, i) => s + (parseFloat(i.monto_pagado) || 0), 0);
+        const recaudado  = pagados.reduce((s, i) => s + (parseFloat(i.monto_pago) || 0), 0);
         document.getElementById('statInscritos').textContent  = todasInscritas.length;
         document.getElementById('statPagados').textContent    = pagados.length;
         document.getElementById('statPendientes').textContent = pendientes.length;
         document.getElementById('statRecaudado').textContent  =
-          recaudado > 0 ? '$' + recaudado.toLocaleString('es-MX') : '—';
+          '$' + recaudado.toLocaleString('es-MX', { minimumFractionDigits: 2 });
 
         // Llenar filtro de categorías
         const cats = [...new Map(todasInscritas.map(i => [i.categoria_id, { id: i.categoria_id, nombre: i.categoria_nombre }])).values()];

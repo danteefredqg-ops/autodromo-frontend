@@ -153,7 +153,71 @@
           <div id="pilotoNombre" style="font-weight:700;font-size:1.05rem"></div>
           <div id="pilotoDatos" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
         </div>
-        <button class="btn" onclick="irContrato()">Continuar — elegir etapa y categoría <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
+
+        <!-- ── Actualizar perfil ── -->
+        <div id="perfilSection" style="margin-top:10px;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden">
+          <button onclick="togglePerfil()" id="btnTogglePerfil"
+            style="width:100%;padding:12px 16px;background:#0a0a0a;border:none;color:#fff;font-family:'Barlow',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:space-between;text-align:left">
+            <span style="display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              Actualizar mi información
+            </span>
+            <svg id="perfilChev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <div id="perfilForm" style="display:none;padding:16px;background:#0d0d0d">
+            <p style="font-size:0.75rem;color:var(--muted);margin-bottom:12px">Esta información se usa para rellenar automáticamente tus formularios oficiales (FEMADAC, Liberación, Inspección).</p>
+            <div id="pA_alert" class="alert" style="margin-bottom:10px"></div>
+
+            <div class="sec" style="margin-top:0">Contacto de Emergencia</div>
+            <div class="g2">
+              <div class="f"><label class="lbl">Nombre del contacto</label><input class="inp" id="pA_emerg" placeholder="Nombre completo" /></div>
+              <div class="f"><label class="lbl">Teléfono de emergencia</label><input class="inp" id="pA_telEmerg" placeholder="81 0000 0000" type="tel" /></div>
+              <div class="f"><label class="lbl">Parentesco</label><input class="inp" id="pA_parentesco" placeholder="Padre / Madre / Esposo(a)" /></div>
+              <div class="f"><label class="lbl">Tipo de Sangre</label>
+                <select class="sel" id="pA_sangre">
+                  <option value="">Selecciona...</option>
+                  <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+                  <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="sec">Datos para Licencia</div>
+            <div class="g2">
+              <div class="f"><label class="lbl">CURP / RFC</label><input class="inp" id="pA_curp" placeholder="GAMJ850101HNLRCN04" style="text-transform:uppercase" /></div>
+              <div class="f"><label class="lbl">Escolaridad</label>
+                <select class="sel" id="pA_escolaridad">
+                  <option value="">Selecciona...</option>
+                  <option>Primaria</option><option>Secundaria</option>
+                  <option>Media Superior</option><option>Superior Cursando</option><option>Superior Terminada</option>
+                </select>
+              </div>
+              <div class="f"><label class="lbl">Lugar de nacimiento</label><input class="inp" id="pA_nacimiento" placeholder="Ciudad, Estado" /></div>
+              <div class="f"><label class="lbl">Teléfono celular</label><input class="inp" id="pA_telefono" placeholder="81 1234 5678" type="tel" /></div>
+            </div>
+
+            <div class="sec">Dirección completa</div>
+            <div class="f"><label class="lbl">Calle</label><input class="inp" id="pA_calle" placeholder="Av. Constitución" /></div>
+            <div class="g2">
+              <div class="f"><label class="lbl">Núm. Ext.</label><input class="inp" id="pA_numExt" /></div>
+              <div class="f"><label class="lbl">Núm. Int.</label><input class="inp" id="pA_numInt" /></div>
+              <div class="f"><label class="lbl">Colonia</label><input class="inp" id="pA_colonia" /></div>
+              <div class="f"><label class="lbl">C.P.</label><input class="inp" id="pA_cp" placeholder="64000" /></div>
+            </div>
+
+            <div class="sec">Condiciones Médicas</div>
+            <div class="f"><label class="lbl">Alergias</label><input class="inp" id="pA_alergias" placeholder="Ninguna / descripción" /></div>
+            <div class="f"><label class="lbl">Condiciones médicas especiales</label><input class="inp" id="pA_condiciones" placeholder="Ninguna / descripción" /></div>
+
+            <div id="pA_ok" style="display:none;padding:10px 14px;border-radius:8px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);color:#4ade80;font-size:0.82rem;margin-bottom:10px">✓ Información guardada exitosamente</div>
+            <button onclick="guardarPerfilPublico()" id="btnGuardarPerfil"
+              style="width:100%;padding:11px;background:var(--rojo);border:none;border-radius:8px;color:#fff;font-family:'Barlow',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;transition:background 0.2s">
+              Guardar información
+            </button>
+          </div>
+        </div>
+
+        <button class="btn" onclick="irContrato()" style="margin-top:10px">Continuar — elegir etapa y categoría <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
       </div>
       <div class="aviso-amarillo" style="margin-top:12px;display:block">
         ¿No recuerdas tu número de piloto? Pregunta en la ventanilla de inscripciones o selecciona <strong>"Soy Nuevo"</strong> si aún no tienes uno.
@@ -383,6 +447,8 @@
 
   function volver0() { step(1); show('p0'); pilotoId = null; pilotoNumero = null; }
 
+  let pilotoVerificadoData = null; // guardamos datos completos del piloto verificado
+
   async function buscar() {
     const email  = document.getElementById('emailBuscar').value.trim();
     const numero = parseInt(document.getElementById('numeroBuscar').value);
@@ -396,14 +462,14 @@
     try {
       const piloto = await apiFetch('/pilotos/buscar-por-email?email=' + encodeURIComponent(email));
 
-      // Verificar que el número coincida con el registrado
       if (piloto.numero_piloto !== numero) {
         alerta('a0b', 'El número de piloto no coincide con el email. Si eres nuevo, selecciona "Soy Nuevo".');
         return;
       }
 
-      pilotoId     = piloto.id;
-      pilotoNumero = piloto.numero_piloto;
+      pilotoId            = piloto.id;
+      pilotoNumero        = piloto.numero_piloto;
+      pilotoVerificadoData = piloto;
       const nombre = piloto.nombres
         ? `${piloto.nombres} ${piloto.apellido_paterno || ''} ${piloto.apellido_materno || ''}`.trim()
         : piloto.nombre_completo;
@@ -411,6 +477,23 @@
       document.getElementById('pilotoDatos').textContent  =
         (piloto.nacionalidad || '') + ' · Sangre: ' + (piloto.tipo_sangre || '') +
         ' · #' + piloto.numero_piloto;
+      // Pre-llenar formulario de perfil con datos existentes
+      document.getElementById('pA_emerg').value      = piloto.contacto_emergencia || '';
+      document.getElementById('pA_telEmerg').value   = piloto.telefono_emergencia || '';
+      document.getElementById('pA_parentesco').value = piloto.parentesco_emergencia || '';
+      document.getElementById('pA_sangre').value     = piloto.tipo_sangre || '';
+      document.getElementById('pA_curp').value       = piloto.curp || '';
+      document.getElementById('pA_escolaridad').value= piloto.escolaridad || '';
+      document.getElementById('pA_nacimiento').value = piloto.lugar_nacimiento || '';
+      document.getElementById('pA_telefono').value   = piloto.telefono || '';
+      document.getElementById('pA_calle').value      = piloto.calle || '';
+      document.getElementById('pA_numExt').value     = piloto.num_ext || '';
+      document.getElementById('pA_numInt').value     = piloto.num_int || '';
+      document.getElementById('pA_colonia').value    = piloto.colonia || '';
+      document.getElementById('pA_cp').value         = piloto.cp || '';
+      document.getElementById('pA_alergias').value   = piloto.alergias || '';
+      document.getElementById('pA_condiciones').value= piloto.condiciones_medicas || '';
+      document.getElementById('pA_ok').style.display = 'none';
       document.getElementById('pilotoBox').style.display = 'block';
     } catch(e) {
       if (e.message.includes('404') || e.message.toLowerCase().includes('no encontrado')) {
@@ -421,6 +504,57 @@
     } finally {
       btn.disabled = false;
       btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Verificar datos';
+    }
+  }
+
+  function togglePerfil() {
+    const form = document.getElementById('perfilForm');
+    const chev = document.getElementById('perfilChev');
+    const open = form.style.display === 'none';
+    form.style.display = open ? 'block' : 'none';
+    chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+
+  async function guardarPerfilPublico() {
+    const email  = document.getElementById('emailBuscar').value.trim();
+    const numero = parseInt(document.getElementById('numeroBuscar').value);
+    const alertEl = document.getElementById('pA_alert');
+    alertEl.style.display = 'none';
+    const btn = document.getElementById('btnGuardarPerfil');
+    btn.disabled = true; btn.textContent = 'Guardando...';
+    try {
+      await fetch(`${API_URL}/pilotos/perfil-publico`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email, numero,
+          tipo_sangre:            document.getElementById('pA_sangre').value || null,
+          telefono:               document.getElementById('pA_telefono').value.trim() || null,
+          contacto_emergencia:    document.getElementById('pA_emerg').value.trim() || null,
+          telefono_emergencia:    document.getElementById('pA_telEmerg').value.trim() || null,
+          parentesco_emergencia:  document.getElementById('pA_parentesco').value.trim() || null,
+          curp:                   document.getElementById('pA_curp').value.trim().toUpperCase() || null,
+          escolaridad:            document.getElementById('pA_escolaridad').value || null,
+          lugar_nacimiento:       document.getElementById('pA_nacimiento').value.trim() || null,
+          calle:                  document.getElementById('pA_calle').value.trim() || null,
+          num_ext:                document.getElementById('pA_numExt').value.trim() || null,
+          num_int:                document.getElementById('pA_numInt').value.trim() || null,
+          colonia:                document.getElementById('pA_colonia').value.trim() || null,
+          cp:                     document.getElementById('pA_cp').value.trim() || null,
+          alergias:               document.getElementById('pA_alergias').value.trim() || null,
+          condiciones_medicas:    document.getElementById('pA_condiciones').value.trim() || null,
+        }),
+      }).then(async r => {
+        if (!r.ok) { const d = await r.json(); throw new Error(d.error || 'Error'); }
+        return r.json();
+      });
+      document.getElementById('pA_ok').style.display = 'block';
+      document.getElementById('pA_alert').style.display = 'none';
+    } catch(e) {
+      alertEl.textContent = e.message;
+      alertEl.style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Guardar información';
     }
   }
 
@@ -656,6 +790,9 @@
     document.getElementById('pSangre').value = '';
     document.getElementById('iNum').readOnly = false;
     document.getElementById('pilotoBox').style.display = 'none';
+    document.getElementById('perfilForm').style.display = 'none';
+    document.getElementById('perfilChev').style.transform = 'rotate(0deg)';
+    pilotoVerificadoData = null;
     document.getElementById('chkContrato1').checked = false;
     document.getElementById('chkContrato2').checked = false;
     document.getElementById('chkContrato3').checked = false;
