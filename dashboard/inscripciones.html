@@ -317,9 +317,10 @@
       grid.innerHTML = cats.length === 0
         ? '<div style="grid-column:span 3;color:#555;font-size:0.8rem">Sin categorías para este campeonato</div>'
         : cats.map(c => `
-            <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
-              onclick="seleccionarCategoria(${c.id},'${c.color}',this)">
-              ${esc(c.nombre)}
+            <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${c.costo ?? ''}"
+              onclick="seleccionarCategoria(${c.id},'${c.color}',${c.costo ?? 'null'},this)">
+              <div>${esc(c.nombre)}</div>
+              ${c.costo ? `<div style="font-size:0.65rem;font-weight:400;opacity:0.7;margin-top:2px">$${Number(c.costo).toLocaleString('es-MX')}</div>` : ''}
             </button>`).join('');
     }
 
@@ -419,7 +420,7 @@
 
     function cerrarModalInsc() { document.getElementById('modalInsc').style.display = 'none'; }
 
-    function seleccionarCategoria(id, color, btn) {
+    function seleccionarCategoria(id, color, costo, btn) {
       categoriaSeleccionada = id;
       document.querySelectorAll('.cat-btn').forEach(b => {
         b.classList.remove('activo');
@@ -431,6 +432,7 @@
       btn.style.background = color + '22';
       btn.style.borderColor = color + '66';
       btn.style.color = color;
+      if (costo !== null) document.getElementById('iMonto').value = costo;
     }
 
     async function guardarInscripcion() {

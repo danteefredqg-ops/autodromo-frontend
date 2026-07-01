@@ -92,7 +92,8 @@
         <div class="campo" style="margin-top:16px">
           <label class="etiqueta">Categorías que participan</label>
           <div id="catToggle" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
-          <div style="font-size:0.7rem;color:#555;margin-top:6px">Selecciona las categorías válidas para este campeonato</div>
+          <div style="font-size:0.7rem;color:#555;margin-top:6px">Selecciona las categorías y define el costo de inscripción de cada una</div>
+          <div id="catCostos"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -158,7 +159,7 @@
     }
 
     let todasCats  = [];
-    let catsSel    = new Set();
+    let catsSel    = new Map(); // id → costo (null si no definido)
     let campEditId = null;
     let etapaCampId = null;
     let etapaEditId = null;
@@ -179,7 +180,7 @@
             ? `Etapa ${c.etapa_actual_num} de ${c.total_etapas}`
             : c.total_etapas > 0 ? `${c.total_etapas} etapa(s) · sin iniciar` : 'Sin etapas';
           const catChips = (c.categorias || []).map(cat =>
-            `<span style="padding:2px 9px;border-radius:20px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:${cat.color}22;border:1px solid ${cat.color}55;color:${cat.color}">${esc(cat.nombre)}</span>`
+            `<span style="padding:2px 9px;border-radius:20px;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;background:${cat.color}22;border:1px solid ${cat.color}55;color:${cat.color}" title="${cat.costo ? '$'+Number(cat.costo).toLocaleString('es-MX') : 'Sin costo definido'}">${esc(cat.nombre)}${cat.costo ? ` <span style="opacity:0.7;font-weight:400">$${Number(cat.costo).toLocaleString('es-MX')}</span>` : ''}</span>`
           ).join('');
           return `
           <div class="camp-card" id="campCard-${c.id}">
@@ -303,7 +304,7 @@
     // ── Modal campeonato ──────────────────────────────────────────────────────
     function abrirModalCamp() {
       campEditId = null;
-      catsSel = new Set();
+      catsSel = new Map();
       document.getElementById('tituloCamp').textContent = 'Nuevo Campeonato';
       document.getElementById('btnGuardarCamp').textContent = 'Crear';
       document.getElementById('cNombre').value = '';
@@ -319,7 +320,7 @@
           apiFetch(`/campeonatos/${id}/categorias`),
         ]);
         campEditId = id;
-        catsSel = new Set(cats.map(c => c.id));
+        catsSel = new Map(cats.map(c => [c.id, c.costo ?? null]));
         document.getElementById('cNombre').value = camp.nombre;
         document.getElementById('cDesc').value   = camp.descripcion || '';
         document.getElementById('tituloCamp').textContent = 'Editar Campeonato';
@@ -336,6 +337,32 @@
           style="${sel ? `background:${c.color}22;border-color:${c.color}66;color:${c.color}` : ''}"
           onclick="toggleCat(${c.id},'${c.color}',this)">${esc(c.nombre)}</button>`;
       }).join('');
+      renderCostosSeleccionados();
+    }
+
+    function renderCostosSeleccionados() {
+      const cont = document.getElementById('catCostos');
+      if (catsSel.size === 0) { cont.innerHTML = ''; return; }
+      const items = [...catsSel.entries()].map(([id, costo]) => {
+        const cat = todasCats.find(c => c.id === id);
+        if (!cat) return '';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #eee">
+          <span style="flex:1;font-size:0.8rem;font-weight:600;color:#222">${esc(cat.nombre)}</span>
+          <span style="font-size:0.75rem;color:#888">Costo:</span>
+          <span style="position:relative">
+            <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:0.75rem;color:#888;pointer-events:none">$</span>
+            <input type="number" min="0" step="100"
+              style="width:90px;padding:4px 6px 4px 18px;border:1px solid #ddd;border-radius:6px;font-size:0.8rem;font-family:'Barlow',sans-serif"
+              placeholder="0.00"
+              value="${costo !== null ? costo : ''}"
+              oninput="actualizarCosto(${id}, this.value)"/>
+          </span>
+        </div>`;
+      }).join('');
+      cont.innerHTML = `<div style="margin-top:10px">
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;color:#888;text-transform:uppercase;margin-bottom:6px">Costo de inscripción por categoría</div>
+        ${items}
+      </div>`;
     }
 
     function toggleCat(id, color, btn) {
@@ -344,12 +371,17 @@
         btn.classList.remove('sel');
         btn.style.cssText = '';
       } else {
-        catsSel.add(id);
+        catsSel.set(id, null);
         btn.classList.add('sel');
         btn.style.background = color + '22';
         btn.style.borderColor = color + '66';
         btn.style.color = color;
       }
+      renderCostosSeleccionados();
+    }
+
+    function actualizarCosto(id, valor) {
+      catsSel.set(id, valor !== '' ? parseFloat(valor) : null);
     }
 
     async function guardarCampeonato() {
@@ -360,8 +392,8 @@
       try {
         const payload = {
           nombre,
-          descripcion:   document.getElementById('cDesc').value || null,
-          categoria_ids: [...catsSel],
+          descripcion: document.getElementById('cDesc').value || null,
+          categorias:  [...catsSel.entries()].map(([id, costo]) => ({ id, costo: costo ?? null })),
         };
         if (campEditId) {
           await apiFetch(`/campeonatos/${campEditId}`, { method: 'PUT', body: JSON.stringify(payload) });
