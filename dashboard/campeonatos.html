@@ -132,10 +132,6 @@
           <input class="input" id="eUbicacion" value="Autódromo Monterrey" />
         </div>
         <div class="campo" style="margin-top:10px">
-          <label class="etiqueta">Costo de Inscripción ($)</label>
-          <input class="input" type="number" step="0.01" id="eCosto" placeholder="0.00 — para el corte de caja" />
-        </div>
-        <div class="campo" style="margin-top:10px">
           <label class="etiqueta">Descripción</label>
           <textarea class="textarea" id="eDescripcion" rows="2" placeholder="Notas adicionales (opcional)"></textarea>
         </div>
@@ -285,7 +281,7 @@
               <a href="reportes.html?etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Corte</a>
               ${usuario.rol === 'admin' ? `
                 <button class="btn-secundario" style="padding:6px 10px;font-size:0.7rem"
-                  onclick="editarEtapa(${campId},${e.id},${e.numero},'${esc(e.nombre).replace(/'/g,"\\'")}','${fechaStr}','${esc(e.ubicacion).replace(/'/g,"\\'")}','${e.costo||''}','${esc(e.descripcion||'').replace(/'/g,"\\'")}')">
+                  onclick="editarEtapa(${campId},${e.id},${e.numero},'${esc(e.nombre).replace(/'/g,"\\'")}','${fechaStr}','${esc(e.ubicacion).replace(/'/g,"\\'")}','${esc(e.descripcion||'').replace(/'/g,"\\'")}')">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
                 <button class="btn-eliminar" style="padding:6px 10px;font-size:0.7rem"
@@ -420,12 +416,11 @@
       document.getElementById('eNombre').value    = '';
       document.getElementById('eFecha').value     = '';
       document.getElementById('eUbicacion').value = 'Autódromo Monterrey';
-      document.getElementById('eCosto').value     = '';
       document.getElementById('eDescripcion').value = '';
       document.getElementById('modalEtapa').style.display = 'flex';
     }
 
-    function editarEtapa(campId, etId, numero, nombre, fecha, ubicacion, costo, desc) {
+    function editarEtapa(campId, etId, numero, nombre, fecha, ubicacion, desc) {
       etapaCampId = campId;
       etapaEditId = etId;
       document.getElementById('tituloEtapa').textContent = 'Editar Etapa';
@@ -434,7 +429,6 @@
       document.getElementById('eNombre').value    = nombre;
       document.getElementById('eFecha').value     = fecha;
       document.getElementById('eUbicacion').value = ubicacion;
-      document.getElementById('eCosto').value     = costo;
       document.getElementById('eDescripcion').value = desc;
       document.getElementById('modalEtapa').style.display = 'flex';
     }
@@ -450,7 +444,6 @@
           nombre:      document.getElementById('eNombre').value.trim() || null,
           fecha,
           ubicacion:   document.getElementById('eUbicacion').value || 'Autódromo Monterrey',
-          costo:       parseFloat(document.getElementById('eCosto').value) || null,
           descripcion: document.getElementById('eDescripcion').value || null,
         };
         if (etapaEditId) {
