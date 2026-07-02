@@ -89,10 +89,14 @@
       </div>
       <div class="modal-body">
         <div class="campo">
-          <label class="etiqueta">Piloto *</label>
-          <select class="select" id="iPiloto" required>
-            <option value="">Seleccionar piloto...</option>
-          </select>
+          <label class="etiqueta">Buscar por número de piloto</label>
+          <div style="display:flex;gap:8px">
+            <input class="input" type="number" id="iBuscarNum" min="1" max="999" placeholder="Ej: 42" style="width:120px;flex-shrink:0" oninput="buscarPilotoPorNumero(this.value)"/>
+            <select class="select" id="iPiloto" required style="flex:1">
+              <option value="">— o selecciona de la lista —</option>
+            </select>
+          </div>
+          <div id="infoPilotoBuscado" style="font-size:0.75rem;margin-top:4px;color:#4ade80;display:none"></div>
         </div>
         <div class="grid-2" style="margin-top:12px">
           <div class="campo">
@@ -308,20 +312,25 @@
         ]);
         etapaSelect.innerHTML = '<option value="">Seleccionar etapa...</option>' +
           etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
-        renderCatGrid(cats);
+        // Si el campeonato no tiene categorías asignadas, usar todas las disponibles
+        const catsFinal = cats.length > 0 ? cats : todasCategorias;
+        renderCatGrid(catsFinal, cats.length === 0);
       } catch {}
     }
 
-    function renderCatGrid(cats) {
+    function renderCatGrid(cats, esFallback = false) {
       const grid = document.getElementById('gridCategorias');
-      grid.innerHTML = cats.length === 0
-        ? '<div style="grid-column:span 3;color:#555;font-size:0.8rem">Sin categorías para este campeonato</div>'
-        : cats.map(c => `
-            <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${c.costo ?? ''}"
-              onclick="seleccionarCategoria(${c.id},'${c.color}',${c.costo ?? 'null'},this)">
-              <div>${esc(c.nombre)}</div>
-              ${c.costo ? `<div style="font-size:0.65rem;font-weight:400;opacity:0.7;margin-top:2px">$${Number(c.costo).toLocaleString('es-MX')}</div>` : ''}
-            </button>`).join('');
+      if (cats.length === 0) {
+        grid.innerHTML = '<div style="grid-column:span 3;color:#555;font-size:0.8rem">Sin categorías disponibles</div>';
+        return;
+      }
+      grid.innerHTML = (esFallback ? `<div style="grid-column:span 3;font-size:0.72rem;color:#fbbf24;margin-bottom:4px">⚠ Campeonato sin categorías asignadas — mostrando todas</div>` : '') +
+        cats.map(c => `
+          <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${c.costo ?? ''}"
+            onclick="seleccionarCategoria(${c.id},'${c.color}',${c.costo ?? 'null'},this)">
+            <div>${esc(c.nombre)}</div>
+            ${c.costo ? `<div style="font-size:0.65rem;font-weight:400;opacity:0.7;margin-top:2px">$${Number(c.costo).toLocaleString('es-MX')}</div>` : ''}
+          </button>`).join('');
     }
 
     async function cargarInscripciones() {
@@ -405,6 +414,8 @@
     // ── Modal inscripción ─────────────────────────────────────────────────────
     function abrirModalInscripcion() {
       categoriaSeleccionada = '';
+      document.getElementById('iBuscarNum').value  = '';
+      document.getElementById('infoPilotoBuscado').style.display = 'none';
       document.getElementById('iPiloto').value   = '';
       document.getElementById('iCampeonato').value = '';
       document.getElementById('iEtapa').innerHTML = '<option value="">Seleccionar etapa...</option>';
@@ -419,6 +430,27 @@
     }
 
     function cerrarModalInsc() { document.getElementById('modalInsc').style.display = 'none'; }
+
+    let buscarTimeout = null;
+    function buscarPilotoPorNumero(val) {
+      clearTimeout(buscarTimeout);
+      const info = document.getElementById('infoPilotoBuscado');
+      if (!val || val < 1) { info.style.display = 'none'; return; }
+      buscarTimeout = setTimeout(() => {
+        const piloto = pilotos.find(p => p.numero_piloto == val);
+        if (piloto) {
+          document.getElementById('iPiloto').value = piloto.id;
+          document.getElementById('iNumero').value  = piloto.numero_piloto;
+          info.textContent = `✓ ${piloto.nombre_completo}`;
+          info.style.color = '#4ade80';
+          info.style.display = 'block';
+        } else {
+          info.textContent = '✗ Número no encontrado';
+          info.style.color = '#f87171';
+          info.style.display = 'block';
+        }
+      }, 400);
+    }
 
     function seleccionarCategoria(id, color, costo, btn) {
       categoriaSeleccionada = id;

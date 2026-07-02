@@ -116,7 +116,7 @@
         <div style="display:grid;grid-template-columns:100px 1fr;gap:10px">
           <div class="campo">
             <label class="etiqueta">Número</label>
-            <input class="input" type="number" id="eNumero" min="1" placeholder="Auto" />
+            <input class="input" type="number" id="eNumero" min="1" placeholder="Se asigna solo" />
           </div>
           <div class="campo">
             <label class="etiqueta">Fecha *</label>
@@ -350,7 +350,7 @@
             <input type="number" min="0" step="100"
               style="width:90px;padding:4px 6px 4px 18px;border:1px solid #ddd;border-radius:6px;font-size:0.8rem;font-family:'Barlow',sans-serif"
               placeholder="0.00"
-              value="${costo !== null ? costo : ''}"
+              value="${costo !== null && costo !== 0 ? costo : ''}"
               oninput="actualizarCosto(${id}, this.value)"/>
           </span>
         </div>`;
