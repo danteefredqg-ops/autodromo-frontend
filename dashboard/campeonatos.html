@@ -367,7 +367,9 @@
         btn.classList.remove('sel');
         btn.style.cssText = '';
       } else {
-        catsSel.set(id, null);
+        // Auto-rellenar con costo_default de la categoría si existe
+        const cat = todasCats.find(c => c.id === id);
+        catsSel.set(id, cat?.costo_default ?? null);
         btn.classList.add('sel');
         btn.style.background = color + '22';
         btn.style.borderColor = color + '66';

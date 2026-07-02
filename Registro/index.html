@@ -662,24 +662,31 @@
         apiFetch(`/campeonatos/${campeonatoSel}/etapas`),
         apiFetch(`/campeonatos/${campeonatoSel}/categorias`),
       ]);
-      cats = catsData;
       // Llenar etapas
       if (etapas.length === 0) {
-        etapaSel.innerHTML = '<option value="">Sin etapas disponibles</option>';
+        etapaSel.innerHTML = '<option value="">Sin etapas disponibles — contacta al organizador</option>';
       } else {
         etapaSel.innerHTML = '<option value="">Selecciona una etapa...</option>' +
           etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${e.nombre} (${formatFecha(e.fecha)})</option>`).join('');
         if (etapas.length === 1) etapaSel.value = etapas[0].id;
       }
-      // Llenar categorías
+      // Llenar categorías — si el campeonato no tiene asignadas, usar todas
+      let catsFinal = catsData;
+      let esFallback = false;
+      if (catsData.length === 0) {
+        try { catsFinal = await apiFetch('/categorias'); } catch { catsFinal = []; }
+        esFallback = true;
+      }
+      cats = catsFinal;
       if (cats.length === 0) {
-        grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Sin categorías asignadas a este campeonato</div>';
+        grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Sin categorías disponibles</div>';
         return;
       }
-      grid.innerHTML = cats.map(c =>
-        `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
-           onclick="selCat(${c.id},'${c.color}',this)">${c.nombre}</button>`
-      ).join('');
+      grid.innerHTML = (esFallback ? '<div style="grid-column:span 3;font-size:0.7rem;color:#fbbf24;margin-bottom:6px">Selecciona tu categoría</div>' : '') +
+        cats.map(c =>
+          `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
+             onclick="selCat(${c.id},'${c.color}',this)">${c.nombre}</button>`
+        ).join('');
     } catch(e) {
       grid.innerHTML = '<div style="grid-column:span 3;color:#f87171;font-size:0.8rem;text-align:center;padding:12px">Error al cargar datos</div>';
     }
