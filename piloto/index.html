@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal del Piloto — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --rojo:#e63946;--negro:#050505;--card:#111;--borde:#1e1e1e;
+      --texto:#e5e5e5;--sub:#888;--verde:#4ade80;--amarillo:#fbbf24;
+    }
+    body{background:var(--negro);color:var(--texto);font-family:'Barlow',sans-serif;min-height:100vh}
+
+    /* ── PANTALLA LOGIN ── */
+    #pantalla-login{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      min-height:100vh;padding:20px;
+    }
+    .login-card{
+      background:var(--card);border:1px solid var(--borde);border-radius:16px;
+      padding:40px 36px;width:100%;max-width:400px;
+    }
+    .login-logo{
+      font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.1em;
+      color:#fff;margin-bottom:4px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .login-logo span{color:var(--rojo)}
+    .login-sub{font-size:0.8rem;color:var(--sub);margin-bottom:28px}
+    .tabs-login{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--borde);border-radius:8px;overflow:hidden}
+    .tab-btn{
+      flex:1;padding:10px;font-family:'Barlow',sans-serif;font-size:0.8rem;
+      font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+      background:transparent;border:none;color:var(--sub);transition:all 0.18s;
+    }
+    .tab-btn.activo{background:var(--rojo);color:#fff}
+    .campo-login{margin-bottom:14px}
+    .campo-login label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);margin-bottom:5px}
+    .input-login{
+      width:100%;padding:11px 14px;background:#1a1a1a;border:1px solid var(--borde);
+      border-radius:8px;color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.9rem;
+      transition:border-color 0.18s;
+    }
+    .input-login:focus{outline:none;border-color:rgba(230,57,70,0.5)}
+    .btn-rojo{
+      width:100%;padding:12px;background:var(--rojo);border:none;border-radius:8px;
+      color:#fff;font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:0.1em;
+      cursor:pointer;transition:opacity 0.18s;margin-top:4px;
+    }
+    .btn-rojo:hover{opacity:0.88}
+    .btn-rojo:disabled{opacity:0.5;cursor:not-allowed}
+    .err-login{
+      background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);
+      color:#f87171;padding:10px 14px;border-radius:8px;font-size:0.82rem;
+      margin-bottom:14px;display:none;
+    }
+    .hint-login{font-size:0.75rem;color:var(--sub);text-align:center;margin-top:16px;line-height:1.5}
+
+    /* ── PORTAL ── */
+    #pantalla-portal{display:none;min-height:100vh;flex-direction:column}
+    .topbar{
+      background:#0a0a0a;border-bottom:1px solid var(--borde);
+      padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:100;
+    }
+    .topbar-marca{font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:0.1em;color:#fff}
+    .topbar-marca span{color:var(--rojo)}
+    .topbar-right{display:flex;align-items:center;gap:12px}
+    .piloto-chip{
+      display:flex;align-items:center;gap:8px;
+      background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.25);
+      border-radius:9999px;padding:4px 12px 4px 6px;
+    }
+    .piloto-avatar{
+      width:28px;height:28px;border-radius:50%;background:var(--rojo);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Bebas Neue';font-size:0.85rem;color:#fff;flex-shrink:0;
+    }
+    .piloto-nombre-chip{font-size:0.78rem;font-weight:700;color:#fff;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .btn-logout{
+      padding:6px 12px;background:transparent;border:1px solid var(--borde);
+      border-radius:8px;color:var(--sub);font-family:'Barlow',sans-serif;font-size:0.75rem;
+      font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+      transition:all 0.18s;
+    }
+    .btn-logout:hover{border-color:var(--rojo);color:var(--rojo)}
+
+    .portal-body{flex:1;max-width:800px;width:100%;margin:0 auto;padding:24px 16px}
+
+    /* ── HERO DEL PILOTO ── */
+    .hero{
+      background:linear-gradient(135deg,#0f0f0f 0%,#1a0a0b 100%);
+      border:1px solid var(--borde);border-radius:12px;padding:24px;
+      margin-bottom:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+    }
+    .hero-num{
+      font-family:'Bebas Neue';font-size:4rem;color:var(--rojo);line-height:1;flex-shrink:0;
+      text-shadow:0 0 40px rgba(230,57,70,0.3);
+    }
+    .hero-num-label{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--sub);margin-bottom:-4px}
+    .hero-info{flex:1;min-width:0}
+    .hero-nombre{font-family:'Bebas Neue';font-size:2rem;letter-spacing:0.04em;line-height:1;margin-bottom:6px;word-break:break-word}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .hero-badge{
+      padding:3px 10px;border-radius:9999px;font-size:0.68rem;font-weight:700;
+      letter-spacing:0.1em;text-transform:uppercase;border:1px solid;
+    }
+
+    /* ── BARRA DE COMPLETITUD ── */
+    .completitud{margin-bottom:24px}
+    .completitud-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .completitud-label{font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub)}
+    .completitud-pct{font-family:'Bebas Neue';font-size:1.2rem;color:var(--rojo)}
+    .barra-fondo{height:6px;background:var(--borde);border-radius:9999px;overflow:hidden}
+    .barra-fill{height:100%;background:linear-gradient(90deg,var(--rojo),#ff6b6b);border-radius:9999px;transition:width 0.6s ease}
+
+    /* ── TABS ── */
+    .tabs{display:flex;gap:0;border-bottom:1px solid var(--borde);margin-bottom:24px;overflow-x:auto}
+    .tab{
+      padding:12px 20px;font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.1em;
+      cursor:pointer;border-bottom:2px solid transparent;color:var(--sub);
+      white-space:nowrap;transition:all 0.18s;background:transparent;border-top:none;border-left:none;border-right:none;
+    }
+    .tab.activo{color:#fff;border-bottom-color:var(--rojo)}
+    .tab:hover:not(.activo){color:#ccc}
+
+    /* ── SECCIÓN ── */
+    .seccion{display:none}
+    .seccion.activa{display:block}
+
+    /* ── CARDS STATS ── */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+    .stat-card{background:var(--card);border:1px solid var(--borde);border-radius:10px;padding:16px;text-align:center}
+    .stat-num{font-family:'Bebas Neue';font-size:2.2rem;color:var(--rojo);line-height:1}
+    .stat-lbl{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);margin-top:4px}
+
+    /* ── HISTORIAL ── */
+    .carrera-card{
+      background:var(--card);border:1px solid var(--borde);border-radius:10px;
+      padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    }
+    .carrera-pos{
+      width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+      font-family:'Bebas Neue';font-size:1.5rem;flex-shrink:0;
+    }
+    .pos-1{background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24}
+    .pos-2{background:rgba(156,163,175,0.15);border:1px solid rgba(156,163,175,0.4);color:#d1d5db}
+    .pos-3{background:rgba(180,120,60,0.15);border:1px solid rgba(180,120,60,0.4);color:#cd7f32}
+    .pos-otro{background:rgba(255,255,255,0.05);border:1px solid var(--borde);color:var(--sub)}
+    .pos-sin{background:rgba(255,255,255,0.03);border:1px solid var(--borde);color:#444}
+    .carrera-info{flex:1;min-width:0}
+    .carrera-camp{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--rojo);margin-bottom:2px}
+    .carrera-etapa{font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:0.04em;line-height:1.1}
+    .carrera-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;align-items:center}
+    .carrera-fecha{font-size:0.75rem;color:var(--sub)}
+    .cat-chip{padding:2px 9px;border-radius:9999px;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+    .carrera-right{text-align:right;flex-shrink:0}
+    .puntos-badge{font-family:'Bebas Neue';font-size:1.3rem;color:var(--rojo)}
+    .puntos-lbl{font-size:0.65rem;color:var(--sub);text-transform:uppercase;letter-spacing:0.08em}
+
+    /* ── PERFIL FORM ── */
+    .perfil-section{background:var(--card);border:1px solid var(--borde);border-radius:10px;padding:20px;margin-bottom:16px}
+    .perfil-section-title{font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.08em;color:#fff;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--borde)}
+    .grid-perfil{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .grid-perfil.uno{grid-template-columns:1fr}
+    @media(max-width:500px){.grid-perfil{grid-template-columns:1fr}}
+    .campo-p label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:4px}
+    .campo-p input,.campo-p select,.campo-p textarea{
+      width:100%;padding:9px 12px;background:#1a1a1a;border:1px solid var(--borde);
+      border-radius:8px;color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.88rem;
+      transition:border-color 0.18s;
+    }
+    .campo-p input:focus,.campo-p select:focus,.campo-p textarea:focus{outline:none;border-color:rgba(230,57,70,0.5)}
+    .campo-p select option{background:#1a1a1a}
+    .campo-p input.faltante{border-color:rgba(245,158,11,0.5);background:rgba(245,158,11,0.04)}
+    .btn-guardar-perfil{
+      padding:11px 28px;background:var(--rojo);border:none;border-radius:8px;
+      color:#fff;font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.1em;
+      cursor:pointer;transition:opacity 0.18s;margin-top:8px;
+    }
+    .btn-guardar-perfil:hover{opacity:0.88}
+    .alert-guardado{
+      background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--verde);
+      padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-top:10px;display:none;
+    }
+
+    /* ── CLASIFICACIÓN ── */
+    .selects-clas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    .select-p{
+      padding:9px 12px;background:#1a1a1a;border:1px solid var(--borde);border-radius:8px;
+      color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.85rem;flex:1;min-width:160px;
+    }
+    .select-p option{background:#1a1a1a}
+    .tabla-clas{width:100%;border-collapse:collapse;font-size:0.85rem}
+    .tabla-clas th{padding:10px 12px;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);border-bottom:1px solid var(--borde)}
+    .tabla-clas td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .tabla-clas tr.yo td{background:rgba(230,57,70,0.06)}
+    .pos-medal{font-family:'Bebas Neue';font-size:1.1rem}
+    .vacio{text-align:center;padding:40px;color:var(--sub);font-size:0.85rem}
+
+    /* ── Contraseña ── */
+    .pass-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:500px){.pass-grid{grid-template-columns:1fr}}
+
+    @keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp 0.3s ease-out}
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════ PANTALLA LOGIN ════════════════════════ -->
+<div id="pantalla-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+      AUTÓDROMO <span>MTY</span>
+    </div>
+    <div class="login-sub">Portal del Piloto</div>
+
+    <div class="tabs-login">
+      <button class="tab-btn activo" onclick="mostrarTab('login')">Iniciar sesión</button>
+      <button class="tab-btn" onclick="mostrarTab('crear')">Crear acceso</button>
+    </div>
+
+    <div id="err-login" class="err-login"></div>
+
+    <!-- Tab: Login -->
+    <div id="form-login">
+      <div class="campo-login">
+        <label>Correo electrónico</label>
+        <input class="input-login" type="email" id="lEmail" placeholder="tu@correo.com" autocomplete="email"/>
+      </div>
+      <div class="campo-login">
+        <label>Contraseña</label>
+        <input class="input-login" type="password" id="lPass" placeholder="••••••" autocomplete="current-password"/>
+      </div>
+      <button class="btn-rojo" id="btnLogin" onclick="iniciarSesion()">Entrar al portal</button>
+      <div class="hint-login">¿Primera vez? Cambia a <strong style="color:#fff;cursor:pointer" onclick="mostrarTab('crear')">Crear acceso</strong></div>
+    </div>
+
+    <!-- Tab: Crear acceso -->
+    <div id="form-crear" style="display:none">
+      <div class="campo-login">
+        <label>Correo electrónico registrado</label>
+        <input class="input-login" type="email" id="cEmail" placeholder="tu@correo.com"/>
+      </div>
+      <div class="campo-login">
+        <label>Tu número de piloto</label>
+        <input class="input-login" type="number" id="cNumero" placeholder="Ej: 42"/>
+      </div>
+      <div class="campo-login">
+        <label>Nueva contraseña</label>
+        <input class="input-login" type="password" id="cPass" placeholder="Mínimo 6 caracteres"/>
+      </div>
+      <div class="campo-login">
+        <label>Confirmar contraseña</label>
+        <input class="input-login" type="password" id="cPass2" placeholder="Repite tu contraseña"/>
+      </div>
+      <button class="btn-rojo" id="btnCrear" onclick="crearAcceso()">Crear mi acceso</button>
+      <div class="hint-login">¿Ya tienes acceso? <strong style="color:#fff;cursor:pointer" onclick="mostrarTab('login')">Inicia sesión</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════ PORTAL ════════════════════════ -->
+<div id="pantalla-portal">
+  <nav class="topbar">
+    <div class="topbar-marca">AUTÓDROMO <span>MTY</span></div>
+    <div class="topbar-right">
+      <div class="piloto-chip">
+        <div class="piloto-avatar" id="avatarLetra">?</div>
+        <span class="piloto-nombre-chip" id="chipNombre">Piloto</span>
+      </div>
+      <button class="btn-logout" onclick="cerrarPortal()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="portal-body">
+
+    <!-- Hero -->
+    <div class="hero fade-up">
+      <div>
+        <div class="hero-num-label">Número</div>
+        <div class="hero-num" id="heroNum">#0</div>
+      </div>
+      <div class="hero-info">
+        <div class="hero-nombre" id="heroNombre">Piloto</div>
+        <div class="hero-meta" id="heroMeta"></div>
+      </div>
+    </div>
+
+    <!-- Barra de completitud de perfil -->
+    <div class="completitud fade-up">
+      <div class="completitud-header">
+        <span class="completitud-label">Completitud del perfil</span>
+        <span class="completitud-pct" id="pctLabel">0%</span>
+      </div>
+      <div class="barra-fondo"><div class="barra-fill" id="barraFill" style="width:0%"></div></div>
+      <div id="camposFaltantes" style="font-size:0.72rem;color:var(--amarillo);margin-top:6px"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab activo" onclick="cambiarTab('estadisticas')">Mis Stats</button>
+      <button class="tab" onclick="cambiarTab('carreras')">Mis Carreras</button>
+      <button class="tab" onclick="cambiarTab('clasificacion')">Clasificación</button>
+      <button class="tab" onclick="cambiarTab('perfil')">Mi Perfil</button>
+    </div>
+
+    <!-- ── ESTADÍSTICAS ── -->
+    <div class="seccion activa" id="sec-estadisticas">
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="stat-num" id="stCarreras">—</div><div class="stat-lbl">Carreras</div></div>
+        <div class="stat-card"><div class="stat-num" id="stCampeonatos">—</div><div class="stat-lbl">Campeonatos</div></div>
+        <div class="stat-card"><div class="stat-num" id="stVictorias">—</div><div class="stat-lbl">Victorias</div></div>
+        <div class="stat-card"><div class="stat-num" id="stPodios">—</div><div class="stat-lbl">Podios</div></div>
+        <div class="stat-card"><div class="stat-num" id="stPuntos">—</div><div class="stat-lbl">Puntos totales</div></div>
+        <div class="stat-card"><div class="stat-num" id="stMejor">—</div><div class="stat-lbl">Mejor resultado</div></div>
+      </div>
+      <div id="resumenCarreras" style="background:var(--card);border:1px solid var(--borde);border-radius:10px;padding:20px">
+        <div style="font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.08em;margin-bottom:14px">Últimas carreras</div>
+        <div id="ultimas-carreras"></div>
+      </div>
+    </div>
+
+    <!-- ── MIS CARRERAS ── -->
+    <div class="seccion" id="sec-carreras">
+      <div id="lista-carreras"><div class="vacio">Cargando...</div></div>
+    </div>
+
+    <!-- ── CLASIFICACIÓN ── -->
+    <div class="seccion" id="sec-clasificacion">
+      <div class="selects-clas">
+        <select class="select-p" id="selClaCamp" onchange="onClaCampChange()">
+          <option value="">Selecciona un campeonato...</option>
+        </select>
+        <select class="select-p" id="selClaCat" onchange="cargarClasificacion()">
+          <option value="">Selecciona una categoría...</option>
+        </select>
+      </div>
+      <div id="tabla-clas-wrap"><div class="vacio">Selecciona campeonato y categoría</div></div>
+    </div>
+
+    <!-- ── MI PERFIL ── -->
+    <div class="seccion" id="sec-perfil">
+
+      <div class="perfil-section">
+        <div class="perfil-section-title">Datos Personales</div>
+        <div class="grid-perfil">
+          <div class="campo-p"><label>Nombre(s)</label><input id="pNombres" type="text"/></div>
+          <div class="campo-p"><label>Apellido Paterno</label><input id="pApPat" type="text"/></div>
+          <div class="campo-p"><label>Apellido Materno</label><input id="pApMat" type="text"/></div>
+          <div class="campo-p"><label>Fecha de Nacimiento</label><input id="pFechaNac" type="date"/></div>
+          <div class="campo-p"><label>CURP</label><input id="pCurp" type="text" maxlength="20" style="text-transform:uppercase"/></div>
+          <div class="campo-p"><label>Teléfono</label><input id="pTel" type="tel"/></div>
+          <div class="campo-p"><label>Tipo de Sangre</label>
+            <select id="pSangre">
+              <option value="">Seleccionar...</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="campo-p"><label>Escolaridad</label>
+            <select id="pEscolaridad">
+              <option value="">Seleccionar...</option>
+              <option>Primaria</option><option>Secundaria</option><option>Preparatoria</option>
+              <option>Técnico</option><option>Licenciatura</option><option>Posgrado</option>
+            </select>
+          </div>
+          <div class="campo-p"><label>Lugar de Nacimiento</label><input id="pLugarNac" type="text"/></div>
+          <div class="campo-p"><label>Nacionalidad</label><input id="pNacionalidad" type="text"/></div>
+        </div>
+      </div>
+
+      <div class="perfil-section">
+        <div class="perfil-section-title">Dirección</div>
+        <div class="grid-perfil">
+          <div class="campo-p"><label>Calle</label><input id="pCalle" type="text"/></div>
+          <div class="campo-p"><label>No. Exterior</label><input id="pNumExt" type="text"/></div>
+          <div class="campo-p"><label>No. Interior</label><input id="pNumInt" type="text"/></div>
+          <div class="campo-p"><label>Colonia</label><input id="pColonia" type="text"/></div>
+          <div class="campo-p"><label>C.P.</label><input id="pCp" type="text" maxlength="10"/></div>
+          <div class="campo-p"><label>Ciudad</label><input id="pCiudad" type="text"/></div>
+          <div class="campo-p"><label>Estado</label><input id="pEstado" type="text"/></div>
+        </div>
+      </div>
+
+      <div class="perfil-section">
+        <div class="perfil-section-title">Emergencias</div>
+        <div class="grid-perfil">
+          <div class="campo-p"><label>Contacto de Emergencia</label><input id="pContactoEmerg" type="text"/></div>
+          <div class="campo-p"><label>Teléfono de Emergencia</label><input id="pTelEmerg" type="tel"/></div>
+          <div class="campo-p"><label>Parentesco</label><input id="pParentesco" type="text"/></div>
+        </div>
+      </div>
+
+      <div class="perfil-section">
+        <div class="perfil-section-title">Información Médica</div>
+        <div class="grid-perfil">
+          <div class="campo-p"><label>Alergias</label><input id="pAlergias" type="text"/></div>
+          <div class="campo-p"><label>Condiciones Médicas</label><input id="pCondMed" type="text"/></div>
+        </div>
+      </div>
+
+      <div class="perfil-section">
+        <div class="perfil-section-title">Datos Deportivos</div>
+        <div class="grid-perfil">
+          <div class="campo-p"><label>Nombre del Equipo</label><input id="pEquipo" type="text"/></div>
+          <div class="campo-p"><label>Comisión Nacional</label><input id="pComision" type="text"/></div>
+          <div class="campo-p"><label>Año Licencia Anterior</label><input id="pAnioLic" type="number" min="2000" max="2030"/></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-guardar-perfil" onclick="guardarPerfil()">Guardar cambios</button>
+      </div>
+      <div class="alert-guardado" id="alertGuardado">✓ Perfil actualizado correctamente</div>
+
+      <div class="perfil-section" style="margin-top:20px">
+        <div class="perfil-section-title">Cambiar Contraseña</div>
+        <div class="pass-grid">
+          <div class="campo-p"><label>Nueva contraseña</label><input id="pNewPass" type="password" placeholder="Mínimo 6 caracteres"/></div>
+          <div class="campo-p"><label>Confirmar contraseña</label><input id="pNewPass2" type="password" placeholder="Repite la contraseña"/></div>
+        </div>
+        <button class="btn-guardar-perfil" style="margin-top:10px" onclick="cambiarPass()">Cambiar contraseña</button>
+        <div class="alert-guardado" id="alertPass">✓ Contraseña actualizada</div>
+      </div>
+    </div>
+
+  </div><!-- /portal-body -->
+</div><!-- /portal -->
+
+<script>
+const API_URL = 'https://autodromo.up.railway.app/api';
+const TOKEN_KEY   = 'piloto_token';
+const PILOTO_KEY  = 'piloto_data';
+
+function esc(str){ return String(str??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+function formatFecha(f){
+  if(!f) return '—';
+  const d=/^\d{4}-\d{2}-\d{2}$/.test(f)?new Date(f+'T00:00:00'):new Date(f);
+  return d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+async function apiFetch(ruta, ops={}){
+  const token = localStorage.getItem(TOKEN_KEY);
+  const headers={'Content-Type':'application/json',...(ops.headers||{})};
+  if(token) headers['Authorization']=`Bearer ${token}`;
+  const res = await fetch(`${API_URL}${ruta}`,{...ops,headers});
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error||'Error en la petición');
+  return data;
+}
+
+function mostrarError(msg){ const e=document.getElementById('err-login'); e.textContent=msg; e.style.display='block'; }
+function ocultarError(){ document.getElementById('err-login').style.display='none'; }
+
+function mostrarToast(msg,tipo='exito'){
+  const c={exito:'rgba(34,197,94,0.15)|rgba(34,197,94,0.4)|#4ade80',error:'rgba(230,57,70,0.15)|rgba(230,57,70,0.4)|#f87171',info:'rgba(59,130,246,0.15)|rgba(59,130,246,0.4)|#60a5fa'}[tipo]||'rgba(59,130,246,0.15)|rgba(59,130,246,0.4)|#60a5fa';
+  const [bg,bd,tx]=c.split('|');
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;top:20px;right:20px;z-index:9999;background:${bg};border:1px solid ${bd};color:${tx};padding:12px 18px;border-radius:10px;font-family:'Barlow',sans-serif;font-size:0.9rem;font-weight:500;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideIn 0.3s ease-out`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// ── Login tabs ──
+function mostrarTab(tab){
+  ocultarError();
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('activo',i===(tab==='login'?0:1)));
+  document.getElementById('form-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('form-crear').style.display = tab==='crear'?'block':'none';
+}
+
+// ── Enter para submit ──
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if(document.getElementById('form-login').style.display!=='none') iniciarSesion();
+  else crearAcceso();
+});
+
+// ── Crear acceso ──
+async function crearAcceso(){
+  ocultarError();
+  const email=document.getElementById('cEmail').value.trim();
+  const numero=document.getElementById('cNumero').value.trim();
+  const pass=document.getElementById('cPass').value;
+  const pass2=document.getElementById('cPass2').value;
+  if(!email||!numero||!pass) return mostrarError('Completa todos los campos');
+  if(pass!==pass2) return mostrarError('Las contraseñas no coinciden');
+  if(pass.length<6) return mostrarError('La contraseña debe tener al menos 6 caracteres');
+  const btn=document.getElementById('btnCrear');
+  btn.disabled=true; btn.textContent='Creando...';
+  try{
+    await apiFetch('/piloto/crear-acceso',{method:'POST',body:JSON.stringify({email,numero,password:pass})});
+    mostrarToast('¡Acceso creado! Ahora inicia sesión.','exito');
+    document.getElementById('lEmail').value=email;
+    mostrarTab('login');
+  } catch(err){ mostrarError(err.message); }
+  finally{ btn.disabled=false; btn.textContent='Crear mi acceso'; }
+}
+
+// ── Iniciar sesión ──
+async function iniciarSesion(){
+  ocultarError();
+  const email=document.getElementById('lEmail').value.trim();
+  const pass=document.getElementById('lPass').value;
+  if(!email||!pass) return mostrarError('Ingresa tu email y contraseña');
+  const btn=document.getElementById('btnLogin');
+  btn.disabled=true; btn.textContent='Entrando...';
+  try{
+    const data = await apiFetch('/piloto/login',{method:'POST',body:JSON.stringify({email,password:pass})});
+    localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(PILOTO_KEY, JSON.stringify(data.piloto));
+    abrirPortal(data.piloto);
+  } catch(err){ mostrarError(err.message); }
+  finally{ btn.disabled=false; btn.textContent='Entrar al portal'; }
+}
+
+// ── Cerrar sesión ──
+function cerrarPortal(){
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(PILOTO_KEY);
+  document.getElementById('pantalla-portal').style.display='none';
+  document.getElementById('pantalla-login').style.display='flex';
+}
+
+// ── Abrir portal ──
+let pilotoData={};
+let carrerasData=[];
+let campeonatosData=[];
+
+async function abrirPortal(piloto){
+  pilotoData=piloto;
+  document.getElementById('pantalla-login').style.display='none';
+  document.getElementById('pantalla-portal').style.display='flex';
+
+  // Hero
+  const nombre = piloto.nombre_completo||`${piloto.nombres||''} ${piloto.apellido_paterno||''}`.trim()||'Piloto';
+  document.getElementById('heroNum').textContent = '#'+(piloto.numero_piloto||'—');
+  document.getElementById('heroNombre').textContent = nombre.toUpperCase();
+  document.getElementById('avatarLetra').textContent = nombre[0]?.toUpperCase()||'P';
+  document.getElementById('chipNombre').textContent = nombre.split(' ')[0];
+
+  // Meta badges
+  const meta=[];
+  if(piloto.estatus_licencia) meta.push(`<span class="hero-badge" style="border-color:rgba(74,222,128,0.4);color:#4ade80;background:rgba(74,222,128,0.08)">${esc(piloto.estatus_licencia)}</span>`);
+  if(piloto.tipo_sangre) meta.push(`<span class="hero-badge" style="border-color:rgba(230,57,70,0.4);color:#e63946;background:rgba(230,57,70,0.08)">🩸 ${esc(piloto.tipo_sangre)}</span>`);
+  if(piloto.nombre_equipo) meta.push(`<span class="hero-badge" style="border-color:rgba(255,255,255,0.15);color:#aaa;background:rgba(255,255,255,0.05)">🏎 ${esc(piloto.nombre_equipo)}</span>`);
+  document.getElementById('heroMeta').innerHTML=meta.join('');
+
+  actualizarCompletitud(piloto);
+  llenarFormPerfil(piloto);
+  await cargarDashboard();
+  await cargarCampeonatosClasificacion();
+}
+
+// ── Completitud del perfil ──
+const CAMPOS_REQUERIDOS=[
+  {k:'tipo_sangre',l:'Tipo de sangre'},
+  {k:'fecha_nacimiento',l:'Fecha de nacimiento'},
+  {k:'curp',l:'CURP'},
+  {k:'telefono',l:'Teléfono'},
+  {k:'contacto_emergencia',l:'Contacto de emergencia'},
+  {k:'telefono_emergencia',l:'Tel. de emergencia'},
+  {k:'parentesco_emergencia',l:'Parentesco emergencia'},
+  {k:'calle',l:'Calle'},
+  {k:'colonia',l:'Colonia'},
+  {k:'cp',l:'C.P.'},
+  {k:'ciudad',l:'Ciudad'},
+  {k:'estado',l:'Estado'},
+  {k:'escolaridad',l:'Escolaridad'},
+  {k:'lugar_nacimiento',l:'Lugar de nacimiento'},
+];
+
+function actualizarCompletitud(p){
+  const faltantes=CAMPOS_REQUERIDOS.filter(c=>!p[c.k]);
+  const pct=Math.round(((CAMPOS_REQUERIDOS.length-faltantes.length)/CAMPOS_REQUERIDOS.length)*100);
+  document.getElementById('pctLabel').textContent=pct+'%';
+  document.getElementById('barraFill').style.width=pct+'%';
+  if(faltantes.length>0){
+    document.getElementById('camposFaltantes').textContent='Faltan: '+faltantes.map(c=>c.l).join(', ');
+  } else {
+    document.getElementById('camposFaltantes').textContent='✓ Perfil completo';
+    document.getElementById('camposFaltantes').style.color='var(--verde)';
+  }
+  // Resaltar campos faltantes en el form
+  faltantes.forEach(c=>{
+    const mapa={tipo_sangre:'pSangre',fecha_nacimiento:'pFechaNac',curp:'pCurp',telefono:'pTel',
+      contacto_emergencia:'pContactoEmerg',telefono_emergencia:'pTelEmerg',
+      parentesco_emergencia:'pParentesco',calle:'pCalle',colonia:'pColonia',cp:'pCp',
+      ciudad:'pCiudad',estado:'pEstado',escolaridad:'pEscolaridad',lugar_nacimiento:'pLugarNac'};
+    const el=document.getElementById(mapa[c.k]);
+    if(el) el.classList.add('faltante');
+  });
+}
+
+// ── Llenar form de perfil ──
+function llenarFormPerfil(p){
+  const m={nombres:'pNombres',apellido_paterno:'pApPat',apellido_materno:'pApMat',
+    fecha_nacimiento:'pFechaNac',curp:'pCurp',telefono:'pTel',tipo_sangre:'pSangre',
+    escolaridad:'pEscolaridad',lugar_nacimiento:'pLugarNac',nacionalidad:'pNacionalidad',
+    calle:'pCalle',num_ext:'pNumExt',num_int:'pNumInt',colonia:'pColonia',cp:'pCp',
+    ciudad:'pCiudad',estado:'pEstado',contacto_emergencia:'pContactoEmerg',
+    telefono_emergencia:'pTelEmerg',parentesco_emergencia:'pParentesco',
+    alergias:'pAlergias',condiciones_medicas:'pCondMed',nombre_equipo:'pEquipo',
+    comision_nacional:'pComision',anio_licencia_anterior:'pAnioLic'};
+  for(const[k,id] of Object.entries(m)){
+    const el=document.getElementById(id);
+    if(el && p[k]!=null){
+      el.value = k==='fecha_nacimiento'&&p[k]
+        ? p[k].split('T')[0]
+        : p[k];
+    }
+  }
+}
+
+// ── Dashboard ──
+async function cargarDashboard(){
+  try{
+    const [stats,carreras]=await Promise.all([
+      apiFetch('/piloto/mis-stats'),
+      apiFetch('/piloto/mis-carreras'),
+    ]);
+    carrerasData=carreras;
+    document.getElementById('stCarreras').textContent    = stats.carreras||0;
+    document.getElementById('stCampeonatos').textContent = stats.campeonatos||0;
+    document.getElementById('stVictorias').textContent   = stats.victorias||0;
+    document.getElementById('stPodios').textContent      = stats.podios||0;
+    document.getElementById('stPuntos').textContent      = stats.totalPuntos||0;
+    document.getElementById('stMejor').textContent       = stats.mejorPosicion ? `P${stats.mejorPosicion}` : '—';
+
+    // Últimas 3
+    const ult=carreras.slice(0,3);
+    document.getElementById('ultimas-carreras').innerHTML = ult.length
+      ? ult.map(c=>tarjetaCarrera(c,true)).join('')
+      : '<div class="vacio" style="padding:20px">Sin carreras registradas aún</div>';
+
+    renderCarreras(carreras);
+  } catch{}
+}
+
+function posClass(pos){
+  if(!pos) return 'pos-sin';
+  if(pos===1) return 'pos-1';
+  if(pos===2) return 'pos-2';
+  if(pos===3) return 'pos-3';
+  return 'pos-otro';
+}
+
+function medalIcon(pos){
+  if(pos===1) return '🥇';
+  if(pos===2) return '🥈';
+  if(pos===3) return '🥉';
+  if(pos) return `P${pos}`;
+  return '—';
+}
+
+function tarjetaCarrera(c, mini=false){
+  const pos=c.resultado_posicion;
+  return `<div class="carrera-card">
+    <div class="carrera-pos ${posClass(pos)}">${medalIcon(pos)}</div>
+    <div class="carrera-info">
+      <div class="carrera-camp">${esc(c.campeonato_nombre)}</div>
+      <div class="carrera-etapa">Etapa ${c.etapa_numero} — ${esc(c.etapa_nombre)}</div>
+      <div class="carrera-meta">
+        <span class="carrera-fecha">${formatFecha(c.etapa_fecha)}</span>
+        <span class="cat-chip" style="background:${c.categoria_color}22;border:1px solid ${c.categoria_color}55;color:${c.categoria_color}">${esc(c.categoria_nombre)}</span>
+        <span style="font-size:0.72rem;color:var(--sub)">${esc(c.vehiculo)}</span>
+      </div>
+    </div>
+    ${pos||c.resultado_puntos ? `<div class="carrera-right">
+      <div class="puntos-badge">${c.resultado_puntos||0} pts</div>
+      <div class="puntos-lbl">puntos</div>
+    </div>` : ''}
+  </div>`;
+}
+
+function renderCarreras(carreras){
+  document.getElementById('lista-carreras').innerHTML = carreras.length
+    ? carreras.map(c=>tarjetaCarrera(c)).join('')
+    : '<div class="vacio">Sin carreras registradas</div>';
+}
+
+// ── Clasificación ──
+async function cargarCampeonatosClasificacion(){
+  try{
+    const camps=await apiFetch('/campeonatos');
+    campeonatosData=camps;
+    const sel=document.getElementById('selClaCamp');
+    sel.innerHTML='<option value="">Selecciona un campeonato...</option>'+
+      camps.map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+  } catch{}
+}
+
+async function onClaCampChange(){
+  const campId=document.getElementById('selClaCamp').value;
+  const selCat=document.getElementById('selClaCat');
+  selCat.innerHTML='<option value="">Selecciona una categoría...</option>';
+  document.getElementById('tabla-clas-wrap').innerHTML='<div class="vacio">Selecciona campeonato y categoría</div>';
+  if(!campId) return;
+  try{
+    const cats=await apiFetch(`/campeonatos/${campId}/categorias`);
+    selCat.innerHTML='<option value="">Selecciona una categoría...</option>'+
+      cats.map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+  } catch{}
+}
+
+async function cargarClasificacion(){
+  const campId=document.getElementById('selClaCamp').value;
+  const catId=document.getElementById('selClaCat').value;
+  if(!campId||!catId){ document.getElementById('tabla-clas-wrap').innerHTML='<div class="vacio">Selecciona campeonato y categoría</div>'; return; }
+  try{
+    const rows=await apiFetch(`/piloto/clasificacion/${campId}/${catId}`);
+    if(!rows.length){ document.getElementById('tabla-clas-wrap').innerHTML='<div class="vacio">Sin resultados en esta categoría</div>'; return; }
+    document.getElementById('tabla-clas-wrap').innerHTML=`
+      <div style="background:var(--card);border:1px solid var(--borde);border-radius:10px;overflow:hidden">
+      <table class="tabla-clas">
+        <thead><tr><th>Pos</th><th>#</th><th>Piloto</th><th>Pts</th><th>Carreras</th><th>Victorias</th></tr></thead>
+        <tbody>
+          ${rows.map((r,i)=>`
+            <tr class="${r.id===pilotoData.id?'yo':''}">
+              <td><span class="pos-medal">${medalIcon(i+1)}</span></td>
+              <td style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">#${r.numero_piloto}</td>
+              <td style="font-weight:${r.id===pilotoData.id?'700':'400'};color:${r.id===pilotoData.id?'#fff':'var(--texto)'}">
+                ${esc(r.nombre_completo)}${r.id===pilotoData.id?' <span style="font-size:0.65rem;color:var(--rojo);font-weight:700">← TÚ</span>':''}
+              </td>
+              <td style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">${r.puntos_totales||0}</td>
+              <td>${r.carreras_corridas||0}</td>
+              <td>${r.victorias||0}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+  } catch(err){ document.getElementById('tabla-clas-wrap').innerHTML=`<div class="vacio">${esc(err.message)}</div>`; }
+}
+
+// ── Tabs navegación ──
+function cambiarTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ids=['estadisticas','carreras','clasificacion','perfil'];
+    t.classList.toggle('activo',ids[i]===id);
+  });
+  document.querySelectorAll('.seccion').forEach(s=>s.classList.remove('activa'));
+  document.getElementById('sec-'+id).classList.add('activa');
+  if(id==='carreras') renderCarreras(carrerasData);
+}
+
+// ── Guardar perfil ──
+async function guardarPerfil(){
+  const campos={
+    nombres:document.getElementById('pNombres').value,
+    apellido_paterno:document.getElementById('pApPat').value,
+    apellido_materno:document.getElementById('pApMat').value,
+    fecha_nacimiento:document.getElementById('pFechaNac').value||null,
+    curp:document.getElementById('pCurp').value.toUpperCase(),
+    telefono:document.getElementById('pTel').value,
+    tipo_sangre:document.getElementById('pSangre').value,
+    escolaridad:document.getElementById('pEscolaridad').value,
+    lugar_nacimiento:document.getElementById('pLugarNac').value,
+    nacionalidad:document.getElementById('pNacionalidad').value,
+    calle:document.getElementById('pCalle').value,
+    num_ext:document.getElementById('pNumExt').value,
+    num_int:document.getElementById('pNumInt').value,
+    colonia:document.getElementById('pColonia').value,
+    cp:document.getElementById('pCp').value,
+    ciudad:document.getElementById('pCiudad').value,
+    estado:document.getElementById('pEstado').value,
+    contacto_emergencia:document.getElementById('pContactoEmerg').value,
+    telefono_emergencia:document.getElementById('pTelEmerg').value,
+    parentesco_emergencia:document.getElementById('pParentesco').value,
+    alergias:document.getElementById('pAlergias').value,
+    condiciones_medicas:document.getElementById('pCondMed').value,
+    nombre_equipo:document.getElementById('pEquipo').value,
+    comision_nacional:document.getElementById('pComision').value,
+    anio_licencia_anterior:document.getElementById('pAnioLic').value||null,
+  };
+  try{
+    const updated=await apiFetch('/piloto/mi-perfil',{method:'PATCH',body:JSON.stringify(campos)});
+    pilotoData={...pilotoData,...updated};
+    localStorage.setItem(PILOTO_KEY,JSON.stringify(pilotoData));
+    actualizarCompletitud(pilotoData);
+    const a=document.getElementById('alertGuardado');
+    a.style.display='block';
+    setTimeout(()=>a.style.display='none',3000);
+  } catch(err){ mostrarToast(err.message,'error'); }
+}
+
+// ── Cambiar contraseña ──
+async function cambiarPass(){
+  const p1=document.getElementById('pNewPass').value;
+  const p2=document.getElementById('pNewPass2').value;
+  if(!p1) return mostrarToast('Escribe la nueva contraseña','error');
+  if(p1!==p2) return mostrarToast('Las contraseñas no coinciden','error');
+  if(p1.length<6) return mostrarToast('Mínimo 6 caracteres','error');
+  try{
+    await apiFetch('/piloto/mi-perfil',{method:'PATCH',body:JSON.stringify({nueva_password:p1})});
+    document.getElementById('pNewPass').value='';
+    document.getElementById('pNewPass2').value='';
+    const a=document.getElementById('alertPass');
+    a.style.display='block';
+    setTimeout(()=>a.style.display='none',3000);
+  } catch(err){ mostrarToast(err.message,'error'); }
+}
+
+// ── Arranque ──
+(function init(){
+  const token=localStorage.getItem(TOKEN_KEY);
+  const piloto=JSON.parse(localStorage.getItem(PILOTO_KEY)||'null');
+  if(token&&piloto){
+    // Refrescar datos del servidor
+    apiFetch('/piloto/mi-perfil').then(p=>{
+      localStorage.setItem(PILOTO_KEY,JSON.stringify(p));
+      abrirPortal(p);
+    }).catch(()=>{
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(PILOTO_KEY);
+    });
+  }
+})();
+</script>
+</body>
+</html>
