@@ -246,6 +246,10 @@
                   onclick="resetPasswordPortal(${p.id},'${(p.nombre_completo||'').replace(/'/g,'\\\'')}')" title="Restablecer contraseña del Portal del Piloto">
                   🔑 Portal
                 </button>
+                <button class="btn-secundario" style="padding:6px 10px;font-size:0.65rem;border-color:rgba(230,57,70,0.4);color:#f87171"
+                  onclick="eliminarPiloto(${p.id},'${(p.nombre_completo||'').replace(/'/g,'\\\'')}')" title="Desactivar piloto">
+                  Eliminar
+                </button>
               ` : ''}
             </div>
           </td>
@@ -365,6 +369,15 @@
 
     function irAInscribir(pilotoId) {
       window.location.href = `inscripciones.html?piloto_id=${pilotoId}`;
+    }
+
+    async function eliminarPiloto(id, nombre) {
+      if (!confirm(`¿Desactivar al piloto "${nombre}"?\n\nEl piloto quedará inactivo y no aparecerá en listas, pero sus inscripciones se conservan.`)) return;
+      try {
+        await apiFetch(`/pilotos/${id}`, { method: 'DELETE' });
+        mostrarToast(`${nombre} desactivado`);
+        cargarPilotos();
+      } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
     async function resetPasswordPortal(id, nombre) {
