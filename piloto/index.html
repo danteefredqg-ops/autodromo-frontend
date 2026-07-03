@@ -350,9 +350,9 @@
       <div class="perfil-section">
         <div class="perfil-section-title">Datos Personales</div>
         <div class="grid-perfil">
-          <div class="campo-p"><label>Nombre(s)</label><input id="pNombres" type="text"/></div>
-          <div class="campo-p"><label>Apellido Paterno</label><input id="pApPat" type="text"/></div>
-          <div class="campo-p"><label>Apellido Materno</label><input id="pApMat" type="text"/></div>
+          <div class="campo-p"><label>Nombre(s) <span style="font-size:0.6rem;color:#555;font-weight:400">(solo admin)</span></label><input id="pNombres" type="text" readonly style="opacity:0.5;cursor:not-allowed"/></div>
+          <div class="campo-p"><label>Apellido Paterno <span style="font-size:0.6rem;color:#555;font-weight:400">(solo admin)</span></label><input id="pApPat" type="text" readonly style="opacity:0.5;cursor:not-allowed"/></div>
+          <div class="campo-p"><label>Apellido Materno <span style="font-size:0.6rem;color:#555;font-weight:400">(solo admin)</span></label><input id="pApMat" type="text" readonly style="opacity:0.5;cursor:not-allowed"/></div>
           <div class="campo-p"><label>Fecha de Nacimiento</label><input id="pFechaNac" type="date"/></div>
           <div class="campo-p"><label>CURP</label><input id="pCurp" type="text" maxlength="20" style="text-transform:uppercase"/></div>
           <div class="campo-p"><label>Teléfono</label><input id="pTel" type="tel"/></div>
@@ -642,7 +642,9 @@ async function cargarDashboard(){
       : '<div class="vacio" style="padding:20px">Sin carreras registradas aún</div>';
 
     renderCarreras(carreras);
-  } catch{}
+  } catch(err){
+    document.getElementById('ultimas-carreras').innerHTML='<div class="vacio" style="padding:20px;color:#f87171">Error al cargar datos: '+esc(err.message)+'</div>';
+  }
 }
 
 function posClass(pos){
@@ -753,9 +755,6 @@ function cambiarTab(id){
 // ── Guardar perfil ──
 async function guardarPerfil(){
   const campos={
-    nombres:document.getElementById('pNombres').value,
-    apellido_paterno:document.getElementById('pApPat').value,
-    apellido_materno:document.getElementById('pApMat').value,
     fecha_nacimiento:document.getElementById('pFechaNac').value||null,
     curp:document.getElementById('pCurp').value.toUpperCase(),
     telefono:document.getElementById('pTel').value,

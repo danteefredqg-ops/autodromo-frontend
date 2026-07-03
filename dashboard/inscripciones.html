@@ -325,12 +325,14 @@
         return;
       }
       grid.innerHTML = (esFallback ? `<div style="grid-column:span 3;font-size:0.72rem;color:#fbbf24;margin-bottom:4px">⚠ Campeonato sin categorías asignadas — mostrando todas</div>` : '') +
-        cats.map(c => `
-          <button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${c.costo ?? ''}"
-            onclick="seleccionarCategoria(${c.id},'${c.color}',${c.costo ?? 'null'},this)">
+        cats.map(c => {
+          const precio = c.costo ?? c.costo_default ?? null;
+          return `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${precio ?? ''}"
+            onclick="seleccionarCategoria(${c.id},'${c.color}',${precio ?? 'null'},this)">
             <div>${esc(c.nombre)}</div>
-            ${c.costo ? `<div style="font-size:0.65rem;font-weight:400;opacity:0.7;margin-top:2px">$${Number(c.costo).toLocaleString('es-MX')}</div>` : ''}
-          </button>`).join('');
+            ${precio ? `<div style="font-size:0.65rem;font-weight:400;opacity:0.7;margin-top:2px">$${Number(precio).toLocaleString('es-MX')}</div>` : ''}
+          </button>`;
+        }).join('');
     }
 
     async function cargarInscripciones() {
