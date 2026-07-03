@@ -241,6 +241,12 @@
                 </button>
                 <button class="btn-secundario" style="padding:6px 12px;font-size:0.7rem" onclick="editarPiloto(${p.id})">Editar</button>
               ` : ''}
+              ${usuario.rol === 'admin' ? `
+                <button class="btn-secundario" style="padding:6px 10px;font-size:0.65rem;border-color:rgba(59,130,246,0.4);color:#60a5fa"
+                  onclick="resetPasswordPortal(${p.id},'${(p.nombre_completo||'').replace(/'/g,'\\\'')}')" title="Restablecer contraseña del Portal del Piloto">
+                  🔑 Portal
+                </button>
+              ` : ''}
             </div>
           </td>
         </tr>`;
@@ -359,6 +365,16 @@
 
     function irAInscribir(pilotoId) {
       window.location.href = `inscripciones.html?piloto_id=${pilotoId}`;
+    }
+
+    async function resetPasswordPortal(id, nombre) {
+      const nueva = prompt(`Restablecer contraseña del Portal para:\n${nombre}\n\nEscribe la nueva contraseña (mínimo 6 caracteres):`);
+      if (!nueva) return;
+      if (nueva.length < 6) return mostrarToast('La contraseña debe tener al menos 6 caracteres', 'error');
+      try {
+        const res = await apiFetch(`/pilotos/${id}/reset-password`, { method: 'PATCH', body: JSON.stringify({ password: nueva }) });
+        mostrarToast(res.mensaje || 'Contraseña restablecida');
+      } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
     // Cerrar modal con Escape
