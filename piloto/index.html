@@ -844,15 +844,18 @@ function medalIcon(pos){
 
 function tarjetaCarrera(c, mini=false){
   const pos=c.resultado_posicion;
+  const etapaTxt = c.etapa_numero
+    ? `Etapa ${c.etapa_numero}${c.etapa_nombre ? ' — '+esc(c.etapa_nombre) : ''}`
+    : esc(c.campeonato_nombre||'');
   return `<div class="carrera-card">
     <div class="carrera-pos ${posClass(pos)}">${medalIcon(pos)}</div>
     <div class="carrera-info">
       <div class="carrera-camp">${esc(c.campeonato_nombre)}</div>
-      <div class="carrera-etapa">Etapa ${c.etapa_numero} — ${esc(c.etapa_nombre)}</div>
+      <div class="carrera-etapa">${etapaTxt}</div>
       <div class="carrera-meta">
-        <span class="carrera-fecha">${formatFecha(c.etapa_fecha)}</span>
+        ${c.etapa_fecha ? `<span class="carrera-fecha">${formatFecha(c.etapa_fecha)}</span>` : ''}
         <span class="cat-chip" style="background:${c.categoria_color}22;border:1px solid ${c.categoria_color}55;color:${c.categoria_color}">${esc(c.categoria_nombre)}</span>
-        <span style="font-size:0.72rem;color:var(--sub)">${esc(c.vehiculo)}</span>
+        ${c.vehiculo ? `<span style="font-size:0.72rem;color:var(--sub)">${esc(c.vehiculo)}</span>` : ''}
       </div>
     </div>
     ${pos||c.resultado_puntos ? `<div class="carrera-right">
@@ -993,10 +996,25 @@ let inscCatId = null;
 
 function poblarCampeonatosInscripcion(){
   const sel = document.getElementById('inscCamp');
-  if(!campeonatosData.length) return;
-  sel.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
-    campeonatosData.map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
-  inscCampDropPoblado = true;
+  if(campeonatosData.length){
+    sel.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
+      campeonatosData.map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+    inscCampDropPoblado = true;
+  } else {
+    sel.innerHTML = '<option value="">Cargando...</option>';
+    apiFetch('/campeonatos').then(camps=>{
+      campeonatosData = camps;
+      if(camps.length){
+        sel.innerHTML = '<option value="">Selecciona un campeonato...</option>' +
+          camps.map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+        inscCampDropPoblado = true;
+      } else {
+        sel.innerHTML = '<option value="">Sin campeonatos disponibles</option>';
+      }
+    }).catch(()=>{
+      sel.innerHTML = '<option value="">Error al cargar — recarga la página</option>';
+    });
+  }
 }
 
 async function onInscCampChange(){
