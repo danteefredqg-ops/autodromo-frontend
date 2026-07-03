@@ -38,10 +38,16 @@
         <h1 class="page-titulo">Inscripciones</h1>
         <p class="page-sub" id="contadorInsc">Selecciona una etapa para ver inscripciones</p>
       </div>
-      <button class="btn-primario" id="btnNuevaInsc" onclick="abrirModalInscripcion()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Inscribir Piloto
-      </button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-secundario" onclick="exportarCSV()" title="Exportar inscripciones actuales a CSV">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+        <button class="btn-primario" id="btnNuevaInsc" onclick="abrirModalInscripcion()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Inscribir Piloto
+        </button>
+      </div>
     </div>
 
     <!-- Filtros en cascada: campeonato → etapa -->
@@ -60,6 +66,10 @@
         <option>Pendiente</option><option>Pagado</option><option>Descalificado</option>
       </select>
       <input class="input" type="text" id="inputBuscar" placeholder="Buscar nombre o número..." oninput="filtrarTabla()" />
+      <button class="btn-secundario" id="btnPagaronHoy" onclick="togglePagaronHoy()" title="Mostrar solo quienes pagaron hoy" style="white-space:nowrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Hoy
+      </button>
     </div>
 
     <div class="card tabla-card">
@@ -360,14 +370,45 @@
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
+    let filtroPagaronHoy = false;
+
+    function togglePagaronHoy() {
+      filtroPagaronHoy = !filtroPagaronHoy;
+      const btn = document.getElementById('btnPagaronHoy');
+      btn.style.borderColor = filtroPagaronHoy ? 'rgba(74,222,128,0.5)' : '';
+      btn.style.color = filtroPagaronHoy ? '#4ade80' : '';
+      filtrarTabla();
+    }
+
     function filtrarTabla() {
       const buscar = document.getElementById('inputBuscar').value.toLowerCase();
-      const filtrados = inscripcionesActuales.filter(i =>
+      let filtrados = inscripcionesActuales.filter(i =>
         !buscar ||
         i.piloto_nombre.toLowerCase().includes(buscar) ||
         String(i.numero_piloto).includes(buscar)
       );
+      if (filtroPagaronHoy) {
+        const hoy = new Date().toISOString().slice(0, 10);
+        filtrados = filtrados.filter(i =>
+          i.estatus === 'Pagado' && i.pagado_en && String(i.pagado_en).slice(0, 10) === hoy
+        );
+      }
       renderizarTabla(filtrados);
+    }
+
+    function exportarCSV() {
+      if (!inscripcionesActuales.length) return mostrarToast('Sin inscripciones para exportar', 'advertencia');
+      const cols   = ['numero_piloto','piloto_nombre','tipo_sangre','categoria_nombre','etapa_nombre','vehiculo','modelo_vehiculo','anio_vehiculo','color_vehiculo','apodo_vehiculo','estatus','metodo_pago','monto_pago','pagado_en'];
+      const heads  = ['#','Piloto','Sangre','Categoría','Etapa','Vehículo','Modelo','Año','Color','Apodo','Estatus','Método pago','Monto','Fecha pago'];
+      const q = v => { if(v==null) return ''; const s=String(v); return (s.includes(',')||s.includes('"')||s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s; };
+      const rows = [heads.join(','), ...inscripcionesActuales.map(i => cols.map(c => q(i[c])).join(','))];
+      const blob = new Blob(['﻿' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = `inscripciones_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function renderizarTabla(lista) {

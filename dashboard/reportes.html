@@ -83,6 +83,10 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Corte de Caja
           </button>
+          <button class="btn-secundario" style="border-color:rgba(168,85,247,0.5);color:#a855f7" onclick="cargarClasificacionAdmin()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18,15 12,9 6,15"/></svg>
+            Clasificación
+          </button>
         </div>
       </div>
     </div>
@@ -338,6 +342,51 @@
             </div>
           </div>
         `;
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    async function cargarClasificacionAdmin() {
+      const campId = document.getElementById('selCampeonato').value;
+      const catId  = document.getElementById('selCategoria').value;
+      if (!campId || campId === 'todos') return mostrarToast('Selecciona un campeonato específico', 'advertencia');
+      if (!catId) return mostrarToast('Selecciona una categoría', 'advertencia');
+      try {
+        const rows = await apiFetch(`/reportes/clasificacion?campeonato_id=${campId}&categoria_id=${catId}`);
+        const selCamp = document.getElementById('selCampeonato');
+        const selCat  = document.getElementById('selCategoria');
+        const campNombre = selCamp.options[selCamp.selectedIndex]?.text || '';
+        const catNombre  = selCat.options[selCat.selectedIndex]?.text  || '';
+        const div = document.getElementById('contenidoReporte');
+        if (!rows.length) {
+          div.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555">Sin resultados registrados en esta categoría</div>';
+          return;
+        }
+        const colPos = i => i === 0 ? '#c9a84c' : i === 1 ? '#9ca3af' : i === 2 ? '#cd7f32' : '#555';
+        const medalla = i => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `P${i+1}`;
+        div.innerHTML = `
+          <div style="margin-bottom:16px">
+            <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em">Clasificación</h2>
+            <div style="font-size:0.8rem;color:#555;margin-top:2px">${esc(campNombre)} — ${esc(catNombre)}</div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="tabla-wrap">
+              <table class="tabla">
+                <thead><tr><th>Pos</th><th>#</th><th>Piloto</th><th>Pts</th><th>Carreras</th><th>Victorias</th><th>Mejor</th></tr></thead>
+                <tbody>
+                  ${rows.map((r, i) => `
+                    <tr>
+                      <td style="font-family:'Bebas Neue';font-size:1.3rem;color:${colPos(i)}">${medalla(i)}</td>
+                      <td style="font-family:'Bebas Neue';font-size:1.2rem;color:#e63946">${r.numero_piloto || '—'}</td>
+                      <td><strong>${esc(r.nombre_completo)}</strong></td>
+                      <td style="font-family:'Bebas Neue';font-size:1.3rem;color:#e63946">${r.puntos_totales || 0}</td>
+                      <td>${r.carreras_corridas || 0}</td>
+                      <td>${r.victorias || 0}</td>
+                      <td style="color:#555">${r.mejor_posicion ? 'P' + r.mejor_posicion : '—'}</td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>`;
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 

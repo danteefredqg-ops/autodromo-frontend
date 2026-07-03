@@ -4,279 +4,396 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Portal del Piloto — Autódromo Monterrey</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{
-      --rojo:#e63946;--negro:#050505;--card:#111;--borde:#1e1e1e;
-      --texto:#e5e5e5;--sub:#888;--verde:#4ade80;--amarillo:#fbbf24;
+      --rojo:#e63946;--negro:#060606;--card:#0f0f0f;--card2:#141414;
+      --borde:rgba(255,255,255,0.07);--borde2:rgba(255,255,255,0.04);
+      --texto:#ebebeb;--sub:#666;--sub2:#444;--verde:#22c55e;
+      --oro:#c9a84c;--plata:#8a919e;--bronce:#a05c2e;
     }
-    body{background:var(--negro);color:var(--texto);font-family:'Barlow',sans-serif;min-height:100vh}
+    html{-webkit-font-smoothing:antialiased}
+    body{background:var(--negro);color:var(--texto);font-family:'Inter',system-ui,sans-serif;min-height:100vh}
 
     /* ── PANTALLA LOGIN ── */
     #pantalla-login{
       display:flex;flex-direction:column;align-items:center;justify-content:center;
-      min-height:100vh;padding:20px;
+      min-height:100vh;padding:40px 20px;position:relative;overflow:hidden;
     }
-    .login-card{
-      background:var(--card);border:1px solid var(--borde);border-radius:16px;
-      padding:40px 36px;width:100%;max-width:400px;
+    #pantalla-login::before{
+      content:'AMT';font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(140px,28vw,320px);color:rgba(255,255,255,0.018);
+      position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);
+      pointer-events:none;letter-spacing:0.05em;line-height:1;
     }
-    .login-logo{
-      font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.1em;
-      color:#fff;margin-bottom:4px;
-      display:flex;align-items:center;gap:10px;
+    .login-wrap{width:100%;max-width:380px;position:relative;z-index:1}
+    .login-marca{margin-bottom:36px}
+    .login-marca-tag{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;
+      color:var(--rojo);margin-bottom:10px;
     }
-    .login-logo span{color:var(--rojo)}
-    .login-sub{font-size:0.8rem;color:var(--sub);margin-bottom:28px}
-    .tabs-login{display:flex;gap:0;margin-bottom:24px;border:1px solid var(--borde);border-radius:8px;overflow:hidden}
+    .login-marca-tag svg{flex-shrink:0}
+    .login-titulo{
+      font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,6vw,3rem);
+      letter-spacing:0.04em;line-height:1;color:var(--texto);
+    }
+    .login-subtitulo{font-size:0.7rem;color:var(--sub);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px}
+
+    /* Tabs login */
+    .tabs-login{display:flex;border-bottom:1px solid var(--borde);margin-bottom:28px}
     .tab-btn{
-      flex:1;padding:10px;font-family:'Barlow',sans-serif;font-size:0.8rem;
-      font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
-      background:transparent;border:none;color:var(--sub);transition:all 0.18s;
+      flex:1;padding:10px 0;background:none;border:none;
+      font-family:'Inter',sans-serif;font-size:0.72rem;font-weight:600;
+      letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);
+      cursor:pointer;position:relative;transition:color 0.15s;
     }
-    .tab-btn.activo{background:var(--rojo);color:#fff}
-    .campo-login{margin-bottom:14px}
-    .campo-login label{display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);margin-bottom:5px}
+    .tab-btn.activo{color:var(--texto)}
+    .tab-btn.activo::after{
+      content:'';position:absolute;bottom:-1px;left:0;right:0;
+      height:1px;background:var(--rojo);
+    }
+
+    .campo-login{margin-bottom:16px}
+    .campo-login label{
+      display:block;font-size:0.65rem;font-weight:700;
+      letter-spacing:0.14em;text-transform:uppercase;color:var(--sub);margin-bottom:6px;
+    }
     .input-login{
-      width:100%;padding:11px 14px;background:#1a1a1a;border:1px solid var(--borde);
-      border-radius:8px;color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.9rem;
-      transition:border-color 0.18s;
+      width:100%;padding:11px 14px;background:#111;
+      border:1px solid rgba(255,255,255,0.08);border-radius:3px;
+      color:var(--texto);font-family:'Inter',sans-serif;font-size:0.88rem;
+      transition:border-color 0.15s;outline:none;
     }
-    .input-login:focus{outline:none;border-color:rgba(230,57,70,0.5)}
+    .input-login:focus{border-color:rgba(255,255,255,0.2)}
+    .input-login::placeholder{color:var(--sub2)}
+
     .btn-rojo{
-      width:100%;padding:12px;background:var(--rojo);border:none;border-radius:8px;
-      color:#fff;font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:0.1em;
-      cursor:pointer;transition:opacity 0.18s;margin-top:4px;
+      width:100%;padding:13px;background:var(--rojo);border:none;border-radius:3px;
+      color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.15em;
+      cursor:pointer;transition:background 0.15s;margin-top:4px;
     }
-    .btn-rojo:hover{opacity:0.88}
-    .btn-rojo:disabled{opacity:0.5;cursor:not-allowed}
+    .btn-rojo:hover{background:#f03030}
+    .btn-rojo:disabled{opacity:0.45;cursor:not-allowed}
+
     .err-login{
-      background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.3);
-      color:#f87171;padding:10px 14px;border-radius:8px;font-size:0.82rem;
-      margin-bottom:14px;display:none;
+      background:rgba(230,57,70,0.08);border-left:2px solid var(--rojo);
+      color:#f87171;padding:10px 14px;border-radius:2px;
+      font-size:0.8rem;margin-bottom:16px;display:none;
     }
-    .hint-login{font-size:0.75rem;color:var(--sub);text-align:center;margin-top:16px;line-height:1.5}
+    .hint-login{font-size:0.73rem;color:var(--sub);text-align:center;margin-top:18px;line-height:1.6}
+    .login-footer{
+      margin-top:52px;padding-top:20px;border-top:1px solid var(--borde2);
+      text-align:center;font-size:0.6rem;color:#2a2a2a;letter-spacing:0.12em;text-transform:uppercase;
+    }
 
     /* ── PORTAL ── */
     #pantalla-portal{display:none;min-height:100vh;flex-direction:column}
+
+    /* Topbar */
     .topbar{
-      background:#0a0a0a;border-bottom:1px solid var(--borde);
-      padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;
-      position:sticky;top:0;z-index:100;
+      height:52px;border-bottom:1px solid var(--borde);padding:0 24px;
+      display:flex;align-items:center;gap:16px;
+      position:sticky;top:0;background:rgba(6,6,6,0.96);
+      backdrop-filter:blur(10px);z-index:100;
     }
-    .topbar-marca{font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:0.1em;color:#fff}
-    .topbar-marca span{color:var(--rojo)}
-    .topbar-right{display:flex;align-items:center;gap:12px}
+    .topbar-marca{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.22em;color:var(--rojo)}
+    .topbar-sep{width:1px;height:18px;background:var(--borde)}
     .piloto-chip{
-      display:flex;align-items:center;gap:8px;
-      background:rgba(230,57,70,0.1);border:1px solid rgba(230,57,70,0.25);
-      border-radius:9999px;padding:4px 12px 4px 6px;
+      display:flex;align-items:center;gap:8px;flex:1;min-width:0;
     }
     .piloto-avatar{
-      width:28px;height:28px;border-radius:50%;background:var(--rojo);
+      width:26px;height:26px;border-radius:50%;background:var(--rojo);
       display:flex;align-items:center;justify-content:center;
-      font-family:'Bebas Neue';font-size:0.85rem;color:#fff;flex-shrink:0;
+      font-family:'Bebas Neue',sans-serif;font-size:0.8rem;color:#fff;flex-shrink:0;
     }
-    .piloto-nombre-chip{font-size:0.78rem;font-weight:700;color:#fff;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .piloto-nombre-chip{
+      font-size:0.8rem;font-weight:500;color:var(--texto);
+      max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
     .btn-logout{
-      padding:6px 12px;background:transparent;border:1px solid var(--borde);
-      border-radius:8px;color:var(--sub);font-family:'Barlow',sans-serif;font-size:0.75rem;
-      font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
-      transition:all 0.18s;
+      padding:5px 12px;background:transparent;border:1px solid rgba(255,255,255,0.1);
+      border-radius:3px;color:var(--sub);font-family:'Inter',sans-serif;font-size:0.7rem;
+      font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;
+      transition:all 0.15s;flex-shrink:0;
     }
-    .btn-logout:hover{border-color:var(--rojo);color:var(--rojo)}
+    .btn-logout:hover{border-color:rgba(255,255,255,0.2);color:var(--texto)}
 
-    .portal-body{flex:1;max-width:800px;width:100%;margin:0 auto;padding:24px 16px}
+    .portal-body{flex:1;max-width:820px;width:100%;margin:0 auto;padding:0 20px 40px}
 
-    /* ── HERO DEL PILOTO ── */
+    /* ── HERO ── */
     .hero{
-      background:linear-gradient(135deg,#0f0f0f 0%,#1a0a0b 100%);
-      border:1px solid var(--borde);border-radius:12px;padding:24px;
-      margin-bottom:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+      display:flex;justify-content:space-between;align-items:flex-end;
+      padding:32px 0 24px;border-bottom:1px solid var(--borde);
+      margin-bottom:0;gap:16px;
     }
-    .hero-num{
-      font-family:'Bebas Neue';font-size:4rem;color:var(--rojo);line-height:1;flex-shrink:0;
-      text-shadow:0 0 40px rgba(230,57,70,0.3);
-    }
-    .hero-num-label{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--sub);margin-bottom:-4px}
     .hero-info{flex:1;min-width:0}
-    .hero-nombre{font-family:'Bebas Neue';font-size:2rem;letter-spacing:0.04em;line-height:1;margin-bottom:6px;word-break:break-word}
-    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .hero-num-label{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--sub);margin-bottom:6px}
+    .hero-num{
+      font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,14vw,9rem);
+      color:rgba(255,255,255,0.05);line-height:1;flex-shrink:0;
+      letter-spacing:-0.02em;user-select:none;
+    }
+    .hero-nombre{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(1.6rem,4vw,2.4rem);
+      letter-spacing:0.04em;line-height:1.05;margin-bottom:10px;
+    }
+    .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
     .hero-badge{
-      padding:3px 10px;border-radius:9999px;font-size:0.68rem;font-weight:700;
+      padding:3px 10px;border-radius:2px;font-size:0.65rem;font-weight:600;
       letter-spacing:0.1em;text-transform:uppercase;border:1px solid;
     }
 
-    /* ── BARRA DE COMPLETITUD ── */
-    .completitud{margin-bottom:24px}
+    /* ── COMPLETITUD ── */
+    .completitud{padding:16px 0;border-bottom:1px solid var(--borde);margin-bottom:0}
     .completitud-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .completitud-label{font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub)}
-    .completitud-pct{font-family:'Bebas Neue';font-size:1.2rem;color:var(--rojo)}
-    .barra-fondo{height:6px;background:var(--borde);border-radius:9999px;overflow:hidden}
-    .barra-fill{height:100%;background:linear-gradient(90deg,var(--rojo),#ff6b6b);border-radius:9999px;transition:width 0.6s ease}
+    .completitud-label{font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--sub)}
+    .completitud-pct{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--rojo)}
+    .barra-fondo{height:2px;background:rgba(255,255,255,0.06);border-radius:9999px;overflow:hidden}
+    .barra-fill{height:100%;background:var(--rojo);border-radius:9999px;transition:width 0.6s ease}
+
+    /* ── STATS (tira horizontal) ── */
+    .stats-grid{
+      display:flex;border-bottom:1px solid var(--borde);
+      overflow-x:auto;margin-bottom:0;
+    }
+    .stats-grid::-webkit-scrollbar{display:none}
+    .stat-card{
+      flex:1;min-width:90px;padding:18px 16px;text-align:center;
+      border-right:1px solid var(--borde2);
+    }
+    .stat-card:last-child{border-right:none}
+    .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--rojo);line-height:1}
+    .stat-lbl{font-size:0.57rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--sub);margin-top:4px}
 
     /* ── TABS ── */
-    .tabs{display:flex;gap:0;border-bottom:1px solid var(--borde);margin-bottom:24px;overflow-x:auto}
-    .tab{
-      padding:12px 20px;font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.1em;
-      cursor:pointer;border-bottom:2px solid transparent;color:var(--sub);
-      white-space:nowrap;transition:all 0.18s;background:transparent;border-top:none;border-left:none;border-right:none;
+    .tabs{
+      display:flex;border-bottom:1px solid var(--borde);
+      margin-bottom:28px;overflow-x:auto;
     }
-    .tab.activo{color:#fff;border-bottom-color:var(--rojo)}
-    .tab:hover:not(.activo){color:#ccc}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{
+      padding:14px 0;margin-right:26px;background:none;border:none;
+      font-family:'Inter',sans-serif;font-size:0.7rem;font-weight:600;
+      letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);
+      cursor:pointer;white-space:nowrap;position:relative;transition:color 0.15s;
+    }
+    .tab:last-child{margin-right:0}
+    .tab.activo{color:var(--texto)}
+    .tab.activo::after{
+      content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--rojo);
+    }
+    .tab:hover:not(.activo){color:#aaa}
 
     /* ── SECCIÓN ── */
-    .seccion{display:none}
+    .seccion{display:none;padding-top:4px}
     .seccion.activa{display:block}
 
-    /* ── CARDS STATS ── */
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
-    .stat-card{background:var(--card);border:1px solid var(--borde);border-radius:10px;padding:16px;text-align:center}
-    .stat-num{font-family:'Bebas Neue';font-size:2.2rem;color:var(--rojo);line-height:1}
-    .stat-lbl{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);margin-top:4px}
-
-    /* ── HISTORIAL ── */
+    /* ── CARRERA CARDS ── */
     .carrera-card{
-      background:var(--card);border:1px solid var(--borde);border-radius:10px;
-      padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+      display:flex;align-items:center;gap:14px;
+      padding:14px 0;border-bottom:1px solid var(--borde2);
     }
+    .carrera-card:last-child{border-bottom:none}
     .carrera-pos{
-      width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;
-      font-family:'Bebas Neue';font-size:1.5rem;flex-shrink:0;
+      width:42px;height:42px;border-radius:3px;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Bebas Neue',sans-serif;font-size:1.3rem;flex-shrink:0;
     }
-    .pos-1{background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);color:#fbbf24}
-    .pos-2{background:rgba(156,163,175,0.15);border:1px solid rgba(156,163,175,0.4);color:#d1d5db}
-    .pos-3{background:rgba(180,120,60,0.15);border:1px solid rgba(180,120,60,0.4);color:#cd7f32}
-    .pos-otro{background:rgba(255,255,255,0.05);border:1px solid var(--borde);color:var(--sub)}
-    .pos-sin{background:rgba(255,255,255,0.03);border:1px solid var(--borde);color:#444}
-    .carrera-info{flex:1;min-width:0}
-    .carrera-camp{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--rojo);margin-bottom:2px}
-    .carrera-etapa{font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:0.04em;line-height:1.1}
-    .carrera-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;align-items:center}
-    .carrera-fecha{font-size:0.75rem;color:var(--sub)}
-    .cat-chip{padding:2px 9px;border-radius:9999px;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
-    .carrera-right{text-align:right;flex-shrink:0}
-    .puntos-badge{font-family:'Bebas Neue';font-size:1.3rem;color:var(--rojo)}
-    .puntos-lbl{font-size:0.65rem;color:var(--sub);text-transform:uppercase;letter-spacing:0.08em}
+    .pos-1{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);color:var(--oro)}
+    .pos-2{background:rgba(138,145,158,0.1);border:1px solid rgba(138,145,158,0.3);color:var(--plata)}
+    .pos-3{background:rgba(160,92,46,0.1);border:1px solid rgba(160,92,46,0.3);color:#cd7f32}
+    .pos-otro{background:rgba(255,255,255,0.03);border:1px solid var(--borde);color:var(--sub)}
+    .pos-sin{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--sub2)}
 
-    /* ── PERFIL FORM ── */
-    .perfil-section{background:var(--card);border:1px solid var(--borde);border-radius:10px;padding:20px;margin-bottom:16px}
-    .perfil-section-title{font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.08em;color:#fff;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--borde)}
-    .grid-perfil{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .grid-perfil.uno{grid-template-columns:1fr}
-    @media(max-width:500px){.grid-perfil{grid-template-columns:1fr}}
-    .campo-p label{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:4px}
-    .campo-p input,.campo-p select,.campo-p textarea{
-      width:100%;padding:9px 12px;background:#1a1a1a;border:1px solid var(--borde);
-      border-radius:8px;color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.88rem;
-      transition:border-color 0.18s;
+    .carrera-info{flex:1;min-width:0}
+    .carrera-camp{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--rojo);margin-bottom:2px}
+    .carrera-etapa{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:0.04em;line-height:1.1}
+    .carrera-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;align-items:center}
+    .carrera-fecha{font-size:0.7rem;color:var(--sub)}
+    .cat-chip{padding:2px 8px;border-radius:2px;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+    .carrera-right{text-align:right;flex-shrink:0}
+    .puntos-badge{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--rojo);line-height:1}
+    .puntos-lbl{font-size:0.57rem;color:var(--sub);text-transform:uppercase;letter-spacing:0.1em}
+
+    /* ── ULTIMAS CARRERAS (estadísticas) ── */
+    #resumenCarreras{
+      border:1px solid var(--borde);border-radius:3px;padding:20px;
     }
-    .campo-p input:focus,.campo-p select:focus,.campo-p textarea:focus{outline:none;border-color:rgba(230,57,70,0.5)}
-    .campo-p select option{background:#1a1a1a}
-    .campo-p input.faltante{border-color:rgba(245,158,11,0.5);background:rgba(245,158,11,0.04)}
-    .btn-guardar-perfil{
-      padding:11px 28px;background:var(--rojo);border:none;border-radius:8px;
-      color:#fff;font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.1em;
-      cursor:pointer;transition:opacity 0.18s;margin-top:8px;
+    .ultimas-header{
+      font-size:0.65rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--sub);margin-bottom:16px;
+      display:flex;justify-content:space-between;align-items:center;
     }
-    .btn-guardar-perfil:hover{opacity:0.88}
-    .alert-guardado{
-      background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:var(--verde);
-      padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-top:10px;display:none;
+    .link-ver-todo{
+      background:none;border:none;color:var(--rojo);font-size:0.7rem;
+      font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.04em;
     }
 
     /* ── CLASIFICACIÓN ── */
     .selects-clas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
     .select-p{
-      padding:9px 12px;background:#1a1a1a;border:1px solid var(--borde);border-radius:8px;
-      color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.85rem;flex:1;min-width:160px;
+      flex:1;min-width:160px;padding:9px 12px;background:#111;
+      border:1px solid rgba(255,255,255,0.08);border-radius:3px;
+      color:var(--texto);font-family:'Inter',sans-serif;font-size:0.84rem;
+      outline:none;appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;
     }
-    .select-p option{background:#1a1a1a}
-    .tabla-clas{width:100%;border-collapse:collapse;font-size:0.85rem}
-    .tabla-clas th{padding:10px 12px;text-align:left;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);border-bottom:1px solid var(--borde)}
-    .tabla-clas td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
-    .tabla-clas tr.yo td{background:rgba(230,57,70,0.06)}
-    .pos-medal{font-family:'Bebas Neue';font-size:1.1rem}
-    .vacio{text-align:center;padding:40px;color:var(--sub);font-size:0.85rem}
+    .select-p:focus{border-color:rgba(255,255,255,0.18)}
+    .select-p option{background:#111}
 
-    /* ── Contraseña ── */
+    .tabla-clas{width:100%;border-collapse:collapse;font-size:0.84rem}
+    .tabla-clas th{
+      padding:9px 12px;text-align:left;font-size:0.62rem;font-weight:700;
+      letter-spacing:0.12em;text-transform:uppercase;color:var(--sub);
+      border-bottom:1px solid var(--borde);
+    }
+    .tabla-clas td{padding:11px 12px;border-bottom:1px solid var(--borde2)}
+    .tabla-clas tr:last-child td{border-bottom:none}
+    .tabla-clas tr.yo td{background:rgba(230,57,70,0.05)}
+    .pos-medal{font-family:'Bebas Neue',sans-serif;font-size:1.1rem}
+    .vacio{text-align:center;padding:40px;color:var(--sub);font-size:0.82rem}
+
+    /* ── FORM PERFIL ── */
+    .perfil-section{
+      border:1px solid var(--borde);border-radius:3px;
+      padding:20px;margin-bottom:14px;
+    }
+    .perfil-section-title{
+      font-size:0.62rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+      color:var(--rojo);margin-bottom:16px;padding-bottom:10px;
+      border-bottom:1px solid var(--borde);
+    }
+    .grid-perfil{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .grid-perfil.uno{grid-template-columns:1fr}
+    @media(max-width:520px){.grid-perfil{grid-template-columns:1fr}}
+    .campo-p label{
+      font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
+      color:var(--sub);display:block;margin-bottom:5px;
+    }
+    .campo-p input,.campo-p select,.campo-p textarea{
+      width:100%;padding:9px 12px;background:#111;
+      border:1px solid rgba(255,255,255,0.07);border-radius:3px;
+      color:var(--texto);font-family:'Inter',sans-serif;font-size:0.86rem;
+      transition:border-color 0.15s;outline:none;
+    }
+    .campo-p input:focus,.campo-p select:focus,.campo-p textarea:focus{
+      border-color:rgba(255,255,255,0.2);
+    }
+    .campo-p select option{background:#111}
+    .campo-p input::placeholder{color:var(--sub2)}
+    .campo-p input.faltante{border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.03)}
+
+    .btn-guardar-perfil{
+      padding:11px 24px;background:var(--rojo);border:none;border-radius:3px;
+      color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:0.12em;
+      cursor:pointer;transition:background 0.15s;margin-top:8px;
+    }
+    .btn-guardar-perfil:hover{background:#f03030}
+
+    .alert-guardado{
+      background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);
+      color:var(--verde);padding:10px 14px;border-radius:3px;
+      font-size:0.8rem;margin-top:10px;display:none;
+    }
     .pass-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:500px){.pass-grid{grid-template-columns:1fr}}
+    @media(max-width:520px){.pass-grid{grid-template-columns:1fr}}
 
     /* ── INSCRIBIRME ── */
     .insc-cat-grid{display:flex;flex-wrap:wrap;gap:8px}
     .insc-cat-btn{
-      display:flex;align-items:center;gap:8px;padding:8px 14px;
-      background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;
-      color:var(--texto);font-family:'Barlow',sans-serif;font-size:0.82rem;font-weight:600;
-      cursor:pointer;transition:all 0.18s;text-align:left;
+      display:flex;align-items:center;gap:8px;padding:9px 14px;
+      background:#111;border:1px solid rgba(255,255,255,0.07);border-radius:3px;
+      color:var(--texto);font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:500;
+      cursor:pointer;transition:all 0.15s;text-align:left;
     }
-    .insc-cat-btn:hover{border-color:rgba(255,255,255,0.25);background:#222}
-    .insc-cat-btn.seleccionada{
-      background:rgba(230,57,70,0.12);border-color:var(--rojo) !important;color:#fff;
-    }
-    .insc-cat-color{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .insc-cat-btn:hover{border-color:rgba(255,255,255,0.18);background:#141414}
+    .insc-cat-btn.seleccionada{background:rgba(230,57,70,0.1);border-color:var(--rojo) !important;color:#fff}
+    .insc-cat-color{width:8px;height:8px;border-radius:50%;flex-shrink:0}
     .insc-cat-nombre{flex:1}
-    .insc-cat-precio{font-size:0.72rem;color:#888;white-space:nowrap}
+    .insc-cat-precio{font-size:0.7rem;color:var(--sub);white-space:nowrap}
     .insc-cat-btn.seleccionada .insc-cat-precio{color:#f87171}
-    .insc-exito{text-align:center;padding:40px 20px;background:var(--card);border:1px solid rgba(74,222,128,0.25);border-radius:12px}
-    .insc-exito-icon{font-size:3rem;margin-bottom:16px}
-    .insc-exito-titulo{font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;color:var(--verde);margin-bottom:8px}
-    .insc-exito-sub{font-size:0.9rem;color:var(--sub);margin-bottom:24px;line-height:1.6}
+
     .insc-piloto-info{
-      background:rgba(230,57,70,0.07);border:1px solid rgba(230,57,70,0.2);
-      border-radius:8px;padding:12px 16px;font-size:0.85rem;color:#ccc;margin-bottom:16px;
-      display:flex;align-items:center;gap:12px;
+      background:rgba(230,57,70,0.06);border:1px solid rgba(230,57,70,0.18);
+      border-radius:3px;padding:12px 16px;font-size:0.84rem;color:#ccc;
+      margin-bottom:16px;display:flex;align-items:center;gap:12px;
     }
-    .insc-piloto-num{font-family:'Bebas Neue';font-size:1.5rem;color:var(--rojo);line-height:1}
+    .insc-piloto-num{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--rojo);line-height:1}
 
-    @keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-    .fade-up{animation:fadeUp 0.3s ease-out}
+    .insc-exito{
+      text-align:center;padding:52px 24px;
+      background:rgba(255,255,255,0.02);border:1px solid var(--borde);border-radius:3px;
+    }
+    .insc-exito-icon{font-size:2.5rem;margin-bottom:12px}
+    .insc-exito-titulo{
+      font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.06em;
+      color:var(--texto);margin-bottom:8px;
+    }
+    .insc-exito-num{
+      font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--rojo);
+      line-height:1;margin:16px 0;letter-spacing:-0.02em;
+    }
+    .insc-exito-sub{font-size:0.88rem;color:var(--sub);margin-bottom:24px;line-height:1.6}
 
-    /* ── PANEL FLOTANTE COMPLETAR PERFIL ── */
+    /* ── BANNER FLOTANTE ── */
     #bannerPerfil{
       position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-      z-index:500;width:calc(100% - 32px);max-width:600px;
-      background:linear-gradient(135deg,#1a0f00,#1f1200);
-      border:1px solid rgba(251,191,36,0.4);border-radius:14px;
+      z-index:500;width:calc(100% - 32px);max-width:580px;
+      background:#12100a;border:1px solid rgba(251,191,36,0.35);border-radius:3px;
       padding:14px 18px;display:none;
       box-shadow:0 8px 40px rgba(0,0,0,0.6);
-      animation:slideDown 0.4s ease-out;
     }
     #bannerPerfil .bp-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-    #bannerPerfil .bp-icon{font-size:1.5rem;flex-shrink:0}
+    #bannerPerfil .bp-icon{font-size:1.3rem;flex-shrink:0}
     #bannerPerfil .bp-texto{flex:1;min-width:0}
-    #bannerPerfil .bp-titulo{font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.08em;color:#fbbf24;margin-bottom:2px}
-    #bannerPerfil .bp-sub{font-size:0.75rem;color:#d4a030;line-height:1.4}
+    #bannerPerfil .bp-titulo{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:0.06em;color:#fbbf24;margin-bottom:2px}
+    #bannerPerfil .bp-sub{font-size:0.72rem;color:#b8892a;line-height:1.4}
     #bannerPerfil .bp-btn{
-      padding:9px 18px;background:#fbbf24;border:none;border-radius:8px;
-      color:#000;font-family:'Bebas Neue';font-size:0.9rem;letter-spacing:0.08em;
-      cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity 0.18s;
+      padding:8px 16px;background:#fbbf24;border:none;border-radius:3px;
+      color:#000;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:0.08em;
+      cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity 0.15s;
     }
     #bannerPerfil .bp-btn:hover{opacity:0.85}
     #bannerPerfil .bp-cerrar{
       position:absolute;top:8px;right:10px;background:none;border:none;
-      color:rgba(251,191,36,0.5);font-size:1rem;cursor:pointer;padding:2px 6px;
-      line-height:1;transition:color 0.18s;
+      color:rgba(251,191,36,0.45);font-size:0.95rem;cursor:pointer;padding:2px 6px;line-height:1;
     }
     #bannerPerfil .bp-cerrar:hover{color:#fbbf24}
-    #bannerPerfil .bp-barra-fondo{height:3px;background:rgba(251,191,36,0.15);border-radius:9999px;margin-top:10px;overflow:hidden}
+    #bannerPerfil .bp-barra-fondo{height:2px;background:rgba(251,191,36,0.12);border-radius:9999px;margin-top:10px;overflow:hidden}
     #bannerPerfil .bp-barra-fill{height:100%;background:#fbbf24;border-radius:9999px;transition:width 0.6s ease}
+
+    @keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .fade-up{animation:fadeUp 0.25s ease-out}
+
+    @media(max-width:480px){
+      .portal-body{padding:0 14px 32px}
+      .topbar{padding:0 16px}
+      .hero{padding:22px 0 18px}
+      .stats-grid{flex-wrap:wrap}
+      .stat-card{min-width:50%;border-bottom:1px solid var(--borde2)}
+      .stat-card:nth-child(odd){border-right:1px solid var(--borde2)}
+      .stat-card:nth-child(even){border-right:none}
+    }
   </style>
 </head>
 <body>
 
 <!-- ════════════════════════ PANTALLA LOGIN ════════════════════════ -->
 <div id="pantalla-login">
-  <div class="login-card">
-    <div class="login-logo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-      AUTÓDROMO <span>MTY</span>
+  <div class="login-wrap">
+    <div class="login-marca">
+      <div class="login-marca-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Autódromo Monterrey
+      </div>
+      <div class="login-titulo">Portal del<br/>Piloto</div>
+      <div class="login-subtitulo">Área Metropolitana de Monterrey</div>
     </div>
-    <div class="login-sub">Portal del Piloto</div>
 
     <div class="tabs-login">
       <button class="tab-btn activo" onclick="mostrarTab('login')">Iniciar sesión</button>
@@ -297,23 +414,25 @@
       </div>
       <button class="btn-rojo" id="btnLogin" onclick="iniciarSesion()">Entrar al portal</button>
       <div class="hint-login">
-        ¿Primera vez aquí? <strong style="color:#fff;cursor:pointer" onclick="mostrarTab('crear')">Crear acceso</strong>
-        <br/><span style="font-size:0.7rem;color:#444">¿Aún no te has inscrito?
-          <a href="../Registro/index.html" style="color:#e63946;text-decoration:none">Pre-registro</a>
+        ¿Primera vez aquí? <strong style="color:var(--texto);cursor:pointer" onclick="mostrarTab('crear')">Crear acceso</strong>
+        <br/><span style="font-size:0.68rem;color:#3a3a3a">¿Aún no te has inscrito?
+          <a href="../Registro/index.html" style="color:var(--rojo);text-decoration:none">Pre-registro</a>
         </span>
       </div>
     </div>
 
     <!-- Tab: Crear acceso -->
     <div id="form-crear" style="display:none">
-      <p style="font-size:0.78rem;color:#888;margin-bottom:14px;line-height:1.5">Necesitas haber sido registrado previamente en el autódromo. Usa el mismo email y número de piloto que te asignaron.</p>
+      <p style="font-size:0.75rem;color:var(--sub);margin-bottom:16px;line-height:1.6">
+        Necesitas haber sido registrado previamente en el autódromo. Usa el mismo email con el que te registraste.
+      </p>
       <div class="campo-login">
         <label>Correo electrónico registrado</label>
         <input class="input-login" type="email" id="cEmail" placeholder="tu@correo.com"/>
       </div>
       <div class="campo-login">
-        <label>Tu número de piloto</label>
-        <input class="input-login" type="number" id="cNumero" placeholder="Ej: 42"/>
+        <label>Número de piloto <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.62rem;color:var(--sub2)">(opcional si no tienes asignado)</span></label>
+        <input class="input-login" type="number" id="cNumero" placeholder="Ej: 42 — déjalo vacío si no tienes"/>
       </div>
       <div class="campo-login">
         <label>Nueva contraseña</label>
@@ -324,70 +443,76 @@
         <input class="input-login" type="password" id="cPass2" placeholder="Repite tu contraseña"/>
       </div>
       <button class="btn-rojo" id="btnCrear" onclick="crearAcceso()">Crear mi acceso</button>
-      <div class="hint-login">¿Ya tienes acceso? <strong style="color:#fff;cursor:pointer" onclick="mostrarTab('login')">Inicia sesión</strong></div>
+      <div class="hint-login">¿Ya tienes acceso? <strong style="color:var(--texto);cursor:pointer" onclick="mostrarTab('login')">Inicia sesión</strong></div>
     </div>
+
+    <div class="login-footer">© Autódromo Monterrey — todos los derechos reservados</div>
   </div>
 </div>
 
 <!-- ════════════════════════ PORTAL ════════════════════════ -->
 <div id="pantalla-portal">
   <nav class="topbar">
-    <div class="topbar-marca">AUTÓDROMO <span>MTY</span></div>
-    <div class="topbar-right">
-      <div class="piloto-chip">
-        <div class="piloto-avatar" id="avatarLetra">?</div>
-        <span class="piloto-nombre-chip" id="chipNombre">Piloto</span>
-      </div>
-      <button class="btn-logout" onclick="cerrarPortal()">Salir</button>
+    <span class="topbar-marca">AMT</span>
+    <div class="topbar-sep"></div>
+    <div class="piloto-chip">
+      <div class="piloto-avatar" id="avatarLetra">?</div>
+      <span class="piloto-nombre-chip" id="chipNombre">Piloto</span>
     </div>
+    <button class="btn-logout" onclick="cerrarPortal()">Salir</button>
   </nav>
 
   <div class="portal-body">
 
     <!-- Hero -->
     <div class="hero fade-up">
-      <div>
-        <div class="hero-num-label">Número</div>
-        <div class="hero-num" id="heroNum">#0</div>
-      </div>
       <div class="hero-info">
         <div class="hero-nombre" id="heroNombre">Piloto</div>
         <div class="hero-meta" id="heroMeta"></div>
       </div>
+      <div>
+        <div class="hero-num-label">N°</div>
+        <div class="hero-num" id="heroNum">#—</div>
+      </div>
     </div>
 
-    <!-- Barra de completitud de perfil -->
-    <div class="completitud fade-up">
+    <!-- Completitud -->
+    <div class="completitud">
       <div class="completitud-header">
         <span class="completitud-label">Completitud del perfil</span>
         <span class="completitud-pct" id="pctLabel">0%</span>
       </div>
       <div class="barra-fondo"><div class="barra-fill" id="barraFill" style="width:0%"></div></div>
-      <div id="camposFaltantes" style="font-size:0.72rem;color:var(--amarillo);margin-top:6px"></div>
+      <div id="camposFaltantes" style="font-size:0.7rem;color:#b8892a;margin-top:6px"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="stCarreras">—</div><div class="stat-lbl">Carreras</div></div>
+      <div class="stat-card"><div class="stat-num" id="stCampeonatos">—</div><div class="stat-lbl">Campeonatos</div></div>
+      <div class="stat-card"><div class="stat-num" id="stVictorias">—</div><div class="stat-lbl">Victorias</div></div>
+      <div class="stat-card"><div class="stat-num" id="stPodios">—</div><div class="stat-lbl">Podios</div></div>
+      <div class="stat-card"><div class="stat-num" id="stPuntos">—</div><div class="stat-lbl">Puntos</div></div>
+      <div class="stat-card"><div class="stat-num" id="stMejor" style="font-size:1.8rem">—</div><div class="stat-lbl">Mejor</div></div>
     </div>
 
     <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab activo" onclick="cambiarTab('estadisticas')">Mis Stats</button>
-      <button class="tab" onclick="cambiarTab('carreras')">Mis Carreras</button>
+    <div class="tabs" style="margin-top:0">
+      <button class="tab activo" onclick="cambiarTab('estadisticas')">Mis stats</button>
+      <button class="tab" onclick="cambiarTab('carreras')">Carreras</button>
       <button class="tab" onclick="cambiarTab('clasificacion')">Clasificación</button>
-      <button class="tab" onclick="cambiarTab('inscripcion')" style="color:var(--rojo)">+ Inscribirme</button>
-      <button class="tab" onclick="cambiarTab('perfil')">Mi Perfil</button>
+      <button class="tab" onclick="cambiarTab('inscripcion')" style="color:var(--rojo)">+ Inscribirse</button>
+      <button class="tab" onclick="cambiarTab('perfil')">Mi perfil</button>
     </div>
 
     <!-- ── ESTADÍSTICAS ── -->
     <div class="seccion activa" id="sec-estadisticas">
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card"><div class="stat-num" id="stCarreras">—</div><div class="stat-lbl">Carreras</div></div>
-        <div class="stat-card"><div class="stat-num" id="stCampeonatos">—</div><div class="stat-lbl">Campeonatos</div></div>
-        <div class="stat-card"><div class="stat-num" id="stVictorias">—</div><div class="stat-lbl">Victorias</div></div>
-        <div class="stat-card"><div class="stat-num" id="stPodios">—</div><div class="stat-lbl">Podios</div></div>
-        <div class="stat-card"><div class="stat-num" id="stPuntos">—</div><div class="stat-lbl">Puntos totales</div></div>
-        <div class="stat-card"><div class="stat-num" id="stMejor">—</div><div class="stat-lbl">Mejor resultado</div></div>
-      </div>
-      <div id="resumenCarreras" style="background:var(--card);border:1px solid var(--borde);border-radius:10px;padding:20px">
-        <div style="font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.08em;margin-bottom:14px">Últimas carreras</div>
-        <div id="ultimas-carreras"></div>
+      <div id="resumenCarreras">
+        <div class="ultimas-header">
+          <span>Últimas carreras</span>
+          <button class="link-ver-todo" onclick="cambiarTab('carreras')">Ver todas →</button>
+        </div>
+        <div id="ultimas-carreras"><div class="vacio">Cargando...</div></div>
       </div>
     </div>
 
@@ -412,12 +537,9 @@
     <!-- ── INSCRIBIRME ── -->
     <div class="seccion" id="sec-inscripcion">
 
-      <!-- Éxito -->
       <div id="inscExito" style="display:none"></div>
 
-      <!-- Formulario -->
       <div id="inscForm">
-
         <div class="perfil-section">
           <div class="perfil-section-title">¿A qué carrera te inscribes?</div>
           <div class="grid-perfil">
@@ -435,7 +557,7 @@
             </div>
           </div>
           <div style="margin-top:14px">
-            <label style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:8px">Categoría</label>
+            <label style="font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:8px">Categoría</label>
             <div id="inscCatGrid" class="insc-cat-grid">
               <div class="vacio" style="width:100%;padding:16px">Selecciona un campeonato para ver las categorías</div>
             </div>
@@ -443,36 +565,34 @@
         </div>
 
         <div class="perfil-section">
-          <div class="perfil-section-title">Tu Vehículo</div>
+          <div class="perfil-section-title">Tu vehículo</div>
           <div class="grid-perfil">
             <div class="campo-p"><label>Marca / Vehículo *</label><input id="inscVehiculo" type="text" placeholder="Ej: Honda, Ford, Kart..."/></div>
             <div class="campo-p"><label>Modelo</label><input id="inscModelo" type="text" placeholder="Ej: Civic, Mustang..."/></div>
             <div class="campo-p"><label>Año</label><input id="inscAnio" type="number" min="1990" max="2030" placeholder="Ej: 2023"/></div>
             <div class="campo-p"><label>Color</label><input id="inscColor" type="text" placeholder="Ej: Rojo metálico"/></div>
           </div>
-          <div class="campo-p" style="margin-top:4px"><label>Apodo del vehículo (opcional)</label><input id="inscApodo" type="text" placeholder="Ej: El Diablo..."/></div>
+          <div class="campo-p" style="margin-top:4px"><label>Apodo del vehículo (opcional)</label><input id="inscApodo" type="text" placeholder='Ej: "El Diablo"...'/></div>
         </div>
 
         <div class="perfil-section">
           <div class="insc-piloto-info">
             <div class="insc-piloto-num" id="inscNumPiloto">#—</div>
             <div>
-              <div style="font-weight:700;color:#fff" id="inscNombrePiloto">Piloto</div>
-              <div style="font-size:0.75rem;color:var(--sub)">Número y nombre de tu cuenta</div>
+              <div style="font-weight:600;color:#fff" id="inscNombrePiloto">Piloto</div>
+              <div style="font-size:0.72rem;color:var(--sub)">Tu número y nombre de cuenta</div>
             </div>
           </div>
 
-          <!-- Contrato anual — se muestra solo cuando el backend lo requiere -->
-          <div id="inscContratoRow" style="display:none;margin-bottom:14px;padding:12px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.25);border-radius:8px">
-            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:0.82rem;color:#ccc;line-height:1.5">
+          <div id="inscContratoRow" style="display:none;margin-bottom:14px;padding:12px;background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:3px">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:0.8rem;color:#ccc;line-height:1.6">
               <input type="checkbox" id="inscContrato" style="margin-top:3px;flex-shrink:0;accent-color:var(--rojo)"/>
               <span>Acepto el reglamento y el contrato anual del Autódromo Monterrey. Confirmo que los datos son correctos y me comprometo a cumplir las normas de competición.</span>
             </label>
           </div>
 
-          <button class="btn-rojo" id="btnInscribirse" onclick="enviarInscripcion()">Confirmar inscripción</button>
+          <button class="btn-rojo" id="btnInscribirse" onclick="enviarInscripcion()">Confirmar pre-inscripción</button>
         </div>
-
       </div>
     </div>
 
@@ -480,15 +600,16 @@
     <div class="seccion" id="sec-perfil">
 
       <div class="perfil-section">
-        <div class="perfil-section-title">Datos Personales</div>
+        <div class="perfil-section-title">Datos personales</div>
+        <div id="alertGuardado" class="alert-guardado">✓ Perfil actualizado correctamente</div>
         <div class="grid-perfil">
-          <div class="campo-p"><label>Nombre(s) <span style="font-size:0.6rem;color:#555;font-weight:400">(solo admin)</span></label><input id="pNombres" type="text" readonly style="opacity:0.5;cursor:not-allowed"/></div>
-          <div class="campo-p"><label>Apellido Paterno <span style="font-size:0.6rem;color:#555;font-weight:400">(solo admin)</span></label><input id="pApPat" type="text" readonly style="opacity:0.5;cursor:not-allowed"/></div>
-          <div class="campo-p"><label>Apellido Materno <span style="font-size:0.6rem;color:#555;font-weight:400">(solo admin)</span></label><input id="pApMat" type="text" readonly style="opacity:0.5;cursor:not-allowed"/></div>
-          <div class="campo-p"><label>Fecha de Nacimiento</label><input id="pFechaNac" type="date"/></div>
+          <div class="campo-p"><label>Nombre(s) <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pNombres" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
+          <div class="campo-p"><label>Apellido paterno <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pApPat" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
+          <div class="campo-p"><label>Apellido materno <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pApMat" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
+          <div class="campo-p"><label>Fecha de nacimiento</label><input id="pFechaNac" type="date"/></div>
           <div class="campo-p"><label>CURP</label><input id="pCurp" type="text" maxlength="20" style="text-transform:uppercase"/></div>
           <div class="campo-p"><label>Teléfono</label><input id="pTel" type="tel"/></div>
-          <div class="campo-p"><label>Tipo de Sangre</label>
+          <div class="campo-p"><label>Tipo de sangre</label>
             <select id="pSangre">
               <option value="">Seleccionar...</option>
               <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
@@ -502,8 +623,11 @@
               <option>Técnico</option><option>Licenciatura</option><option>Posgrado</option>
             </select>
           </div>
-          <div class="campo-p"><label>Lugar de Nacimiento</label><input id="pLugarNac" type="text"/></div>
+          <div class="campo-p"><label>Lugar de nacimiento</label><input id="pLugarNac" type="text"/></div>
           <div class="campo-p"><label>Nacionalidad</label><input id="pNacionalidad" type="text"/></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-guardar-perfil" onclick="guardarPerfil()">Guardar cambios</button>
         </div>
       </div>
 
@@ -511,8 +635,8 @@
         <div class="perfil-section-title">Dirección</div>
         <div class="grid-perfil">
           <div class="campo-p"><label>Calle</label><input id="pCalle" type="text"/></div>
-          <div class="campo-p"><label>No. Exterior</label><input id="pNumExt" type="text"/></div>
-          <div class="campo-p"><label>No. Interior</label><input id="pNumInt" type="text"/></div>
+          <div class="campo-p"><label>No. exterior</label><input id="pNumExt" type="text"/></div>
+          <div class="campo-p"><label>No. interior</label><input id="pNumInt" type="text"/></div>
           <div class="campo-p"><label>Colonia</label><input id="pColonia" type="text"/></div>
           <div class="campo-p"><label>C.P.</label><input id="pCp" type="text" maxlength="10"/></div>
           <div class="campo-p"><label>Ciudad</label><input id="pCiudad" type="text"/></div>
@@ -523,47 +647,43 @@
       <div class="perfil-section">
         <div class="perfil-section-title">Emergencias</div>
         <div class="grid-perfil">
-          <div class="campo-p"><label>Contacto de Emergencia</label><input id="pContactoEmerg" type="text"/></div>
-          <div class="campo-p"><label>Teléfono de Emergencia</label><input id="pTelEmerg" type="tel"/></div>
+          <div class="campo-p"><label>Contacto de emergencia</label><input id="pContactoEmerg" type="text"/></div>
+          <div class="campo-p"><label>Teléfono de emergencia</label><input id="pTelEmerg" type="tel"/></div>
           <div class="campo-p"><label>Parentesco</label><input id="pParentesco" type="text"/></div>
         </div>
       </div>
 
       <div class="perfil-section">
-        <div class="perfil-section-title">Información Médica</div>
+        <div class="perfil-section-title">Información médica</div>
         <div class="grid-perfil">
           <div class="campo-p"><label>Alergias</label><input id="pAlergias" type="text"/></div>
-          <div class="campo-p"><label>Condiciones Médicas</label><input id="pCondMed" type="text"/></div>
+          <div class="campo-p"><label>Condiciones médicas</label><input id="pCondMed" type="text"/></div>
         </div>
       </div>
 
       <div class="perfil-section">
-        <div class="perfil-section-title">Datos Deportivos</div>
+        <div class="perfil-section-title">Datos deportivos</div>
         <div class="grid-perfil">
-          <div class="campo-p"><label>Nombre del Equipo</label><input id="pEquipo" type="text"/></div>
-          <div class="campo-p"><label>Comisión Nacional</label><input id="pComision" type="text"/></div>
-          <div class="campo-p"><label>Año Licencia Anterior</label><input id="pAnioLic" type="number" min="2000" max="2030"/></div>
+          <div class="campo-p"><label>Nombre del equipo</label><input id="pEquipo" type="text"/></div>
+          <div class="campo-p"><label>Comisión nacional</label><input id="pComision" type="text"/></div>
+          <div class="campo-p"><label>Año licencia anterior</label><input id="pAnioLic" type="number" min="2000" max="2030"/></div>
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn-guardar-perfil" onclick="guardarPerfil()">Guardar cambios</button>
-      </div>
-      <div class="alert-guardado" id="alertGuardado">✓ Perfil actualizado correctamente</div>
-
-      <div class="perfil-section" style="margin-top:20px">
-        <div class="perfil-section-title">Cambiar Contraseña</div>
+      <div class="perfil-section" style="margin-top:4px">
+        <div class="perfil-section-title">Cambiar contraseña</div>
+        <div id="alertPass" class="alert-guardado">✓ Contraseña actualizada</div>
         <div class="pass-grid">
           <div class="campo-p"><label>Nueva contraseña</label><input id="pNewPass" type="password" placeholder="Mínimo 6 caracteres"/></div>
           <div class="campo-p"><label>Confirmar contraseña</label><input id="pNewPass2" type="password" placeholder="Repite la contraseña"/></div>
         </div>
-        <button class="btn-guardar-perfil" style="margin-top:10px" onclick="cambiarPass()">Cambiar contraseña</button>
-        <div class="alert-guardado" id="alertPass">✓ Contraseña actualizada</div>
+        <button class="btn-guardar-perfil" style="margin-top:8px" onclick="cambiarPass()">Cambiar contraseña</button>
       </div>
-    </div>
+
+    </div><!-- /sec-perfil -->
 
   </div><!-- /portal-body -->
-</div><!-- /portal -->
+</div><!-- /pantalla-portal -->
 
 <!-- ════ BANNER FLOTANTE COMPLETAR PERFIL ════ -->
 <div id="bannerPerfil">
@@ -606,10 +726,10 @@ function mostrarError(msg){ const e=document.getElementById('err-login'); e.text
 function ocultarError(){ document.getElementById('err-login').style.display='none'; }
 
 function mostrarToast(msg,tipo='exito'){
-  const c={exito:'rgba(34,197,94,0.15)|rgba(34,197,94,0.4)|#4ade80',error:'rgba(230,57,70,0.15)|rgba(230,57,70,0.4)|#f87171',info:'rgba(59,130,246,0.15)|rgba(59,130,246,0.4)|#60a5fa'}[tipo]||'rgba(59,130,246,0.15)|rgba(59,130,246,0.4)|#60a5fa';
+  const c={exito:'rgba(34,197,94,0.12)|rgba(34,197,94,0.35)|#4ade80',error:'rgba(230,57,70,0.12)|rgba(230,57,70,0.35)|#f87171',info:'rgba(59,130,246,0.12)|rgba(59,130,246,0.35)|#60a5fa'}[tipo]||'rgba(59,130,246,0.12)|rgba(59,130,246,0.35)|#60a5fa';
   const [bg,bd,tx]=c.split('|');
   const t=document.createElement('div');
-  t.style.cssText=`position:fixed;top:20px;right:20px;z-index:9999;background:${bg};border:1px solid ${bd};color:${tx};padding:12px 18px;border-radius:10px;font-family:'Barlow',sans-serif;font-size:0.9rem;font-weight:500;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideIn 0.3s ease-out`;
+  t.style.cssText=`position:fixed;top:20px;right:20px;z-index:9999;background:${bg};border:1px solid ${bd};color:${tx};padding:11px 16px;border-radius:3px;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:500;max-width:280px;animation:slideIn 0.2s ease-out`;
   t.textContent=msg;
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),3000);
@@ -637,13 +757,13 @@ async function crearAcceso(){
   const numero=document.getElementById('cNumero').value.trim();
   const pass=document.getElementById('cPass').value;
   const pass2=document.getElementById('cPass2').value;
-  if(!email||!numero||!pass) return mostrarError('Completa todos los campos');
+  if(!email||!pass) return mostrarError('Correo y contraseña son requeridos');
   if(pass!==pass2) return mostrarError('Las contraseñas no coinciden');
   if(pass.length<6) return mostrarError('La contraseña debe tener al menos 6 caracteres');
   const btn=document.getElementById('btnCrear');
   btn.disabled=true; btn.textContent='Creando...';
   try{
-    await apiFetch('/piloto/crear-acceso',{method:'POST',body:JSON.stringify({email,numero,password:pass})});
+    await apiFetch('/piloto/crear-acceso',{method:'POST',body:JSON.stringify({email,numero:numero||undefined,password:pass})});
     mostrarToast('¡Acceso creado! Ahora inicia sesión.','exito');
     document.getElementById('lEmail').value=email;
     mostrarTab('login');
@@ -696,17 +816,16 @@ async function abrirPortal(piloto){
 
   // Meta badges
   const meta=[];
-  if(piloto.estatus_licencia) meta.push(`<span class="hero-badge" style="border-color:rgba(74,222,128,0.4);color:#4ade80;background:rgba(74,222,128,0.08)">${esc(piloto.estatus_licencia)}</span>`);
-  if(piloto.tipo_sangre) meta.push(`<span class="hero-badge" style="border-color:rgba(230,57,70,0.4);color:#e63946;background:rgba(230,57,70,0.08)">🩸 ${esc(piloto.tipo_sangre)}</span>`);
-  if(piloto.nombre_equipo) meta.push(`<span class="hero-badge" style="border-color:rgba(255,255,255,0.15);color:#aaa;background:rgba(255,255,255,0.05)">🏎 ${esc(piloto.nombre_equipo)}</span>`);
+  if(piloto.estatus_licencia) meta.push(`<span class="hero-badge" style="border-color:rgba(34,197,94,0.4);color:#4ade80;background:rgba(34,197,94,0.08)">${esc(piloto.estatus_licencia)}</span>`);
+  if(piloto.tipo_sangre) meta.push(`<span class="hero-badge" style="border-color:rgba(230,57,70,0.4);color:var(--rojo);background:rgba(230,57,70,0.08)">🩸 ${esc(piloto.tipo_sangre)}</span>`);
+  if(piloto.nombre_equipo) meta.push(`<span class="hero-badge" style="border-color:rgba(255,255,255,0.12);color:#999;background:rgba(255,255,255,0.04)">🏎 ${esc(piloto.nombre_equipo)}</span>`);
   document.getElementById('heroMeta').innerHTML=meta.join('');
 
   actualizarCompletitud(piloto);
   llenarFormPerfil(piloto);
-  // Inscribirme: info del piloto (reutiliza `nombre` ya declarado arriba)
   document.getElementById('inscNumPiloto').textContent = '#'+(piloto.numero_piloto||'—');
   document.getElementById('inscNombrePiloto').textContent = nombre;
-  inscCampDropPoblado = false; // reset so it reloads on next open
+  inscCampDropPoblado = false;
   await cargarDashboard();
   await cargarCampeonatosClasificacion();
 }
@@ -740,7 +859,6 @@ function actualizarCompletitud(p){
     document.getElementById('camposFaltantes').textContent='✓ Perfil completo';
     document.getElementById('camposFaltantes').style.color='var(--verde)';
   }
-  // Resaltar campos faltantes en el form
   faltantes.forEach(c=>{
     const mapa={tipo_sangre:'pSangre',fecha_nacimiento:'pFechaNac',curp:'pCurp',telefono:'pTel',
       contacto_emergencia:'pContactoEmerg',telefono_emergencia:'pTelEmerg',
@@ -749,11 +867,10 @@ function actualizarCompletitud(p){
     const el=document.getElementById(mapa[c.k]);
     if(el) el.classList.add('faltante');
   });
-  // Banner flotante
   mostrarBanner(faltantes, pct);
 }
 
-// ── Banner flotante de completar perfil ──
+// ── Banner flotante ──
 function mostrarBanner(faltantes, pct){
   const banner = document.getElementById('bannerPerfil');
   if(!faltantes.length || sessionStorage.getItem('banner_cerrado')){
@@ -813,7 +930,6 @@ async function cargarDashboard(){
     document.getElementById('stPuntos').textContent      = stats.totalPuntos||0;
     document.getElementById('stMejor').textContent       = stats.mejorPosicion ? `P${stats.mejorPosicion}` : '—';
 
-    // Últimas 3
     const ult=carreras.slice(0,3);
     document.getElementById('ultimas-carreras').innerHTML = ult.length
       ? ult.map(c=>tarjetaCarrera(c,true)).join('')
@@ -853,8 +969,8 @@ function tarjetaCarrera(c, mini=false){
       <div class="carrera-etapa">${etapaTxt}</div>
       <div class="carrera-meta">
         ${c.etapa_fecha ? `<span class="carrera-fecha">${formatFecha(c.etapa_fecha)}</span>` : ''}
-        <span class="cat-chip" style="background:${c.categoria_color}22;border:1px solid ${c.categoria_color}55;color:${c.categoria_color}">${esc(c.categoria_nombre)}</span>
-        ${c.vehiculo ? `<span style="font-size:0.72rem;color:var(--sub)">${esc(c.vehiculo)}</span>` : ''}
+        <span class="cat-chip" style="background:${c.categoria_color}22;border:1px solid ${c.categoria_color}44;color:${c.categoria_color}">${esc(c.categoria_nombre)}</span>
+        ${c.vehiculo ? `<span style="font-size:0.7rem;color:var(--sub)">${esc(c.vehiculo)}</span>` : ''}
       </div>
     </div>
     ${pos||c.resultado_puntos ? `<div class="carrera-right">
@@ -902,7 +1018,7 @@ async function cargarClasificacion(){
     const rows=await apiFetch(`/piloto/clasificacion/${campId}/${catId}`);
     if(!rows.length){ document.getElementById('tabla-clas-wrap').innerHTML='<div class="vacio">Sin resultados en esta categoría</div>'; return; }
     document.getElementById('tabla-clas-wrap').innerHTML=`
-      <div style="background:var(--card);border:1px solid var(--borde);border-radius:10px;overflow:hidden">
+      <div style="background:var(--card);border:1px solid var(--borde);border-radius:3px;overflow:hidden">
       <table class="tabla-clas">
         <thead><tr><th>Pos</th><th>#</th><th>Piloto</th><th>Pts</th><th>Carreras</th><th>Victorias</th></tr></thead>
         <tbody>
@@ -910,8 +1026,8 @@ async function cargarClasificacion(){
             <tr class="${r.id===pilotoData.id?'yo':''}">
               <td><span class="pos-medal">${medalIcon(i+1)}</span></td>
               <td style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">#${r.numero_piloto}</td>
-              <td style="font-weight:${r.id===pilotoData.id?'700':'400'};color:${r.id===pilotoData.id?'#fff':'var(--texto)'}">
-                ${esc(r.nombre_completo)}${r.id===pilotoData.id?' <span style="font-size:0.65rem;color:var(--rojo);font-weight:700">← TÚ</span>':''}
+              <td style="font-weight:${r.id===pilotoData.id?'600':'400'};color:${r.id===pilotoData.id?'#fff':'var(--texto)'}">
+                ${esc(r.nombre_completo)}${r.id===pilotoData.id?' <span style="font-size:0.62rem;color:var(--rojo);font-weight:700">← tú</span>':''}
               </td>
               <td style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">${r.puntos_totales||0}</td>
               <td>${r.carreras_corridas||0}</td>
@@ -1088,7 +1204,7 @@ async function enviarInscripcion(){
     };
     const resp = await apiFetch('/inscripciones/auto-registro',{method:'POST',body:JSON.stringify(body)});
     mostrarExitoInscripcion(resp.inscripcion);
-    cargarDashboard(); // refresca stats en background
+    cargarDashboard();
   } catch(err){
     if(err.message.toLowerCase().includes('contrato')){
       document.getElementById('inscContratoRow').style.display='block';
@@ -1097,7 +1213,7 @@ async function enviarInscripcion(){
       mostrarToast(err.message,'error');
     }
   } finally{
-    btn.disabled=false; btn.textContent='Confirmar inscripción';
+    btn.disabled=false; btn.textContent='Confirmar pre-inscripción';
   }
 }
 
@@ -1107,13 +1223,14 @@ function mostrarExitoInscripcion(insc){
   ok.style.display='block';
   ok.innerHTML=`<div class="insc-exito">
     <div class="insc-exito-icon">🏁</div>
-    <div class="insc-exito-titulo">¡Pre-inscripción exitosa!</div>
+    <div class="insc-exito-titulo">Pre-inscripción confirmada</div>
+    <div class="insc-exito-num">#${pilotoData.numero_piloto||'—'}</div>
     <div class="insc-exito-sub">
       <strong style="color:#fff">${esc(insc.campeonato_nombre)}</strong><br/>
       ${insc.etapa_nombre?`Etapa: <strong style="color:#fff">${esc(insc.etapa_nombre)}</strong><br/>`:''}
       Categoría: <strong style="color:#fff">${esc(insc.categoria_nombre)}</strong>
     </div>
-    <div style="font-size:0.8rem;color:var(--sub);margin-bottom:20px">El personal del autódromo confirmará tu inscripción. Presenta este comprobante el día del evento.</div>
+    <div style="font-size:0.76rem;color:var(--sub);margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto">El personal del autódromo confirmará tu inscripción antes del evento.</div>
     <button class="btn-guardar-perfil" onclick="resetInscripcion()">Inscribir otra carrera</button>
   </div>`;
 }
@@ -1139,7 +1256,6 @@ function resetInscripcion(){
   const token=localStorage.getItem(TOKEN_KEY);
   const piloto=JSON.parse(localStorage.getItem(PILOTO_KEY)||'null');
   if(token&&piloto){
-    // Refrescar datos del servidor
     apiFetch('/piloto/mi-perfil').then(p=>{
       localStorage.setItem(PILOTO_KEY,JSON.stringify(p));
       abrirPortal(p);
