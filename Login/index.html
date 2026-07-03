@@ -4,137 +4,149 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Iniciar Sesión — Autódromo Monterrey</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
-      --rojo:     #e63946;
-      --rojo-d:   #c1121f;
-      --oscuro:   #050505;
-      --card:     #111111;
-      --borde:    #222222;
-      --muted:    #666666;
-      --verde:    #22c55e;
+      --rojo: #e63946; --rojo-d: #c1121f;
+      --oscuro: #050505; --card: #111; --borde: #1e1e1e; --muted: #555;
+      --verde: #22c55e;
     }
-
+    html { -webkit-font-smoothing: antialiased; }
     body {
-      background: var(--oscuro);
-      color: #fff;
-      font-family: 'Barlow', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
-      overflow: hidden;
+      background: var(--oscuro); color: #ebebeb;
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px 20px; overflow: hidden; position: relative;
     }
 
-    /* Decoración de fondo */
-    .bg-blob {
-      position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0;
+    /* Fondo decorativo */
+    body::before {
+      content: 'AMT';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(160px, 30vw, 340px);
+      color: rgba(255,255,255,0.018);
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none; letter-spacing: 0.05em; line-height: 1;
     }
-    .bg-blob-1 { width: 500px; height: 500px; background: rgba(230,57,70,0.06); top: -150px; right: -150px; }
-    .bg-blob-2 { width: 400px; height: 400px; background: rgba(244,80,30,0.04); bottom: -100px; left: -100px; }
 
     .contenedor {
       position: relative; z-index: 1;
-      width: 100%; max-width: 380px;
-      padding: 0 20px;
+      width: 100%; max-width: 400px;
     }
 
     /* Header */
     .encabezado { text-align: center; margin-bottom: 32px; }
     .logo {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 60px; height: 60px;
-      background: var(--rojo);
-      border-radius: 14px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 32px rgba(230,57,70,0.35);
+      width: 56px; height: 56px; background: var(--rojo); border-radius: 12px;
+      margin-bottom: 14px; box-shadow: 0 8px 28px rgba(230,57,70,0.3);
     }
-    .logo svg { width: 28px; height: 28px; fill: #fff; }
-    .titulo { font-family: 'Bebas Neue'; font-size: 3.2rem; letter-spacing: 0.15em; line-height: 1; }
-    .subtitulo { font-size: 0.7rem; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
-    .linea {
-      height: 1px; margin-top: 16px;
-      background: linear-gradient(to right, transparent, var(--rojo), transparent);
+    .logo svg { width: 26px; height: 26px; fill: #fff; }
+    .titulo { font-family: 'Bebas Neue'; font-size: clamp(2.4rem, 6vw, 3rem); letter-spacing: 0.12em; line-height: 1; }
+    .subtitulo { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-top: 5px; }
+    .linea { height: 1px; margin-top: 16px; background: linear-gradient(to right, transparent, var(--rojo), transparent); }
+
+    /* Tabs selector */
+    .tabs-selector {
+      display: flex; margin-bottom: 24px;
+      background: #0a0a0a; border: 1px solid var(--borde); border-radius: 10px; padding: 4px; gap: 4px;
     }
+    .tab-sel {
+      flex: 1; padding: 10px 8px; border: none; border-radius: 7px;
+      background: transparent; color: var(--muted);
+      font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.18s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .tab-sel.activo {
+      background: var(--card); color: #fff;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    .tab-sel svg { flex-shrink: 0; }
 
     /* Card */
     .card {
-      background: var(--card);
-      border: 1px solid var(--borde);
-      border-radius: 16px;
-      padding: 28px;
+      background: var(--card); border: 1px solid var(--borde);
+      border-radius: 14px; padding: 28px;
     }
 
     /* Formulario */
     .campo { margin-bottom: 16px; }
     .etiqueta {
-      display: block; font-size: 0.65rem; letter-spacing: 0.15em;
-      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+      display: block; font-size: 0.63rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
     }
     .input-wrap { position: relative; }
     .input {
       width: 100%; padding: 11px 14px;
       background: #0a0a0a; border: 1px solid var(--borde);
-      color: #fff; border-radius: 8px;
-      font-family: 'Barlow', sans-serif; font-size: 0.95rem;
-      transition: border-color 0.2s;
-      outline: none;
+      color: #ebebeb; border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      transition: border-color 0.18s; outline: none;
     }
-    .input:focus { border-color: var(--rojo); }
-    .input::placeholder { color: var(--muted); }
+    .input:focus { border-color: rgba(230,57,70,0.5); }
+    .input::placeholder { color: #333; }
     .btn-ver {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
       background: none; border: none; cursor: pointer; color: var(--muted);
-      display: flex; align-items: center; padding: 0;
-      transition: color 0.2s;
+      display: flex; align-items: center; padding: 0; transition: color 0.18s;
     }
     .btn-ver:hover { color: #fff; }
 
     /* Botón */
     .btn-primario {
-      width: 100%; padding: 13px;
-      background: var(--rojo); border: none; border-radius: 8px;
-      color: #fff; font-family: 'Barlow', sans-serif;
-      font-size: 0.8rem; font-weight: 700;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      cursor: pointer; margin-top: 8px;
-      transition: background 0.2s, transform 0.1s;
+      width: 100%; padding: 13px; background: var(--rojo); border: none; border-radius: 8px;
+      color: #fff; font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem; letter-spacing: 0.12em;
+      cursor: pointer; margin-top: 8px; transition: background 0.18s, transform 0.1s;
       display: flex; align-items: center; justify-content: center; gap: 8px;
     }
     .btn-primario:hover  { background: var(--rojo-d); }
     .btn-primario:active { transform: scale(0.98); }
-    .btn-primario:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Error / spinner */
+    /* Alert */
     .alerta {
-      padding: 10px 14px; border-radius: 8px; font-size: 0.85rem;
+      padding: 10px 14px; border-radius: 8px; font-size: 0.82rem;
       margin-bottom: 14px; display: none;
     }
-    .alerta.error  { background: rgba(230,57,70,0.12); border: 1px solid rgba(230,57,70,0.3); color: #ff6b6b; }
-    .alerta.exito  { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: var(--verde); }
+    .alerta.error { background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #f87171; }
+    .alerta.exito { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--verde); }
+
+    /* Spinner */
     .spinner {
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
       border-radius: 50%; animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Pie */
-    .pie { text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--muted); }
+    .pie {
+      text-align: center; margin-top: 18px;
+      font-size: 0.72rem; color: var(--muted); line-height: 1.7;
+    }
     .pie a { color: var(--rojo); text-decoration: none; }
     .pie a:hover { color: #ff6b6b; }
+    .pie-sep { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+    .pie-sep span { flex: 1; height: 1px; background: var(--borde); }
+    .pie-sep em { font-size: 0.62rem; font-style: normal; color: #2a2a2a; letter-spacing: 0.1em; }
+
+    /* Indicador de tipo activo */
+    .tipo-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--rojo); margin-bottom: 18px;
+    }
+    .tipo-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--rojo); }
   </style>
 </head>
 <body>
-  <div class="bg-blob bg-blob-1"></div>
-  <div class="bg-blob bg-blob-2"></div>
-
   <div class="contenedor">
+    <!-- Header -->
     <div class="encabezado">
       <div class="logo">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -146,17 +158,33 @@
       <div class="linea"></div>
     </div>
 
+    <!-- Selector Sistema / Piloto -->
+    <div class="tabs-selector">
+      <button class="tab-sel activo" id="tabSistema" onclick="cambiarTipo('sistema')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Sistema
+      </button>
+      <button class="tab-sel" id="tabPiloto" onclick="cambiarTipo('piloto')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Piloto
+      </button>
+    </div>
+
+    <!-- Card -->
     <div class="card">
       <div id="alerta" class="alerta"></div>
-      <form id="formLogin" novalidate>
+
+      <!-- Form Sistema (admin/staff) -->
+      <div id="formSistema">
+        <div class="tipo-badge">Acceso al sistema</div>
         <div class="campo">
           <label class="etiqueta" for="username">Usuario</label>
-          <input class="input" type="text" id="username" placeholder="usuario" autocomplete="username" required />
+          <input class="input" type="text" id="username" placeholder="usuario" autocomplete="username" />
         </div>
         <div class="campo">
           <label class="etiqueta" for="password">Contraseña</label>
           <div class="input-wrap">
-            <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" required style="padding-right: 42px;" />
+            <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:42px" />
             <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
               <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -165,52 +193,116 @@
             </button>
           </div>
         </div>
-        <button class="btn-primario" type="submit" id="btnEntrar">
-          Entrar al Sistema
+        <button class="btn-primario" id="btnSistema" onclick="loginSistema()">
+          Entrar al sistema
         </button>
-      </form>
+      </div>
+
+      <!-- Form Piloto -->
+      <div id="formPiloto" style="display:none">
+        <div class="tipo-badge">Portal del piloto</div>
+        <div class="campo">
+          <label class="etiqueta" for="pEmail">Correo electrónico</label>
+          <input class="input" type="email" id="pEmail" placeholder="tu@correo.com" autocomplete="email" />
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="pPass">Contraseña</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="pPass" placeholder="••••••" autocomplete="current-password" style="padding-right:42px" />
+            <button type="button" class="btn-ver" onclick="togglePassPiloto()" title="Mostrar/ocultar">
+              <svg id="ojoPiloto" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn-primario" id="btnPiloto" onclick="loginPiloto()">
+          Entrar al portal
+        </button>
+        <div class="pie-sep"><span></span><em>¿primera vez?</em><span></span></div>
+        <div style="text-align:center;font-size:0.76rem;color:var(--muted)">
+          ¿No tienes acceso aún?
+          <a href="../piloto/index.html#crear" style="color:var(--rojo);text-decoration:none;font-weight:600"> Crear acceso</a>
+          &nbsp;·&nbsp;
+          <a href="../Registro/index.html" style="color:#444;text-decoration:none">Pre-registro</a>
+        </div>
+      </div>
     </div>
 
-    <div class="pie">
-      ¿Eres piloto? <a href="../Registro/index.html">Pre-inscríbete aquí</a>
+    <!-- Pie -->
+    <div class="pie" id="piePage">
+      ¿Eres piloto? <a href="#" onclick="cambiarTipo('piloto');return false">Entra aquí →</a>
     </div>
   </div>
 
   <script src="../admin/config.js"></script>
   <script>
-    const formLogin = document.getElementById('formLogin');
-    const btnEntrar = document.getElementById('btnEntrar');
-    const alertaEl  = document.getElementById('alerta');
-    const inputPw   = document.getElementById('password');
-    const btnVer    = document.getElementById('btnVer');
+    let tipoActivo = 'sistema';
 
-    // Redirigir si ya hay sesión
+    // Redirigir si ya hay sesión admin
     if (localStorage.getItem('autodromo_token')) {
       window.location.href = '../dashboard/index.html';
     }
 
-    // Mostrar/ocultar contraseña
-    btnVer.addEventListener('click', () => {
-      const esTexto = inputPw.type === 'text';
-      inputPw.type = esTexto ? 'password' : 'text';
+    // Redirigir si ya hay sesión piloto
+    if (localStorage.getItem('piloto_token')) {
+      window.location.href = '../piloto/index.html';
+    }
+
+    // Mostrar/ocultar contraseña admin
+    document.getElementById('btnVer').addEventListener('click', () => {
+      const input = document.getElementById('password');
+      const esTexto = input.type === 'text';
+      input.type = esTexto ? 'password' : 'text';
       document.getElementById('iconoOjo').style.opacity = esTexto ? '1' : '0.4';
     });
 
-    function mostrarAlerta(msg, tipo = 'error') {
-      alertaEl.textContent = msg;
-      alertaEl.className = `alerta ${tipo}`;
-      alertaEl.style.display = 'block';
+    function togglePassPiloto() {
+      const input = document.getElementById('pPass');
+      const esTexto = input.type === 'text';
+      input.type = esTexto ? 'password' : 'text';
+      document.getElementById('ojoPiloto').style.opacity = esTexto ? '1' : '0.4';
     }
 
-    formLogin.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      alertaEl.style.display = 'none';
+    function mostrarAlerta(msg, tipo = 'error') {
+      const el = document.getElementById('alerta');
+      el.textContent = msg;
+      el.className = `alerta ${tipo}`;
+      el.style.display = 'block';
+    }
+
+    function ocultarAlerta() {
+      document.getElementById('alerta').style.display = 'none';
+    }
+
+    function cambiarTipo(tipo) {
+      tipoActivo = tipo;
+      ocultarAlerta();
+      document.getElementById('tabSistema').classList.toggle('activo', tipo === 'sistema');
+      document.getElementById('tabPiloto').classList.toggle('activo', tipo === 'piloto');
+      document.getElementById('formSistema').style.display = tipo === 'sistema' ? 'block' : 'none';
+      document.getElementById('formPiloto').style.display  = tipo === 'piloto'  ? 'block' : 'none';
+      document.getElementById('piePage').style.display     = tipo === 'sistema' ? 'block' : 'none';
+    }
+
+    // Enter key
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      if (tipoActivo === 'sistema') loginSistema();
+      else loginPiloto();
+    });
+
+    // ── Login sistema (admin/staff) ──
+    async function loginSistema() {
+      ocultarAlerta();
       const username = document.getElementById('username').value.trim();
-      const password = inputPw.value;
+      const password = document.getElementById('password').value;
       if (!username || !password) return mostrarAlerta('Ingresa usuario y contraseña');
 
-      btnEntrar.disabled = true;
-      btnEntrar.innerHTML = '<div class="spinner"></div> Autenticando...';
+      const btn = document.getElementById('btnSistema');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Autenticando...';
 
       try {
         const res  = await fetch(`${API_URL}/auth/login`, {
@@ -220,16 +312,47 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
-
         localStorage.setItem('autodromo_token', data.token);
         localStorage.setItem('autodromo_usuario', JSON.stringify(data.usuario));
         window.location.href = '../dashboard/index.html';
       } catch (err) {
         mostrarAlerta(err.message);
-        btnEntrar.disabled = false;
-        btnEntrar.textContent = 'Entrar al Sistema';
+        btn.disabled = false;
+        btn.textContent = 'Entrar al sistema';
       }
-    });
+    }
+
+    // ── Login piloto ──
+    async function loginPiloto() {
+      ocultarAlerta();
+      const email    = document.getElementById('pEmail').value.trim();
+      const password = document.getElementById('pPass').value;
+      if (!email || !password) return mostrarAlerta('Ingresa tu correo y contraseña');
+
+      const btn = document.getElementById('btnPiloto');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Entrando...';
+
+      try {
+        const res  = await fetch(`${API_URL}/piloto/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Correo o contraseña incorrectos');
+        localStorage.setItem('piloto_token', data.token);
+        localStorage.setItem('piloto_data', JSON.stringify(data.piloto));
+        window.location.href = '../piloto/index.html';
+      } catch (err) {
+        mostrarAlerta(err.message);
+        btn.disabled = false;
+        btn.textContent = 'Entrar al portal';
+      }
+    }
+
+    // Si viene con hash #piloto, abrir tab piloto directamente
+    if (window.location.hash === '#piloto') cambiarTipo('piloto');
   </script>
 </body>
 </html>
