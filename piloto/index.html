@@ -206,7 +206,38 @@
 
     @keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
     .fade-up{animation:fadeUp 0.3s ease-out}
+
+    /* ── PANEL FLOTANTE COMPLETAR PERFIL ── */
+    #bannerPerfil{
+      position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+      z-index:500;width:calc(100% - 32px);max-width:600px;
+      background:linear-gradient(135deg,#1a0f00,#1f1200);
+      border:1px solid rgba(251,191,36,0.4);border-radius:14px;
+      padding:14px 18px;display:none;
+      box-shadow:0 8px 40px rgba(0,0,0,0.6);
+      animation:slideDown 0.4s ease-out;
+    }
+    #bannerPerfil .bp-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    #bannerPerfil .bp-icon{font-size:1.5rem;flex-shrink:0}
+    #bannerPerfil .bp-texto{flex:1;min-width:0}
+    #bannerPerfil .bp-titulo{font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.08em;color:#fbbf24;margin-bottom:2px}
+    #bannerPerfil .bp-sub{font-size:0.75rem;color:#d4a030;line-height:1.4}
+    #bannerPerfil .bp-btn{
+      padding:9px 18px;background:#fbbf24;border:none;border-radius:8px;
+      color:#000;font-family:'Bebas Neue';font-size:0.9rem;letter-spacing:0.08em;
+      cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity 0.18s;
+    }
+    #bannerPerfil .bp-btn:hover{opacity:0.85}
+    #bannerPerfil .bp-cerrar{
+      position:absolute;top:8px;right:10px;background:none;border:none;
+      color:rgba(251,191,36,0.5);font-size:1rem;cursor:pointer;padding:2px 6px;
+      line-height:1;transition:color 0.18s;
+    }
+    #bannerPerfil .bp-cerrar:hover{color:#fbbf24}
+    #bannerPerfil .bp-barra-fondo{height:3px;background:rgba(251,191,36,0.15);border-radius:9999px;margin-top:10px;overflow:hidden}
+    #bannerPerfil .bp-barra-fill{height:100%;background:#fbbf24;border-radius:9999px;transition:width 0.6s ease}
   </style>
 </head>
 <body>
@@ -238,11 +269,17 @@
         <input class="input-login" type="password" id="lPass" placeholder="••••••" autocomplete="current-password"/>
       </div>
       <button class="btn-rojo" id="btnLogin" onclick="iniciarSesion()">Entrar al portal</button>
-      <div class="hint-login">¿Primera vez? Cambia a <strong style="color:#fff;cursor:pointer" onclick="mostrarTab('crear')">Crear acceso</strong></div>
+      <div class="hint-login">
+        ¿Primera vez aquí? <strong style="color:#fff;cursor:pointer" onclick="mostrarTab('crear')">Crear acceso</strong>
+        <br/><span style="font-size:0.7rem;color:#444">¿Aún no te has inscrito?
+          <a href="../Registro/index.html" style="color:#e63946;text-decoration:none">Pre-registro</a>
+        </span>
+      </div>
     </div>
 
     <!-- Tab: Crear acceso -->
     <div id="form-crear" style="display:none">
+      <p style="font-size:0.78rem;color:#888;margin-bottom:14px;line-height:1.5">Necesitas haber sido registrado previamente en el autódromo. Usa el mismo email y número de piloto que te asignaron.</p>
       <div class="campo-login">
         <label>Correo electrónico registrado</label>
         <input class="input-login" type="email" id="cEmail" placeholder="tu@correo.com"/>
@@ -433,6 +470,20 @@
   </div><!-- /portal-body -->
 </div><!-- /portal -->
 
+<!-- ════ BANNER FLOTANTE COMPLETAR PERFIL ════ -->
+<div id="bannerPerfil">
+  <button class="bp-cerrar" onclick="cerrarBanner()" title="Cerrar">✕</button>
+  <div class="bp-inner">
+    <div class="bp-icon">⚠️</div>
+    <div class="bp-texto">
+      <div class="bp-titulo" id="bpTitulo">Perfil incompleto</div>
+      <div class="bp-sub" id="bpSub">Completa tu información para inscripciones y formularios oficiales</div>
+    </div>
+    <button class="bp-btn" onclick="irAPerfil()">Completar ahora</button>
+  </div>
+  <div class="bp-barra-fondo"><div class="bp-barra-fill" id="bpBarraFill"></div></div>
+</div>
+
 <script>
 const API_URL = 'https://autodromo.up.railway.app/api';
 const TOKEN_KEY   = 'piloto_token';
@@ -526,6 +577,7 @@ async function iniciarSesion(){
 function cerrarPortal(){
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(PILOTO_KEY);
+  sessionStorage.removeItem('banner_cerrado');
   document.getElementById('pantalla-portal').style.display='none';
   document.getElementById('pantalla-login').style.display='flex';
 }
@@ -598,6 +650,33 @@ function actualizarCompletitud(p){
     const el=document.getElementById(mapa[c.k]);
     if(el) el.classList.add('faltante');
   });
+  // Banner flotante
+  mostrarBanner(faltantes, pct);
+}
+
+// ── Banner flotante de completar perfil ──
+function mostrarBanner(faltantes, pct){
+  const banner = document.getElementById('bannerPerfil');
+  if(!faltantes.length || sessionStorage.getItem('banner_cerrado')){
+    banner.style.display = 'none';
+    return;
+  }
+  const n = faltantes.length;
+  document.getElementById('bpTitulo').textContent = `Perfil ${pct}% completo — faltan ${n} campo${n!==1?'s':''}`;
+  document.getElementById('bpSub').textContent = 'Incompleto: ' + faltantes.slice(0,4).map(c=>c.l).join(', ') + (n>4 ? ` y ${n-4} más` : '');
+  document.getElementById('bpBarraFill').style.width = pct+'%';
+  banner.style.display = 'block';
+}
+
+function cerrarBanner(){
+  sessionStorage.setItem('banner_cerrado','1');
+  document.getElementById('bannerPerfil').style.display='none';
+}
+
+function irAPerfil(){
+  cerrarBanner();
+  cambiarTab('perfil');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ── Llenar form de perfil ──

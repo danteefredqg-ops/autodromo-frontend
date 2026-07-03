@@ -117,18 +117,30 @@
   <div id="p0">
     <div class="card">
       <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">¿Cómo quieres continuar?</h2>
-      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:18px">Selecciona una opción para comenzar tu pre-inscripción</p>
-      <div class="opt-grid">
-        <div class="opt-card" onclick="elegir('nuevo')">
-          <div class="opt-icon">🏁</div>
-          <div class="opt-titulo">Soy Nuevo</div>
-          <div class="opt-desc">Primera vez en el autódromo — llenaré mis datos completos</div>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:18px">Selecciona una opción para comenzar</p>
+      <div class="opt-grid" style="grid-template-columns:1fr">
+        <div class="opt-card" onclick="elegir('nuevo')" style="display:flex;align-items:center;gap:16px;text-align:left">
+          <div class="opt-icon" style="font-size:1.8rem;flex-shrink:0">🏁</div>
+          <div>
+            <div class="opt-titulo">Soy Nuevo</div>
+            <div class="opt-desc">Primera vez en el autódromo — llenaré mis datos completos</div>
+          </div>
         </div>
-        <div class="opt-card" onclick="elegir('existente')">
-          <div class="opt-icon">🔑</div>
-          <div class="opt-titulo">Ya Tengo Cuenta</div>
-          <div class="opt-desc">Ya me registré antes — solo quiero inscribirme a este campeonato</div>
+        <div class="opt-card" onclick="elegir('existente')" style="display:flex;align-items:center;gap:16px;text-align:left">
+          <div class="opt-icon" style="font-size:1.8rem;flex-shrink:0">🔑</div>
+          <div>
+            <div class="opt-titulo">Ya Tengo Cuenta — Solo Inscribirme</div>
+            <div class="opt-desc">Ya me registré antes — buscaré mi cuenta con email y número</div>
+          </div>
         </div>
+        <a href="../piloto/index.html" class="opt-card" style="display:flex;align-items:center;gap:16px;text-align:left;text-decoration:none;border-color:rgba(230,57,70,0.35);background:rgba(230,57,70,0.04)">
+          <div class="opt-icon" style="font-size:1.8rem;flex-shrink:0">🏎</div>
+          <div>
+            <div class="opt-titulo" style="color:var(--rojo)">Mi Portal de Piloto</div>
+            <div class="opt-desc">Ver mis carreras, posiciones y completar mi perfil</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2" style="margin-left:auto;flex-shrink:0"><polyline points="9,18 15,12 9,6"/></svg>
+        </a>
       </div>
     </div>
   </div>
@@ -154,10 +166,16 @@
         Verificar datos
       </button>
       <div id="pilotoBox" style="display:none;margin-top:14px">
-        <div class="piloto-box">
-          <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--verde);margin-bottom:4px">✓ Piloto verificado</div>
-          <div id="pilotoNombre" style="font-weight:700;font-size:1.05rem"></div>
-          <div id="pilotoDatos" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
+        <div class="piloto-box" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--verde);margin-bottom:4px">✓ Piloto verificado</div>
+            <div id="pilotoNombre" style="font-weight:700;font-size:1.05rem"></div>
+            <div id="pilotoDatos" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
+          </div>
+          <a href="../piloto/index.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.4);border-radius:8px;color:#e63946;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;flex-shrink:0">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
+            Mi portal
+          </a>
         </div>
 
         <!-- ── Actualizar perfil ── -->
