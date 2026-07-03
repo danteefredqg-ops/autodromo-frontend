@@ -703,9 +703,8 @@ async function abrirPortal(piloto){
 
   actualizarCompletitud(piloto);
   llenarFormPerfil(piloto);
-  // Inscribirme: info del piloto
+  // Inscribirme: info del piloto (reutiliza `nombre` ya declarado arriba)
   document.getElementById('inscNumPiloto').textContent = '#'+(piloto.numero_piloto||'—');
-  const nombre = piloto.nombre_completo||`${piloto.nombres||''} ${piloto.apellido_paterno||''}`.trim()||'Piloto';
   document.getElementById('inscNombrePiloto').textContent = nombre;
   inscCampDropPoblado = false; // reset so it reloads on next open
   await cargarDashboard();
