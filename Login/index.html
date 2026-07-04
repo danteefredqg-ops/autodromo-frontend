@@ -229,11 +229,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Pie -->
-    <div class="pie" id="piePage">
-      ¿Eres piloto? <a href="#" onclick="cambiarTipo('piloto');return false">Entra aquí →</a>
-    </div>
   </div>
 
   <script src="../admin/config.js"></script>
@@ -283,7 +278,6 @@
       document.getElementById('tabPiloto').classList.toggle('activo', tipo === 'piloto');
       document.getElementById('formSistema').style.display = tipo === 'sistema' ? 'block' : 'none';
       document.getElementById('formPiloto').style.display  = tipo === 'piloto'  ? 'block' : 'none';
-      document.getElementById('piePage').style.display     = tipo === 'sistema' ? 'block' : 'none';
     }
 
     // Enter key
