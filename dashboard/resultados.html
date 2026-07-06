@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultados — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    .estatus-select.dnf, .estatus-select.dsq { color: #f87171; border-color: rgba(239,68,68,0.4); }
+    .fila-tocada { background: rgba(230,57,70,0.04); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" />
+    </div>
+    <nav class="nav">
+      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="pilotos.html"       class="nav-link">Pilotos</a>
+      <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
+      <a href="inscripciones.html" class="nav-link">Inscripciones</a>
+      <a href="reportes.html"      class="nav-link">Reportes</a>
+      <a href="resultados.html"    class="nav-link activo">Resultados</a>
+      <a href="formularios.html"   class="nav-link">Formularios</a>
+      <a href="usuarios.html"      class="nav-link solo-admin" style="display:none">Usuarios</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="usuario-info">
+        <div class="usuario-avatar" id="usuarioAvatar"></div>
+        <div><div class="usuario-nombre" id="usuarioNombre"></div><div class="usuario-rol" id="usuarioRol"></div></div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1 class="page-titulo">Resultados</h1>
+        <p class="page-sub" id="subTitulo">Selecciona etapa y categoría para capturar posiciones</p>
+      </div>
+    </div>
+
+    <!-- Filtros en cascada: campeonato → etapa → categoría -->
+    <div class="barra-filtros">
+      <select class="select" id="selCampeonato" onchange="onCampChange()">
+        <option value="">Selecciona un campeonato...</option>
+      </select>
+      <select class="select" id="selEtapa" onchange="onEtapaOCategoriaChange()">
+        <option value="">Selecciona una etapa...</option>
+      </select>
+      <select class="select" id="selCategoria" onchange="onEtapaOCategoriaChange()">
+        <option value="">Selecciona una categoría...</option>
+      </select>
+    </div>
+
+    <div class="card tabla-card">
+      <div class="tabla-wrap">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>#</th><th>Piloto</th><th>Estatus</th><th>Posición</th><th>Tiempo Vuelta</th><th>Puntos</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyResultados">
+            <tr><td colspan="6" class="td-vacio">Selecciona etapa y categoría</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:16px">
+      <button class="btn-primario" id="btnGuardarResultados" onclick="guardarResultados()" style="display:none">
+        Guardar Resultados
+      </button>
+    </div>
+  </main>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    requerirSesion();
+    const usuario = obtenerUsuario();
+    document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
+    document.getElementById('usuarioNombre').textContent = usuario.nombre;
+    document.getElementById('usuarioRol').textContent    = usuario.rol;
+    if (usuario.rol === 'admin') {
+      document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
+    }
+    const soloLectura = usuario.rol === 'torre';
+
+    const PUNTOS_POS = [0, 25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+    function puntosPreview(posicion, estatus) {
+      if (estatus !== 'Finalizado') return 0;
+      return PUNTOS_POS[posicion] ?? 0;
+    }
+
+    let resultadosGuardados = {}; // piloto_id -> resultado existente al momento de cargar
+
+    async function inicializar() {
+      try {
+        const campeonatos = await apiFetch('/campeonatos');
+        document.getElementById('selCampeonato').innerHTML =
+          '<option value="">Selecciona un campeonato...</option>' +
+          campeonatos.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    async function onCampChange() {
+      const campId = document.getElementById('selCampeonato').value;
+      const selEtapa = document.getElementById('selEtapa');
+      const selCat   = document.getElementById('selCategoria');
+      selEtapa.innerHTML = '<option value="">Selecciona una etapa...</option>';
+      selCat.innerHTML    = '<option value="">Selecciona una categoría...</option>';
+      resetTabla();
+      if (!campId) return;
+      try {
+        const [etapas, cats] = await Promise.all([
+          apiFetch(`/campeonatos/${campId}/etapas`),
+          apiFetch(`/campeonatos/${campId}/categorias`),
+        ]);
+        selEtapa.innerHTML = '<option value="">Selecciona una etapa...</option>' +
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
+        selCat.innerHTML = '<option value="">Selecciona una categoría...</option>' +
+          cats.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function resetTabla() {
+      document.getElementById('tbodyResultados').innerHTML =
+        '<tr><td colspan="6" class="td-vacio">Selecciona etapa y categoría</td></tr>';
+      document.getElementById('btnGuardarResultados').style.display = 'none';
+      resultadosGuardados = {};
+    }
+
+    function onEtapaOCategoriaChange() {
+      const etapaId = document.getElementById('selEtapa').value;
+      const catId   = document.getElementById('selCategoria').value;
+      if (!etapaId || !catId) { resetTabla(); return; }
+      cargarPilotosYResultados();
+    }
+
+    async function cargarPilotosYResultados() {
+      const etapaId = document.getElementById('selEtapa').value;
+      const catId   = document.getElementById('selCategoria').value;
+      const tbody = document.getElementById('tbodyResultados');
+      tbody.innerHTML = '<tr><td colspan="6" class="td-vacio">Cargando...</td></tr>';
+      try {
+        const [inscritos, existentes] = await Promise.all([
+          apiFetch(`/inscripciones?etapa_id=${etapaId}&categoria_id=${catId}&estatus=Pagado`),
+          apiFetch(`/resultados?etapa_id=${etapaId}&categoria_id=${catId}`),
+        ]);
+        resultadosGuardados = {};
+        existentes.forEach(r => resultadosGuardados[r.piloto_id] = r);
+
+        if (inscritos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="td-vacio">Sin inscripciones pagadas en esta etapa/categoría</td></tr>';
+          document.getElementById('btnGuardarResultados').style.display = 'none';
+          return;
+        }
+
+        tbody.innerHTML = inscritos.map(i => {
+          const guardado = resultadosGuardados[i.piloto_id];
+          const estatus  = guardado ? guardado.estatus : 'Finalizado';
+          const posicion = guardado && guardado.posicion !== null ? guardado.posicion : '';
+          const tiempo   = guardado && guardado.tiempo_vuelta ? guardado.tiempo_vuelta : '';
+          const posDisabled = estatus !== 'Finalizado' ? 'disabled' : '';
+          return `
+            <tr data-piloto-id="${i.piloto_id}" data-tocado="0">
+              <td><span class="num-piloto">${i.numero_piloto}</span></td>
+              <td>${esc(i.piloto_nombre)}</td>
+              <td>
+                <select class="select estatus-select" onchange="onEstatusChange(this)">
+                  <option value="Finalizado" ${estatus === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
+                  <option value="DNF" ${estatus === 'DNF' ? 'selected' : ''}>DNF</option>
+                  <option value="DSQ" ${estatus === 'DSQ' ? 'selected' : ''}>DSQ</option>
+                </select>
+              </td>
+              <td><input class="input input-posicion" type="number" min="1" step="1" value="${posicion}" ${posDisabled} oninput="onFilaInput(this)" /></td>
+              <td><input class="input input-tiempo" type="text" placeholder="Ej: 1:23.456" value="${esc(tiempo)}" oninput="onFilaInput(this)" /></td>
+              <td class="td-puntos" style="color:#4ade80;font-weight:700">${puntosPreview(posicion || null, estatus)}</td>
+            </tr>
+          `;
+        }).join('');
+
+        document.querySelectorAll('.estatus-select').forEach(sel => marcarClaseEstatus(sel));
+        document.getElementById('btnGuardarResultados').style.display = soloLectura ? 'none' : 'inline-flex';
+        if (soloLectura) {
+          document.querySelectorAll('.input-posicion, .input-tiempo, .estatus-select').forEach(el => el.disabled = true);
+        }
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+        tbody.innerHTML = '<tr><td colspan="6" class="td-vacio">Error al cargar</td></tr>';
+      }
+    }
+
+    function marcarClaseEstatus(sel) {
+      sel.classList.remove('dnf', 'dsq');
+      if (sel.value === 'DNF') sel.classList.add('dnf');
+      if (sel.value === 'DSQ') sel.classList.add('dsq');
+    }
+
+    function onEstatusChange(sel) {
+      const fila = sel.closest('tr');
+      fila.dataset.tocado = '1';
+      fila.classList.add('fila-tocada');
+      marcarClaseEstatus(sel);
+      const inputPos = fila.querySelector('.input-posicion');
+      if (sel.value === 'Finalizado') {
+        inputPos.disabled = false;
+      } else {
+        inputPos.value = '';
+        inputPos.disabled = true;
+      }
+      actualizarPuntosFila(fila);
+    }
+
+    function onFilaInput(el) {
+      const fila = el.closest('tr');
+      fila.dataset.tocado = '1';
+      fila.classList.add('fila-tocada');
+      actualizarPuntosFila(fila);
+    }
+
+    function actualizarPuntosFila(fila) {
+      const estatus  = fila.querySelector('.estatus-select').value;
+      const posicion = parseInt(fila.querySelector('.input-posicion').value) || null;
+      fila.querySelector('.td-puntos').textContent = puntosPreview(posicion, estatus);
+    }
+
+    async function guardarResultados() {
+      const etapaId = document.getElementById('selEtapa').value;
+      const catId   = document.getElementById('selCategoria').value;
+      const filas = [...document.querySelectorAll('#tbodyResultados tr[data-piloto-id]')];
+      const payload = [];
+
+      for (const fila of filas) {
+        const pilotoId = Number(fila.dataset.pilotoId);
+        const tocado = fila.dataset.tocado === '1';
+        const teniaGuardado = !!resultadosGuardados[pilotoId];
+        if (!tocado && !teniaGuardado) continue;
+
+        const estatus = fila.querySelector('.estatus-select').value;
+        const posInput = fila.querySelector('.input-posicion').value;
+        if (estatus === 'Finalizado' && !posInput) continue;
+
+        payload.push({
+          piloto_id: pilotoId,
+          estatus,
+          posicion: estatus === 'Finalizado' ? parseInt(posInput) : null,
+          tiempo_vuelta: fila.querySelector('.input-tiempo').value.trim() || null,
+        });
+      }
+
+      const posicionesFinalizado = payload.filter(r => r.estatus === 'Finalizado').map(r => r.posicion);
+      const duplicadas = posicionesFinalizado.filter((p, i) => posicionesFinalizado.indexOf(p) !== i);
+      if (duplicadas.length > 0) {
+        return mostrarToast(`Posición duplicada: ${[...new Set(duplicadas)].join(', ')}`, 'error');
+      }
+
+      const totalGuardadosPrevio = Object.keys(resultadosGuardados).length;
+      if (payload.length < totalGuardadosPrevio) {
+        const perdidos = totalGuardadosPrevio - payload.length;
+        if (!confirm(`Se eliminarán ${perdidos} resultado(s) previamente guardado(s). ¿Continuar?`)) return;
+      }
+
+      const btn = document.getElementById('btnGuardarResultados');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        await apiFetch('/resultados', {
+          method: 'POST',
+          body: JSON.stringify({ etapa_id: parseInt(etapaId), categoria_id: parseInt(catId), resultados: payload }),
+        });
+        mostrarToast('Resultados guardados correctamente');
+        cargarPilotosYResultados();
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Guardar Resultados';
+      }
+    }
+
+    inicializar();
+  </script>
+</body>
+</html>
