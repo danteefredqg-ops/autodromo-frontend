@@ -565,7 +565,7 @@
       metodoPagoSeleccionado = 'Efectivo';
       document.querySelectorAll('.metodo-btn').forEach(b => b.classList.remove('activo'));
       document.querySelectorAll('.metodo-btn')[0].classList.add('activo');
-      document.getElementById('iMonto').value = '';
+      document.getElementById('iMonto').value = i.costo_categoria ? i.costo_categoria : '';
       document.getElementById('infoCobro').innerHTML = `
         <div style="display:flex;align-items:center;gap:12px">
           <div style="font-family:'Bebas Neue';font-size:2.4rem;color:#e63946;line-height:1">#${i.numero_piloto}</div>

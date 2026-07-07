@@ -601,7 +601,6 @@
 
       <div class="perfil-section">
         <div class="perfil-section-title">Datos personales</div>
-        <div id="alertGuardado" class="alert-guardado">✓ Perfil actualizado correctamente</div>
         <div class="grid-perfil">
           <div class="campo-p"><label>Nombre(s) <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pNombres" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
           <div class="campo-p"><label>Apellido paterno <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pApPat" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
@@ -625,9 +624,6 @@
           </div>
           <div class="campo-p"><label>Lugar de nacimiento</label><input id="pLugarNac" type="text"/></div>
           <div class="campo-p"><label>Nacionalidad</label><input id="pNacionalidad" type="text"/></div>
-        </div>
-        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-guardar-perfil" onclick="guardarPerfil()">Guardar cambios</button>
         </div>
       </div>
 
@@ -668,16 +664,26 @@
           <div class="campo-p"><label>Comisión nacional</label><input id="pComision" type="text"/></div>
           <div class="campo-p"><label>Año licencia anterior</label><input id="pAnioLic" type="number" min="2000" max="2030"/></div>
         </div>
+        <div id="alertGuardado" class="alert-guardado">✓ Perfil actualizado correctamente</div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-guardar-perfil" onclick="guardarPerfil()">Guardar todos los cambios</button>
+        </div>
       </div>
 
       <div class="perfil-section" style="margin-top:4px">
-        <div class="perfil-section-title">Cambiar contraseña</div>
-        <div id="alertPass" class="alert-guardado">✓ Contraseña actualizada</div>
-        <div class="pass-grid">
-          <div class="campo-p"><label>Nueva contraseña</label><input id="pNewPass" type="password" placeholder="Mínimo 6 caracteres"/></div>
-          <div class="campo-p"><label>Confirmar contraseña</label><input id="pNewPass2" type="password" placeholder="Repite la contraseña"/></div>
+        <button type="button" class="perfil-section-title" id="btnTogglePass" onclick="togglePassSection()"
+          style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;text-align:left;color:var(--sub)">
+          <svg id="chevPass" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="9,18 15,12 9,6"/></svg>
+          Cambiar contraseña
+        </button>
+        <div id="passSection" style="display:none;margin-top:12px">
+          <div id="alertPass" class="alert-guardado">✓ Contraseña actualizada</div>
+          <div class="pass-grid">
+            <div class="campo-p"><label>Nueva contraseña</label><input id="pNewPass" type="password" placeholder="Mínimo 6 caracteres"/></div>
+            <div class="campo-p"><label>Confirmar contraseña</label><input id="pNewPass2" type="password" placeholder="Repite la contraseña"/></div>
+          </div>
+          <button class="btn-guardar-perfil" style="margin-top:8px" onclick="cambiarPass()">Cambiar contraseña</button>
         </div>
-        <button class="btn-guardar-perfil" style="margin-top:8px" onclick="cambiarPass()">Cambiar contraseña</button>
       </div>
 
     </div><!-- /sec-perfil -->
@@ -1087,6 +1093,14 @@ async function guardarPerfil(){
     a.style.display='block';
     setTimeout(()=>a.style.display='none',3000);
   } catch(err){ mostrarToast(err.message,'error'); }
+}
+
+function togglePassSection(){
+  const sec = document.getElementById('passSection');
+  const chev = document.getElementById('chevPass');
+  const abrir = sec.style.display === 'none';
+  sec.style.display = abrir ? 'block' : 'none';
+  chev.style.transform = abrir ? 'rotate(90deg)' : 'rotate(0deg)';
 }
 
 // ── Cambiar contraseña ──
