@@ -659,10 +659,11 @@
       // Firmar contrato para piloto existente si se aceptó
       if (pilotoId && contratoFirmado) {
         try {
+          const emailBuscar = document.getElementById('emailBuscar').value.trim();
           await fetch(API_URL + '/contratos/firmar', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ piloto_id: pilotoId, anio: new Date().getFullYear() }),
+            body: JSON.stringify({ piloto_id: pilotoId, anio: new Date().getFullYear(), email: emailBuscar, numero: pilotoNumero }),
           });
         } catch {}
       }

@@ -304,6 +304,35 @@ body {
 .btn-primario:disabled, .btn-exito:disabled { opacity: 0.5; cursor: not-allowed; }
 .flex-1 { flex: 1; justify-content: center; }
 
+/* Menú de acciones (kebab) */
+.btn-kebab {
+  width: 30px; height: 30px; padding: 0; border-radius: 8px; border: 1px solid var(--borde);
+  background: var(--dark); color: var(--muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+}
+.btn-kebab:hover, .btn-kebab.activo { background: var(--borde); color: #fff; }
+.menu-dropdown {
+  position: fixed; z-index: 200; min-width: 190px;
+  background: var(--card); border: 1px solid var(--borde); border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  padding: 6px; display: none;
+}
+.menu-dropdown.abierto { display: block; }
+.menu-item {
+  width: 100%; padding: 9px 12px; border: none; background: none; cursor: pointer;
+  display: flex; align-items: center; gap: 9px; border-radius: 7px;
+  font-family: 'Barlow', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--texto);
+  text-align: left; transition: background 0.15s;
+}
+.menu-item:hover { background: var(--borde); }
+.menu-item svg { flex-shrink: 0; opacity: 0.75; }
+.menu-item.peligro { color: #f87171; }
+.menu-item.peligro:hover { background: rgba(230,57,70,0.12); }
+.menu-item.dorado { color: #fbbf24; }
+.menu-item.dorado:hover { background: rgba(251,191,36,0.12); }
+.menu-divider { height: 1px; background: var(--borde); margin: 6px 4px; }
+
 /* Barra de búsqueda y filtros */
 .barra-filtros { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
 .barra-filtros .input { max-width: 260px; }
