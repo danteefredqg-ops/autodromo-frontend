@@ -132,7 +132,6 @@
     document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
     document.getElementById('usuarioNombre').textContent = usuario.nombre;
     document.getElementById('usuarioRol').textContent    = usuario.rol;
-    if (usuario.rol === 'torre') document.querySelector('a[href="resultados.html"]').style.display = 'none';
 
     const DESC_ROLES = {
       admin:         'Acceso total: gestión de carreras, usuarios, pilotos y corte general',

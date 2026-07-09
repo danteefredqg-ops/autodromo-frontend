@@ -175,7 +175,7 @@
         <div id="infoCobro" style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:10px;padding:16px;margin-bottom:16px"></div>
         <div class="campo">
           <label class="etiqueta">Método de Pago</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="gridMetodoPago">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="gridMetodoPago">
             <button class="metodo-btn activo" onclick="seleccionarMetodo('Efectivo',this)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               Efectivo
@@ -183,6 +183,10 @@
             <button class="metodo-btn" onclick="seleccionarMetodo('Transferencia',this)">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><polyline points="17,1 21,5 17,9"/><path d="M3,11V9a4,4,0,0,1,4-4h14"/><polyline points="7,23 3,19 7,15"/><path d="M21,13v2a4,4,0,0,1-4,4H3"/></svg>
               Transferencia
+            </button>
+            <button class="metodo-btn" onclick="seleccionarMetodo('Intercambio',this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px"><polyline points="16,3 21,3 21,8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21,16 21,21 16,21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+              Intercambio
             </button>
           </div>
         </div>
@@ -197,6 +201,35 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
           Confirmar Pago
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal editar vehículo (único campo que torre puede modificar) -->
+  <div class="modal-overlay" id="modalVehiculo" style="display:none">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <span class="modal-titulo">Editar Vehículo</span>
+        <button class="modal-cerrar" onclick="cerrarModalVehiculo()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="infoVehiculo" style="font-size:0.82rem;color:#888;margin-bottom:14px"></div>
+        <div class="campo">
+          <label class="etiqueta">Marca *</label>
+          <input class="input" id="vMarca" placeholder="Ej: Tony Kart" />
+        </div>
+        <div class="grid-2" style="margin-top:10px">
+          <div class="campo"><label class="etiqueta">Modelo</label><input class="input" id="vModelo" /></div>
+          <div class="campo"><label class="etiqueta">Año</label><input class="input" type="number" id="vAnio" /></div>
+          <div class="campo"><label class="etiqueta">Color</label><input class="input" id="vColor" /></div>
+          <div class="campo"><label class="etiqueta">Apodo</label><input class="input" id="vApodo" /></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secundario flex-1" onclick="cerrarModalVehiculo()">Cancelar</button>
+        <button class="btn-primario flex-1" id="btnGuardarVehiculo" onclick="guardarVehiculo()">Guardar</button>
       </div>
     </div>
   </div>
@@ -230,7 +263,7 @@
     }
     if (usuario.rol === 'torre') {
       document.getElementById('btnNuevaInsc').style.display = 'none';
-      document.querySelector('a[href="resultados.html"]').style.display = 'none';
+      document.querySelector('a[href="formularios.html"]').style.display = 'none';
     }
 
     let todasCategorias = [], campeonatos = [], pilotos = [];
@@ -390,10 +423,14 @@
         String(i.numero_piloto).includes(buscar)
       );
       if (filtroPagaronHoy) {
-        const hoy = new Date().toISOString().slice(0, 10);
-        filtrados = filtrados.filter(i =>
-          i.estatus === 'Pagado' && i.pagado_en && String(i.pagado_en).slice(0, 10) === hoy
-        );
+        const ahora = new Date();
+        const hoy = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+        filtrados = filtrados.filter(i => {
+          if (i.estatus !== 'Pagado' || !i.pagado_en) return false;
+          const d = new Date(i.pagado_en);
+          const fechaPago = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          return fechaPago === hoy;
+        });
       }
       renderizarTabla(filtrados);
     }
@@ -426,7 +463,7 @@
             <div style="font-weight:600">${esc(i.piloto_nombre)}</div>
             ${i.auto_registro ? '<div style="font-size:0.72rem;color:#3b82f6">auto-registro</div>' : ''}
           </td>
-          <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946">${i.tipo_sangre}</span></td>
+          <td>${usuario.rol === 'torre' ? '<span style="color:#333">—</span>' : `<span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946">${i.tipo_sangre}</span>`}</td>
           <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${i.categoria_color}22;color:${i.categoria_color};border:1px solid ${i.categoria_color}44">${esc(i.categoria_nombre)}</span></td>
           <td style="font-size:0.78rem;color:#555">${i.etapa_nombre ? `Etapa ${i.etapa_numero} — ${esc(i.etapa_nombre)}` : '—'}</td>
           <td style="color:#666;font-size:0.82rem">
@@ -445,6 +482,9 @@
                   Cobrar
                 </button>
               ` : ''}
+              <button class="btn-secundario" style="padding:6px 10px;font-size:0.7rem" onclick="abrirModalVehiculo(${i.id})" title="Editar vehículo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+              </button>
               ${usuario.rol === 'admin' ? `
                 <button class="btn-peligro" style="padding:6px 10px;font-size:0.7rem" onclick="eliminarInscripcion(${i.id})" title="Eliminar">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14H6L5,6"/></svg>
@@ -618,8 +658,49 @@
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
+    // ── Modal editar vehículo ────────────────────────────────────────────────
+    let vehiculoInscId = null;
+
+    function abrirModalVehiculo(id) {
+      const i = inscripcionesActuales.find(x => x.id === id);
+      if (!i) return;
+      vehiculoInscId = id;
+      document.getElementById('infoVehiculo').textContent = `#${i.numero_piloto} — ${i.piloto_nombre}`;
+      document.getElementById('vMarca').value  = i.vehiculo || '';
+      document.getElementById('vModelo').value = i.modelo_vehiculo || '';
+      document.getElementById('vAnio').value   = i.anio_vehiculo || '';
+      document.getElementById('vColor').value  = i.color_vehiculo || '';
+      document.getElementById('vApodo').value  = i.apodo_vehiculo || '';
+      document.getElementById('modalVehiculo').style.display = 'flex';
+    }
+
+    function cerrarModalVehiculo() { document.getElementById('modalVehiculo').style.display = 'none'; }
+
+    async function guardarVehiculo() {
+      const marca = document.getElementById('vMarca').value.trim();
+      if (!marca) return mostrarToast('La marca es obligatoria', 'error');
+      const btn = document.getElementById('btnGuardarVehiculo');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+      try {
+        await apiFetch(`/inscripciones/${vehiculoInscId}/vehiculo`, {
+          method: 'PATCH',
+          body: JSON.stringify({
+            vehiculo:        marca,
+            modelo_vehiculo: document.getElementById('vModelo').value.trim() || null,
+            anio_vehiculo:   parseInt(document.getElementById('vAnio').value) || null,
+            color_vehiculo:  document.getElementById('vColor').value.trim() || null,
+            apodo_vehiculo:  document.getElementById('vApodo').value.trim() || null,
+          }),
+        });
+        mostrarToast('Vehículo actualizado');
+        cerrarModalVehiculo();
+        cargarInscripciones();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { btn.disabled = false; btn.textContent = 'Guardar'; }
+    }
+
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { cerrarModalInsc(); cerrarModalCobro(); }
+      if (e.key === 'Escape') { cerrarModalInsc(); cerrarModalCobro(); cerrarModalVehiculo(); }
     });
 
     inicializar();

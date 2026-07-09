@@ -48,7 +48,7 @@
 
     <!-- Filtros -->
     <div class="barra-filtros">
-      <input class="input" type="text" id="inputBuscar" placeholder="Buscar por nombre, email, teléfono..." oninput="filtrarPilotos()" />
+      <input class="input" type="text" id="inputBuscar" placeholder="Buscar por nombre, número, categoría, email o teléfono..." oninput="filtrarPilotos()" />
       <select class="select" id="filtroLicencia" onchange="filtrarPilotos()">
         <option value="">Todos los estatus de licencia</option>
         <option>Vigente</option><option>Vencida</option><option>Suspendida</option>
@@ -66,7 +66,7 @@
         <table class="tabla">
           <thead>
             <tr>
-              <th>Piloto</th><th>Sangre</th><th>Teléfono</th><th>Nacionalidad</th><th>Licencia</th><th>Estatus</th><th>Última etapa</th><th>Carreras</th><th></th>
+              <th>Piloto</th><th id="thSangre">Sangre</th><th id="thTelefono">Teléfono</th><th id="thNacionalidad">Nacionalidad</th><th>Licencia</th><th>Estatus</th><th>Última etapa</th><th>Carreras</th><th></th>
             </tr>
           </thead>
           <tbody id="tbodyPilotos">
@@ -167,6 +167,9 @@
   <!-- Menú de acciones (kebab), compartido por todas las filas -->
   <div class="menu-dropdown" id="menuAcciones"></div>
 
+  <input type="hidden" id="fotoAdminId" />
+  <input type="file" id="fotoAdminInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="subirFotoAdmin()" />
+
   <script src="../admin/config.js"></script>
   <script>
     requerirSesion();
@@ -179,7 +182,10 @@
     }
     if (usuario.rol === 'torre') {
       document.getElementById('btnNuevoPiloto').style.display = 'none';
-      document.querySelector('a[href="resultados.html"]').style.display = 'none';
+      document.querySelector('a[href="formularios.html"]').style.display = 'none';
+      document.getElementById('thSangre').textContent = 'Número';
+      document.getElementById('thTelefono').textContent = 'Categoría';
+      document.getElementById('thNacionalidad').textContent = '';
     }
 
     let pilotos = [];
@@ -207,24 +213,27 @@
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:32px;height:32px;border-radius:50%;background:${inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(230,57,70,0.15)'};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(230,57,70,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? '#f59e0b' : '#e63946'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${esc(p.nombre_completo[0])}</div>
+              <div style="width:32px;height:32px;border-radius:50%;background:${p.foto_perfil ? `url('${UPLOADS_BASE}${p.foto_perfil}') center/cover` : (inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(230,57,70,0.15)')};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(230,57,70,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? '#f59e0b' : '#e63946'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${p.foto_perfil ? '' : esc(p.nombre_completo[0])}</div>
               <div>
                 <div style="display:flex;align-items:center;gap:6px">
                   <span style="font-weight:600">${esc(p.nombre_completo)}</span>
                   ${p.numero_piloto ? `<span style="font-family:'Bebas Neue';font-size:0.85rem;padding:1px 7px;border-radius:5px;${p.numero_piloto===1?'background:rgba(230,57,70,0.2);color:#e63946;border:1px solid rgba(230,57,70,0.4)':'background:#1a1a1a;color:#888;border:1px solid #2a2a2a'}">#${p.numero_piloto}</span>` : ''}
                 </div>
                 ${p.email ? `<div style="font-size:0.75rem;color:#666">${esc(p.email)}</div>` : ''}
+                ${p.anio_inicio_autodromo ? `<div style="font-size:0.7rem;color:#3b82f6;margin-top:2px">🏁 ${new Date().getFullYear() - p.anio_inicio_autodromo + 1} año(s) corriendo en el autódromo</div>` : ''}
                 ${inactivo  ? `<div style="font-size:0.68rem;color:#f59e0b;display:flex;align-items:center;gap:3px;margin-top:2px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Sin actividad reciente</div>` : ''}
                 ${sinEtapas ? `<div style="font-size:0.68rem;color:#555;margin-top:2px">Nunca ha competido</div>` : ''}
               </div>
             </div>
           </td>
-          <td><span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946;display:flex;align-items:center;gap:4px">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            ${esc(p.tipo_sangre)}
-          </span></td>
-          <td style="color:#666">${esc(p.telefono || '—')}</td>
-          <td style="color:#666">${esc(p.nacionalidad)}</td>
+          <td>${usuario.rol === 'torre'
+            ? `<span style="font-family:'Bebas Neue';font-size:1.3rem;color:#e63946">${p.numero_piloto ? '#'+p.numero_piloto : '—'}</span>`
+            : `<span style="font-family:'Bebas Neue';font-size:1.1rem;color:#e63946;display:flex;align-items:center;gap:4px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                ${esc(p.tipo_sangre)}
+              </span>`}</td>
+          <td style="color:#666">${usuario.rol === 'torre' ? esc(p.ultima_categoria || '—') : esc(p.telefono || '—')}</td>
+          <td style="color:#666">${usuario.rol === 'torre' ? '<span style="color:#333">—</span>' : esc(p.nacionalidad)}</td>
           <td style="color:#666;font-size:0.8rem">${esc(p.numero_licencia || '—')}</td>
           <td>${badgeEstatus(p.estatus_licencia)}</td>
           <td style="font-size:0.8rem;color:#666">${formatFecha(p.ultima_carrera_fecha) || '—'}</td>
@@ -255,7 +264,9 @@
           p.nombre_completo.toLowerCase().includes(buscar) ||
           (p.email || '').toLowerCase().includes(buscar) ||
           (p.telefono || '').includes(buscar) ||
-          (p.numero_licencia || '').toLowerCase().includes(buscar);
+          (p.numero_licencia || '').toLowerCase().includes(buscar) ||
+          String(p.numero_piloto || '').includes(buscar) ||
+          (p.ultima_categoria || '').toLowerCase().includes(buscar);
         const matchEstatus = !estatus || p.estatus_licencia === estatus;
         const matchActividad =
           !actividad ||
@@ -381,6 +392,28 @@
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
+    async function subirFotoAdmin() {
+      const id = document.getElementById('fotoAdminId').value;
+      const input = document.getElementById('fotoAdminInput');
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { input.value = ''; return mostrarToast('La imagen no puede pesar más de 5MB', 'error'); }
+      try {
+        const fd = new FormData();
+        fd.append('foto', file);
+        const res = await fetch(`${API_URL}/pilotos/${id}/foto`, {
+          method: 'PATCH',
+          headers: { 'Authorization': `Bearer ${obtenerToken()}` },
+          body: fd,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error al subir la foto');
+        mostrarToast('Foto de perfil actualizada');
+        cargarPilotos();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+      finally { input.value = ''; }
+    }
+
     // ── Menú de acciones (kebab) ────────────────────────────────────────────
     let menuAbiertoBtn = null;
 
@@ -408,6 +441,12 @@
             ${p.numero_piloto === 1 ? `Restaurar #${p.numero_piloto_anterior || '?'}` : 'Asignar #1'}
           </button>`);
         }
+      }
+      if (usuario.rol === 'admin' || usuario.rol === 'inscripciones') {
+        items.push(`<button class="menu-item" onclick="document.getElementById('fotoAdminId').value=${id};document.getElementById('fotoAdminInput').click();cerrarMenuAcciones()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Subir foto de perfil
+        </button>`);
       }
       if (usuario.rol === 'admin') {
         items.push(`<button class="menu-item" onclick="resetPasswordPortal(${id});cerrarMenuAcciones()">

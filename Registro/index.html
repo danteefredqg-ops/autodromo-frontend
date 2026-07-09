@@ -244,7 +244,7 @@
   <!-- ═══ PASO 3: Contrato anual ═══ -->
   <div id="p3" style="display:none">
     <div class="card">
-      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Contrato Anual FEMADAC</h2>
+      <h2 style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.08em;margin-bottom:4px">Contrato Anual Autódromo Monterrey</h2>
       <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Requerido una vez por año para participar en los campeonatos</p>
       <div id="a3" class="alert"></div>
 
@@ -255,15 +255,15 @@
       <div id="contratoFormulario">
         <div class="contrato-texto">
           <h4>Aviso de Privacidad y Contrato de Participación</h4>
-          <p>Con el objeto de poder atender sus necesidades y brindarle un mejor servicio, la <strong>FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C.</strong>, domiciliada en Calle Goethe No. 40, Colonia Anzures, Delegación Miguel Hidalgo, Distrito Federal, código postal 11590, utilizará sus datos personales aquí recabados para proveer nuestra actividad de sancionar, regular y promover el automovilismo deportivo en sus diferentes especialidades, de conformidad con los lineamientos establecidos por la propia FEMADAC y sus Comisiones Nacionales.</p>
-          <p style="margin-top:8px">El solicitante acepta conocer el <strong>Código Deportivo de FEMADAC</strong> y Reglamentos de las Comisiones Nacionales y se compromete a cumplirlos y respetarlos en todo momento.</p>
+          <p>Con el objeto de poder atender sus necesidades y brindarle un mejor servicio, <strong>Autódromo Monterrey</strong> utilizará sus datos personales aquí recabados para proveer nuestra actividad de sancionar, regular y promover el automovilismo deportivo en sus diferentes especialidades, de conformidad con los lineamientos establecidos por el propio Autódromo Monterrey y sus Comisiones Nacionales.</p>
+          <p style="margin-top:8px">El solicitante acepta conocer el <strong>Código Deportivo de Autódromo Monterrey</strong> y Reglamentos de las Comisiones Nacionales y se compromete a cumplirlos y respetarlos en todo momento.</p>
           <p style="margin-top:8px">Los únicos datos considerados como sensibles son los relativos a su grupo sanguíneo y alergias, para el caso de su atención médica en caso de accidente debido al riesgo que implica la participación en eventos de automovilismo deportivo.</p>
           <p style="margin-top:8px"><strong>EL SOLICITANTE SE OBLIGA A PRESENTAR SU RECLAMACIÓN CORRESPONDIENTE AL SIGUIENTE DÍA HÁBIL DE OCURRIDO EL INCIDENTE.</strong></p>
         </div>
 
         <label class="check-row">
           <input type="checkbox" id="chkContrato1" onchange="verificarChecks()" />
-          <span>He leído y acepto el Código Deportivo de FEMADAC y los Reglamentos de las Comisiones Nacionales, y me comprometo a cumplirlos.</span>
+          <span>He leído y acepto el Código Deportivo de Autódromo Monterrey y los Reglamentos de las Comisiones Nacionales, y me comprometo a cumplirlos.</span>
         </label>
         <label class="check-row" style="margin-top:8px">
           <input type="checkbox" id="chkContrato2" onchange="verificarChecks()" />
@@ -552,7 +552,7 @@
     grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Cargando...</div>';
     try {
       const [etapas, catsData] = await Promise.all([
-        apiFetch(`/campeonatos/${campeonatoSel}/etapas`),
+        apiFetch(`/campeonatos/${campeonatoSel}/etapas?disponibles=1`),
         apiFetch(`/campeonatos/${campeonatoSel}/categorias`),
       ]);
       // Llenar etapas

@@ -2,6 +2,7 @@
 // Cambia esta URL a la de tu Railway backend en producción
 const API_URL = 'https://autodromo.up.railway.app/api';
 // Para desarrollo local usa: const API_URL = 'http://localhost:3001/api';
+const UPLOADS_BASE = API_URL.replace(/\/api$/, '');
 
 // ─── Seguridad: escapar HTML para evitar XSS ──────────────────────────────────
 function esc(str) {

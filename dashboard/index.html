@@ -130,7 +130,7 @@
           <div class="stat-numero" id="statPendientes">—</div>
           <div class="stat-label">Pendientes</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" id="cardRecaudado">
           <div class="stat-icon amarillo">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </div>
@@ -188,7 +188,10 @@
     document.getElementById('tituloNombre').textContent  = usuario.nombre;
     document.getElementById('usuarioRolSub').textContent = ({ admin: 'Administrador', inscripciones: 'Inscripciones', torre: 'Torre de Control' })[usuario.rol] || usuario.rol;
     if (usuario.rol === 'admin') document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
-    if (usuario.rol === 'torre') document.querySelector('a[href="resultados.html"]').style.display = 'none';
+    if (usuario.rol === 'torre') {
+      document.getElementById('cardRecaudado').style.display = 'none';
+      document.querySelector('a[href="formularios.html"]').style.display = 'none';
+    }
 
     let todasInscritas = [];
     let campeonatoActual = null;

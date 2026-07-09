@@ -502,6 +502,7 @@
       <button class="tab" onclick="cambiarTab('carreras')">Carreras</button>
       <button class="tab" onclick="cambiarTab('clasificacion')">Clasificación</button>
       <button class="tab" onclick="cambiarTab('inscripcion')" style="color:var(--rojo)">+ Inscribirse</button>
+      <button class="tab" onclick="cambiarTab('preparadores')">Preparadores</button>
       <button class="tab" onclick="cambiarTab('perfil')">Mi perfil</button>
     </div>
 
@@ -596,8 +597,78 @@
       </div>
     </div>
 
+    <!-- ── PREPARADORES ── -->
+    <div class="seccion" id="sec-preparadores">
+      <div class="perfil-section">
+        <div class="perfil-section-title">Mis Preparadores</div>
+        <p style="font-size:0.78rem;color:var(--sub);margin-bottom:14px">Registra a tus mecánicos/preparadores para tramitarles el seguro. Se les pide la misma información que a ti para la hoja FEMADAC, más una foto.</p>
+        <div id="listaPreparadores"><div class="vacio">Cargando...</div></div>
+        <button class="btn-guardar-perfil" type="button" style="margin-top:14px" onclick="abrirFormPreparador()">+ Registrar preparador</button>
+      </div>
+
+      <div class="perfil-section" id="formPreparadorWrap" style="display:none">
+        <div class="perfil-section-title" id="tituloFormPreparador">Nuevo Preparador</div>
+        <input type="hidden" id="prepId" />
+
+        <div id="prepFotoSection" style="display:none;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <div id="prepFotoPreviewWrap" style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:#0a0a0a;border:2px solid var(--borde);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <img id="prepFotoPreview" src="" style="width:100%;height:100%;object-fit:cover;display:none" />
+              <svg id="prepFotoPlaceholder" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--sub2)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <div>
+              <input type="file" id="prepFotoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="subirFotoPreparador()" />
+              <button class="btn-guardar-perfil" type="button" onclick="document.getElementById('prepFotoInput').click()">Elegir foto / selfie</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-perfil">
+          <div class="campo-p"><label>Apellido paterno *</label><input id="prepApPat" type="text"/></div>
+          <div class="campo-p"><label>Apellido materno</label><input id="prepApMat" type="text"/></div>
+          <div class="campo-p"><label>Nombre(s) *</label><input id="prepNombres" type="text"/></div>
+          <div class="campo-p"><label>Fecha de nacimiento</label><input id="prepFechaNac" type="date"/></div>
+          <div class="campo-p"><label>CURP</label><input id="prepCurp" type="text" maxlength="20" style="text-transform:uppercase"/></div>
+          <div class="campo-p"><label>Teléfono</label><input id="prepTel" type="tel"/></div>
+          <div class="campo-p"><label>Email</label><input id="prepEmail" type="email"/></div>
+          <div class="campo-p"><label>Tipo de sangre</label>
+            <select id="prepSangre">
+              <option value="">Seleccionar...</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+            </select>
+          </div>
+          <div class="campo-p"><label>Nacionalidad</label><input id="prepNacionalidad" type="text" value="Mexicana"/></div>
+          <div class="campo-p"><label>Ciudad</label><input id="prepCiudad" type="text"/></div>
+          <div class="campo-p"><label>Estado</label><input id="prepEstado" type="text"/></div>
+          <div class="campo-p"><label>Contacto de emergencia</label><input id="prepContactoEmerg" type="text"/></div>
+          <div class="campo-p"><label>Tel. de emergencia</label><input id="prepTelEmerg" type="tel"/></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn-guardar-perfil" type="button" onclick="guardarPreparador()">Guardar</button>
+          <button class="btn-guardar-perfil" type="button" style="background:transparent;border:1px solid var(--borde);color:var(--sub)" onclick="cerrarFormPreparador()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ── MI PERFIL ── -->
     <div class="seccion" id="sec-perfil">
+
+      <div class="perfil-section">
+        <div class="perfil-section-title">Foto de perfil</div>
+        <p style="font-size:0.78rem;color:var(--sub);margin-bottom:14px">Necesaria para tu identificación en el Autódromo. Sube una foto tipo credencial o una selfie clara de tu rostro.</p>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div id="fotoPreviewWrap" style="width:96px;height:96px;border-radius:50%;overflow:hidden;background:#0a0a0a;border:2px solid var(--borde);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <img id="fotoPreview" src="" style="width:100%;height:100%;object-fit:cover;display:none" />
+            <svg id="fotoPlaceholder" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--sub2)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div>
+            <input type="file" id="fotoInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="subirFoto()" />
+            <button class="btn-guardar-perfil" type="button" onclick="document.getElementById('fotoInput').click()">Elegir foto</button>
+            <div id="fotoEstado" style="font-size:0.75rem;color:var(--sub);margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
 
       <div class="perfil-section">
         <div class="perfil-section-title">Datos personales</div>
@@ -663,7 +734,9 @@
           <div class="campo-p"><label>Nombre del equipo</label><input id="pEquipo" type="text"/></div>
           <div class="campo-p"><label>Comisión nacional</label><input id="pComision" type="text"/></div>
           <div class="campo-p"><label>Año licencia anterior</label><input id="pAnioLic" type="number" min="2000" max="2030"/></div>
+          <div class="campo-p"><label>¿Desde qué año corres en el Autódromo?</label><input id="pAnioInicio" type="number" min="1990" max="2030"/></div>
         </div>
+        <div id="anosCorriendoTexto" style="font-size:0.78rem;color:var(--sub);margin-top:8px;display:none"></div>
         <div id="alertGuardado" class="alert-guardado">✓ Perfil actualizado correctamente</div>
         <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn-guardar-perfil" onclick="guardarPerfil()">Guardar todos los cambios</button>
@@ -707,6 +780,7 @@
 
 <script>
 const API_URL = 'https://autodromo.up.railway.app/api';
+const UPLOADS_BASE = API_URL.replace(/\/api$/, '');
 const TOKEN_KEY   = 'piloto_token';
 const PILOTO_KEY  = 'piloto_data';
 
@@ -838,6 +912,7 @@ async function abrirPortal(piloto){
 
 // ── Completitud del perfil ──
 const CAMPOS_REQUERIDOS=[
+  {k:'foto_perfil',l:'Foto de perfil'},
   {k:'tipo_sangre',l:'Tipo de sangre'},
   {k:'fecha_nacimiento',l:'Fecha de nacimiento'},
   {k:'curp',l:'CURP'},
@@ -910,7 +985,8 @@ function llenarFormPerfil(p){
     ciudad:'pCiudad',estado:'pEstado',contacto_emergencia:'pContactoEmerg',
     telefono_emergencia:'pTelEmerg',parentesco_emergencia:'pParentesco',
     alergias:'pAlergias',condiciones_medicas:'pCondMed',nombre_equipo:'pEquipo',
-    comision_nacional:'pComision',anio_licencia_anterior:'pAnioLic'};
+    comision_nacional:'pComision',anio_licencia_anterior:'pAnioLic',
+    anio_inicio_autodromo:'pAnioInicio'};
   for(const[k,id] of Object.entries(m)){
     const el=document.getElementById(id);
     if(el && p[k]!=null){
@@ -919,6 +995,212 @@ function llenarFormPerfil(p){
         : p[k];
     }
   }
+  mostrarAnosCorriendo(p.anio_inicio_autodromo);
+  mostrarFotoPerfil(p.foto_perfil);
+}
+
+function mostrarFotoPerfil(fotoPerfil){
+  const img = document.getElementById('fotoPreview');
+  const placeholder = document.getElementById('fotoPlaceholder');
+  if(fotoPerfil){
+    img.src = UPLOADS_BASE + fotoPerfil;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    placeholder.style.display = 'block';
+  }
+}
+
+async function subirFoto(){
+  const input = document.getElementById('fotoInput');
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024) return mostrarToast('La imagen no puede pesar más de 5MB','error');
+  const estado = document.getElementById('fotoEstado');
+  estado.textContent = 'Subiendo...';
+  try{
+    const fd = new FormData();
+    fd.append('foto', file);
+    const token = localStorage.getItem(TOKEN_KEY);
+    const res = await fetch(`${API_URL}/piloto/mi-foto`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: fd,
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Error al subir la foto');
+    pilotoData = { ...pilotoData, foto_perfil: data.foto_perfil };
+    localStorage.setItem(PILOTO_KEY, JSON.stringify(pilotoData));
+    mostrarFotoPerfil(data.foto_perfil);
+    actualizarCompletitud(pilotoData);
+    estado.textContent = '✓ Foto actualizada';
+    mostrarToast('Foto de perfil actualizada');
+  } catch(err){
+    estado.textContent = '';
+    mostrarToast(err.message, 'error');
+  } finally {
+    input.value = '';
+  }
+}
+
+function mostrarAnosCorriendo(anioInicio){
+  const el = document.getElementById('anosCorriendoTexto');
+  if(!anioInicio){ el.style.display='none'; return; }
+  const anios = new Date().getFullYear() - anioInicio + 1;
+  el.textContent = `🏁 ${anios} año${anios!==1?'s':''} corriendo en el Autódromo Monterrey`;
+  el.style.display = 'block';
+}
+
+// ── Preparadores ──
+let preparadoresData = [];
+
+async function cargarPreparadores(){
+  try{
+    preparadoresData = await apiFetch('/piloto/mis-preparadores');
+    renderPreparadores();
+  } catch(err){ mostrarToast(err.message,'error'); }
+}
+
+function renderPreparadores(){
+  const cont = document.getElementById('listaPreparadores');
+  if(!preparadoresData.length){
+    cont.innerHTML = '<div class="vacio">Aún no has registrado ningún preparador</div>';
+    return;
+  }
+  cont.innerHTML = preparadoresData.map(p => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--borde);border-radius:6px;margin-bottom:8px">
+      <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:#0a0a0a;border:1px solid var(--borde);flex-shrink:0;display:flex;align-items:center;justify-content:center">
+        ${p.foto_perfil
+          ? `<img src="${UPLOADS_BASE}${p.foto_perfil}" style="width:100%;height:100%;object-fit:cover"/>`
+          : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sub2)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;color:#fff">${esc(p.nombre_completo)}</div>
+        <div style="font-size:0.75rem;color:var(--sub)">${[p.telefono, p.tipo_sangre].filter(Boolean).join(' · ') || 'Sin datos adicionales'}</div>
+      </div>
+      <button class="btn-guardar-perfil" style="padding:6px 12px;font-size:0.75rem" onclick="editarPreparador(${p.id})">Editar</button>
+      <button class="btn-guardar-perfil" style="padding:6px 12px;font-size:0.75rem;background:transparent;border:1px solid rgba(230,57,70,0.4);color:#e63946" onclick="eliminarPreparador(${p.id})">Eliminar</button>
+    </div>
+  `).join('');
+}
+
+function abrirFormPreparador(){
+  document.getElementById('tituloFormPreparador').textContent = 'Nuevo Preparador';
+  document.getElementById('prepId').value = '';
+  ['prepApPat','prepApMat','prepNombres','prepFechaNac','prepCurp','prepTel','prepEmail',
+   'prepCiudad','prepEstado','prepContactoEmerg','prepTelEmerg'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('prepSangre').value = '';
+  document.getElementById('prepNacionalidad').value = 'Mexicana';
+  document.getElementById('prepFotoSection').style.display = 'none';
+  document.getElementById('formPreparadorWrap').style.display = 'block';
+  document.getElementById('formPreparadorWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function editarPreparador(id){
+  const p = preparadoresData.find(x => x.id === id);
+  if(!p) return;
+  document.getElementById('tituloFormPreparador').textContent = `Editar: ${p.nombre_completo}`;
+  document.getElementById('prepId').value = p.id;
+  document.getElementById('prepApPat').value = p.apellido_paterno || '';
+  document.getElementById('prepApMat').value = p.apellido_materno || '';
+  document.getElementById('prepNombres').value = p.nombres || '';
+  document.getElementById('prepFechaNac').value = p.fecha_nacimiento ? p.fecha_nacimiento.split('T')[0] : '';
+  document.getElementById('prepCurp').value = p.curp || '';
+  document.getElementById('prepTel').value = p.telefono || '';
+  document.getElementById('prepEmail').value = p.email || '';
+  document.getElementById('prepSangre').value = p.tipo_sangre || '';
+  document.getElementById('prepNacionalidad').value = p.nacionalidad || 'Mexicana';
+  document.getElementById('prepCiudad').value = p.ciudad || '';
+  document.getElementById('prepEstado').value = p.estado || '';
+  document.getElementById('prepContactoEmerg').value = p.contacto_emergencia || '';
+  document.getElementById('prepTelEmerg').value = p.telefono_emergencia || '';
+  document.getElementById('prepFotoSection').style.display = 'block';
+  const img = document.getElementById('prepFotoPreview');
+  const placeholder = document.getElementById('prepFotoPlaceholder');
+  if(p.foto_perfil){ img.src = UPLOADS_BASE + p.foto_perfil; img.style.display='block'; placeholder.style.display='none'; }
+  else { img.style.display='none'; placeholder.style.display='block'; }
+  document.getElementById('formPreparadorWrap').style.display = 'block';
+  document.getElementById('formPreparadorWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function cerrarFormPreparador(){
+  document.getElementById('formPreparadorWrap').style.display = 'none';
+}
+
+async function guardarPreparador(){
+  const apPat = document.getElementById('prepApPat').value.trim();
+  const nombres = document.getElementById('prepNombres').value.trim();
+  if(!apPat || !nombres) return mostrarToast('Apellido paterno y nombres son obligatorios','error');
+  const id = document.getElementById('prepId').value;
+  const campos = {
+    apellido_paterno: apPat,
+    apellido_materno: document.getElementById('prepApMat').value.trim() || null,
+    nombres,
+    fecha_nacimiento: document.getElementById('prepFechaNac').value || null,
+    curp: document.getElementById('prepCurp').value.toUpperCase() || null,
+    telefono: document.getElementById('prepTel').value.trim() || null,
+    email: document.getElementById('prepEmail').value.trim() || null,
+    tipo_sangre: document.getElementById('prepSangre').value || null,
+    nacionalidad: document.getElementById('prepNacionalidad').value.trim() || 'Mexicana',
+    ciudad: document.getElementById('prepCiudad').value.trim() || null,
+    estado: document.getElementById('prepEstado').value.trim() || null,
+    contacto_emergencia: document.getElementById('prepContactoEmerg').value.trim() || null,
+    telefono_emergencia: document.getElementById('prepTelEmerg').value.trim() || null,
+  };
+  try{
+    if(id){
+      await apiFetch(`/piloto/mis-preparadores/${id}`, {method:'PUT', body:JSON.stringify(campos)});
+      mostrarToast('Preparador actualizado');
+    } else {
+      const nuevo = await apiFetch('/piloto/mis-preparadores', {method:'POST', body:JSON.stringify(campos)});
+      mostrarToast('Preparador registrado');
+      document.getElementById('prepId').value = nuevo.id;
+      document.getElementById('tituloFormPreparador').textContent = `Editar: ${nuevo.nombre_completo}`;
+      document.getElementById('prepFotoSection').style.display = 'block';
+    }
+    await cargarPreparadores();
+  } catch(err){ mostrarToast(err.message,'error'); }
+}
+
+async function eliminarPreparador(id){
+  const p = preparadoresData.find(x => x.id === id);
+  if(!confirm(`¿Eliminar al preparador "${p?.nombre_completo||''}"?`)) return;
+  try{
+    await apiFetch(`/piloto/mis-preparadores/${id}`, {method:'DELETE'});
+    mostrarToast('Preparador eliminado');
+    cerrarFormPreparador();
+    await cargarPreparadores();
+  } catch(err){ mostrarToast(err.message,'error'); }
+}
+
+async function subirFotoPreparador(){
+  const id = document.getElementById('prepId').value;
+  if(!id) return mostrarToast('Guarda al preparador antes de subir su foto','error');
+  const input = document.getElementById('prepFotoInput');
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024) return mostrarToast('La imagen no puede pesar más de 5MB','error');
+  try{
+    const fd = new FormData();
+    fd.append('foto', file);
+    const token = localStorage.getItem(TOKEN_KEY);
+    const res = await fetch(`${API_URL}/piloto/mis-preparadores/${id}/foto`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: fd,
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Error al subir la foto');
+    const img = document.getElementById('prepFotoPreview');
+    const placeholder = document.getElementById('prepFotoPlaceholder');
+    img.src = UPLOADS_BASE + data.foto_perfil;
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+    mostrarToast('Foto actualizada');
+    await cargarPreparadores();
+  } catch(err){ mostrarToast(err.message,'error'); }
+  finally { input.value=''; }
 }
 
 // ── Dashboard ──
@@ -1049,13 +1331,14 @@ let inscCampDropPoblado = false;
 
 function cambiarTab(id){
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    const ids=['estadisticas','carreras','clasificacion','inscripcion','perfil'];
+    const ids=['estadisticas','carreras','clasificacion','inscripcion','preparadores','perfil'];
     t.classList.toggle('activo',ids[i]===id);
   });
   document.querySelectorAll('.seccion').forEach(s=>s.classList.remove('activa'));
   document.getElementById('sec-'+id).classList.add('activa');
   if(id==='carreras') renderCarreras(carrerasData);
   if(id==='inscripcion' && !inscCampDropPoblado) poblarCampeonatosInscripcion();
+  if(id==='preparadores') cargarPreparadores();
 }
 
 // ── Guardar perfil ──
@@ -1083,12 +1366,21 @@ async function guardarPerfil(){
     nombre_equipo:document.getElementById('pEquipo').value,
     comision_nacional:document.getElementById('pComision').value,
     anio_licencia_anterior:document.getElementById('pAnioLic').value||null,
+    anio_inicio_autodromo:document.getElementById('pAnioInicio').value||null,
   };
+  const anioActual = new Date().getFullYear();
+  if (campos.anio_licencia_anterior && (campos.anio_licencia_anterior < 1990 || campos.anio_licencia_anterior > anioActual)) {
+    return mostrarToast(`El año de licencia anterior debe estar entre 1990 y ${anioActual}`, 'error');
+  }
+  if (campos.anio_inicio_autodromo && (campos.anio_inicio_autodromo < 1990 || campos.anio_inicio_autodromo > anioActual)) {
+    return mostrarToast(`El año de inicio debe estar entre 1990 y ${anioActual}`, 'error');
+  }
   try{
     const updated=await apiFetch('/piloto/mi-perfil',{method:'PATCH',body:JSON.stringify(campos)});
     pilotoData={...pilotoData,...updated};
     localStorage.setItem(PILOTO_KEY,JSON.stringify(pilotoData));
     actualizarCompletitud(pilotoData);
+    mostrarAnosCorriendo(pilotoData.anio_inicio_autodromo);
     const a=document.getElementById('alertGuardado');
     a.style.display='block';
     setTimeout(()=>a.style.display='none',3000);
@@ -1160,11 +1452,13 @@ async function onInscCampChange(){
   }
   try{
     const [etapas, cats] = await Promise.all([
-      apiFetch(`/campeonatos/${campId}/etapas`),
+      apiFetch(`/campeonatos/${campId}/etapas?disponibles=1`),
       apiFetch(`/campeonatos/${campId}/categorias`),
     ]);
-    selEtapa.innerHTML = '<option value="">Selecciona una etapa...</option>' +
-      etapas.map(e=>`<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)}${e.fecha?' ('+formatFecha(e.fecha)+')':''}</option>`).join('');
+    selEtapa.innerHTML = etapas.length
+      ? '<option value="">Selecciona una etapa...</option>' +
+        etapas.map(e=>`<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)}${e.fecha?' ('+formatFecha(e.fecha)+')':''}</option>`).join('')
+      : '<option value="">Sin etapas con inscripciones abiertas</option>';
     renderCatsInscripcion(cats.length ? cats : await apiFetch('/categorias'));
   } catch(err){
     selEtapa.innerHTML = '<option value="">Error al cargar</option>';

@@ -16,6 +16,9 @@
     .corte-desc        { background: rgba(239,68,68,0.12);   color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
     .metodo-tag { font-size:0.68rem;color:#888;padding:2px 6px;border:1px solid #1e1e1e;border-radius:4px }
     .stat-corte { background:#111;border:1px solid #1e1e1e;border-radius:10px;padding:16px 18px;text-align:center }
+    .denom-row { display:grid; grid-template-columns:70px 1fr 90px 110px; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid #1a1a1a; }
+    .denom-input { width:100%; padding:8px 10px; background:#0a0a0a; border:1px solid #1e1e1e; border-radius:6px; color:#fff; font-size:0.9rem; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
   </style>
 </head>
 <body>
@@ -88,6 +91,10 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18,15 12,9 6,15"/></svg>
             Clasificación
           </button>
+          <button class="btn-secundario" id="btnArqueo" style="border-color:rgba(96,165,250,0.5);color:#60a5fa" onclick="cargarArqueo()" title="Contador de billetes y monedas para el precorte de caja">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+            Precorte
+          </button>
         </div>
       </div>
     </div>
@@ -107,7 +114,8 @@
     }
     if (usuario.rol === 'torre') {
       document.getElementById('btnCorte').style.display = 'none';
-      document.querySelector('a[href="resultados.html"]').style.display = 'none';
+      document.getElementById('btnArqueo').style.display = 'none';
+      document.querySelector('a[href="formularios.html"]').style.display = 'none';
     }
 
     let todasCats = [];
@@ -239,6 +247,86 @@
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
+    const DENOMINACIONES = [
+      { tipo: 'Billete', valor: 1000 }, { tipo: 'Billete', valor: 500 }, { tipo: 'Billete', valor: 200 },
+      { tipo: 'Billete', valor: 100 }, { tipo: 'Billete', valor: 50 },   { tipo: 'Billete', valor: 20 },
+      { tipo: 'Moneda',  valor: 20 },  { tipo: 'Moneda',  valor: 10 },  { tipo: 'Moneda',  valor: 5 },
+      { tipo: 'Moneda',  valor: 2 },   { tipo: 'Moneda',  valor: 1 },
+    ];
+
+    async function cargarArqueo() {
+      let efectivoEsperado = null;
+      let contexto = '';
+      const { qs } = getQueryParams();
+      if (qs) {
+        try {
+          const data = await apiFetch(`/reportes/corte-general?${qs}`);
+          efectivoEsperado = data.resumen.ingresosEfectivo;
+          const campId = document.getElementById('selCampeonato').value;
+          contexto = campId === 'todos' ? 'Todos los campeonatos'
+            : data.etapa ? `${data.campeonato?.nombre || ''} — Etapa ${data.etapa.numero}: ${data.etapa.nombre}`
+            : (data.campeonato?.nombre || '');
+        } catch { /* si no hay contexto seleccionado, el arqueo funciona igual sin comparar */ }
+      }
+
+      document.getElementById('contenidoReporte').innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em;color:#60a5fa">Precorte — Arqueo de Efectivo</h2>
+            ${contexto ? `<div style="font-size:0.8rem;color:#555;margin-top:2px">${esc(contexto)}</div>` : ''}
+          </div>
+        </div>
+        <div class="card" style="padding:20px">
+          <div class="denom-row" style="border-bottom:2px solid #2a2a2a;font-size:0.68rem;color:#555;text-transform:uppercase;letter-spacing:0.08em;font-weight:700">
+            <div>Tipo</div><div>Denominación</div><div>Cantidad</div><div style="text-align:right">Subtotal</div>
+          </div>
+          ${DENOMINACIONES.map((d, i) => `
+            <div class="denom-row">
+              <div style="color:#666;font-size:0.78rem">${d.tipo}</div>
+              <div style="font-family:'Bebas Neue';font-size:1.2rem;color:${d.tipo==='Billete'?'#4ade80':'#fbbf24'}">$${d.valor}</div>
+              <input class="denom-input" type="number" min="0" step="1" id="denom-${i}" oninput="actualizarArqueo()" placeholder="0" />
+              <div id="sub-${i}" style="text-align:right;color:#888;font-family:'Bebas Neue';font-size:1.1rem">$0</div>
+            </div>
+          `).join('')}
+          <div style="display:flex;justify-content:flex-end;gap:32px;margin-top:20px;padding-top:16px;border-top:1px solid #1e1e1e;flex-wrap:wrap">
+            ${efectivoEsperado !== null ? `
+              <div style="text-align:right">
+                <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.08em">Esperado en efectivo</div>
+                <div style="font-family:'Bebas Neue';font-size:1.6rem;color:#888">$${efectivoEsperado.toLocaleString('es-MX',{minimumFractionDigits:2})}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.08em">Diferencia</div>
+                <div id="diferenciaArqueo" style="font-family:'Bebas Neue';font-size:1.6rem;color:#888">—</div>
+              </div>
+            ` : ''}
+            <div style="text-align:right">
+              <div style="font-size:0.65rem;color:#555;text-transform:uppercase;letter-spacing:0.08em">Total contado</div>
+              <div id="totalArqueo" style="font-family:'Bebas Neue';font-size:2.2rem;color:#60a5fa">$0.00</div>
+            </div>
+          </div>
+        </div>
+      `;
+      window._arqueoEsperado = efectivoEsperado;
+    }
+
+    function actualizarArqueo() {
+      let total = 0;
+      DENOMINACIONES.forEach((d, i) => {
+        const cant = parseInt(document.getElementById(`denom-${i}`).value) || 0;
+        const sub = cant * d.valor;
+        document.getElementById(`sub-${i}`).textContent = `$${sub.toLocaleString('es-MX')}`;
+        total += sub;
+      });
+      document.getElementById('totalArqueo').textContent = `$${total.toLocaleString('es-MX',{minimumFractionDigits:2})}`;
+      const esperado = window._arqueoEsperado;
+      if (esperado !== null && esperado !== undefined) {
+        const dif = total - esperado;
+        const el = document.getElementById('diferenciaArqueo');
+        el.textContent = `${dif >= 0 ? '+' : ''}$${dif.toLocaleString('es-MX',{minimumFractionDigits:2})}`;
+        el.style.color = dif === 0 ? '#4ade80' : (dif > 0 ? '#fbbf24' : '#f87171');
+      }
+    }
+
     async function cargarCorteGeneral() {
       const { qs } = getQueryParams();
       if (!qs) return mostrarToast('Selecciona un campeonato o etapa', 'advertencia');
@@ -273,6 +361,7 @@
               ['Pendientes',      c.pendientes,                     '#fbbf24'],
               ['Efectivo',        c.efectivo,                       '#60a5fa'],
               ['Transferencia',   c.transferencia,                  '#a78bfa'],
+              ['Intercambio',     c.intercambio,                    '#fb923c'],
               ['Recaudado',       '$'+c.ingresos.toLocaleString('es-MX',{minimumFractionDigits:2}), '#4ade80'],
               ...(costo > 0 ? [['Esperado', '$'+c.esperado.toLocaleString('es-MX',{minimumFractionDigits:2}), '#555']] : []),
             ].map(([label, val, color]) => `
