@@ -173,7 +173,7 @@
             </tbody>
           </table>
         </div>
-        <div id="contadorTabla" style="padding:10px 16px;font-size:0.75rem;color:#555;border-top:1px solid #1a1a1a"></div>
+        <div id="contadorTabla" style="padding:10px 16px;font-size:0.75rem;color:var(--muted);border-top:1px solid var(--borde)"></div>
       </div>
     </div>
   </main>
@@ -345,7 +345,7 @@
           <td style="color:#666;font-size:0.82rem">${esc(r.vehiculo || '—')}</td>
           <td style="font-size:0.78rem">
             ${r.metodo_pago
-              ? `<span style="padding:2px 7px;border-radius:4px;background:${r.metodo_pago==='Efectivo'?'rgba(34,197,94,0.1)':'rgba(99,102,241,0.1)'};color:${r.metodo_pago==='Efectivo'?'#4ade80':'#818cf8'};border:1px solid ${r.metodo_pago==='Efectivo'?'rgba(34,197,94,0.3)':'rgba(99,102,241,0.3)'}">${esc(r.metodo_pago)}</span>`
+              ? `<span style="padding:2px 7px;border-radius:4px;background:${r.metodo_pago==='Efectivo'?'rgba(34,197,94,0.1)':'rgba(99,102,241,0.1)'};color:${r.metodo_pago==='Efectivo'?'#15803d':'#818cf8'};border:1px solid ${r.metodo_pago==='Efectivo'?'rgba(34,197,94,0.3)':'rgba(99,102,241,0.3)'}">${esc(r.metodo_pago)}</span>`
               : '<span style="color:#555">—</span>'}
           </td>
           <td>${badgeEstatus(r.estatus)}</td>

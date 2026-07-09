@@ -104,19 +104,19 @@
     </div>
 
     <!-- ── Preview del piloto ── -->
-    <div id="previewVacio" class="card" style="padding:40px;text-align:center;color:#555">
+    <div id="previewVacio" class="card" style="padding:40px;text-align:center;color:var(--muted)">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5" style="margin-bottom:12px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <div style="font-family:'Bebas Neue';font-size:1.3rem;color:#444">Selecciona un piloto para ver sus datos</div>
+      <div style="font-family:'Bebas Neue';font-size:1.3rem;color:var(--muted)">Selecciona un piloto para ver sus datos</div>
       <div style="font-size:0.8rem;margin-top:4px">Los formularios se auto-rellenan con la información del piloto</div>
     </div>
 
     <div id="previewPiloto" style="display:none">
       <div class="card" style="padding:20px;margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
-          <div id="pvAvatar" style="width:52px;height:52px;border-radius:50%;background:#e6394622;border:2px solid #e6394644;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:1.6rem;color:#e63946"></div>
+          <div id="pvAvatar" style="width:52px;height:52px;border-radius:50%;background:#c1121f22;border:2px solid #c1121f44;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:1.6rem;color:var(--rojo)"></div>
           <div>
             <div id="pvNombre" style="font-weight:700;font-size:1.1rem"></div>
-            <div id="pvSub" style="font-size:0.8rem;color:#666;margin-top:2px"></div>
+            <div id="pvSub" style="font-size:0.8rem;color:var(--muted);margin-top:2px"></div>
           </div>
           <button class="btn-secundario" style="margin-left:auto;padding:7px 14px;font-size:0.75rem" onclick="abrirModalExtra()">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -126,14 +126,14 @@
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="pvGrid"></div>
 
         <!-- Inscripción activa -->
-        <div id="pvInscripcion" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #1e1e1e">
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:8px">Inscripción seleccionada</div>
+        <div id="pvInscripcion" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--borde)">
+          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Inscripción seleccionada</div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px" id="pvInscGrid"></div>
         </div>
 
         <!-- Preparadores del piloto -->
-        <div id="pvPreparadores" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #1e1e1e">
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#555;margin-bottom:8px">Preparadores registrados</div>
+        <div id="pvPreparadores" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--borde)">
+          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Preparadores registrados</div>
           <div id="pvPreparadoresLista"></div>
         </div>
       </div>
@@ -147,7 +147,7 @@
           <button class="modal-cerrar" onclick="cerrarModalExtra()">✕</button>
         </div>
         <div class="modal-body">
-          <p style="font-size:0.78rem;color:#666;margin-bottom:14px">Estos datos se guardan en el perfil y se usan para rellenar los formularios automáticamente.</p>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:14px">Estos datos se guardan en el perfil y se usan para rellenar los formularios automáticamente.</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div class="campo"><label class="etiqueta">CURP / RFC</label><input class="input" id="xCurp" placeholder="Ej: GAMJ850101HNLRCN04" /></div>
             <div class="campo"><label class="etiqueta">Año licencia anterior</label><input class="input" type="number" id="xLicAnio" placeholder="2024" min="2000" max="2030" /></div>
@@ -193,8 +193,8 @@
 
   <style>
     .form-card {
-      background: #0d0d0d;
-      border: 1px solid #1e1e1e;
+      background: var(--card);
+      border: 1px solid var(--borde);
       border-radius: 14px;
       padding: 28px 20px;
       cursor: pointer;
@@ -206,14 +206,14 @@
       gap: 10px;
       user-select: none;
     }
-    .form-card:hover { border-color: #e63946; background: rgba(230,57,70,0.06); transform: translateY(-2px); }
-    .form-card-icon { color: #e63946; opacity: 0.8; }
+    .form-card:hover { border-color: var(--rojo); background: rgba(193,18,31,0.06); transform: translateY(-2px); }
+    .form-card-icon { color: var(--rojo); opacity: 0.8; }
     .form-card:hover .form-card-icon { opacity: 1; }
-    .form-card-nombre { font-family: 'Bebas Neue'; font-size: 1.5rem; letter-spacing: 0.06em; color: #fff; }
-    .form-card-desc { font-size: 0.75rem; color: #555; line-height: 1.4; }
+    .form-card-nombre { font-family: 'Bebas Neue'; font-size: 1.5rem; letter-spacing: 0.06em; color: var(--texto); }
+    .form-card-desc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
     .form-card-btn {
       margin-top: 8px;
-      background: #e63946;
+      background: var(--rojo);
       color: #fff;
       border: none;
       border-radius: 8px;
@@ -228,11 +228,11 @@
       gap: 6px;
       transition: background 0.18s;
     }
-    .form-card:hover .form-card-btn { background: #c1121f; }
+    .form-card:hover .form-card-btn { background: var(--rojo-d); }
     .pv-campo { font-size: 0.8rem; }
-    .pv-lbl { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #444; margin-bottom: 2px; }
-    .pv-val { color: #ccc; }
-    .pv-val.missing { color: #f59e0b; font-style: italic; }
+    .pv-lbl { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+    .pv-val { color: var(--texto); }
+    .pv-val.missing { color: var(--amarillo); font-style: italic; }
   </style>
 
   <script src="../admin/config.js"></script>
@@ -249,41 +249,32 @@
     let inscripcionActual = null; // inscripción seleccionada
     let todasLasInscripciones = []; // inscripciones del piloto actual
 
-    // ── Logos para los PDF (FEMADAC, CONADE) ─────────────────────────────────────
-    // Coloca los archivos en frontend/assets/femadac-logo.png y conade-logo.png.
-    // Si no existen todavía, los PDF se generan igual mostrando solo el texto.
-    let logoFemadacImg = null, logoConadeImg = null;
-    (function precargarLogosFemadac() {
+    // ── Hojas oficiales FEMADAC como fondo (frontend/assets/femadac-pagina1.png y
+    // femadac-pagina2.png) — el PDF se genera dibujando la hoja real de fondo y
+    // escribiendo encima solo los valores, en vez de recrear el formato.
+    let femadacPag1Img = null, femadacPag2Img = null;
+    (function precargarHojasFemadac() {
       const cargar = (src) => new Promise(resolve => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => resolve(null);
         img.src = src;
       });
-      Promise.all([cargar('../assets/femadac-logo.png'), cargar('../assets/conade-logo.png')])
-        .then(([femadac, conade]) => { logoFemadacImg = femadac; logoConadeImg = conade; });
+      Promise.all([cargar('../assets/femadac-pagina1.png'), cargar('../assets/femadac-pagina2.png')])
+        .then(([p1, p2]) => { femadacPag1Img = p1; femadacPag2Img = p2; });
     })();
 
-    function dibujarLogoFemadac(doc) {
-      if (!logoFemadacImg) return;
-      try {
-        const alturaMM = 16;
-        const anchoMM  = alturaMM * (logoFemadacImg.width / logoFemadacImg.height);
-        doc.addImage(logoFemadacImg, 'PNG', 108 - anchoMM / 2, 4, anchoMM, alturaMM);
-      } catch { /* si la imagen no es un formato soportado, se omite sin romper el PDF */ }
-    }
+    const FEMADAC_PAGE_W = 215.9, FEMADAC_PAGE_H = 279.4; // carta, en mm
 
-    function dibujarPiePaginaFemadac(doc) {
-      const yPie = 273;
-      if (logoConadeImg) {
-        try {
-          const alturaMM = 10;
-          const anchoMM  = alturaMM * (logoConadeImg.width / logoConadeImg.height);
-          doc.addImage(logoConadeImg, 'PNG', 15, yPie - 4, anchoMM, alturaMM);
-        } catch { /* se omite si el formato no es soportado */ }
+    function dibujarFondoFemadac(doc, img) {
+      if (img) {
+        try { doc.addImage(img, 'PNG', 0, 0, FEMADAC_PAGE_W, FEMADAC_PAGE_H); return; }
+        catch {}
       }
-      doc.setFont('helvetica','normal'); doc.setFontSize(6.4);
-      doc.text('GOETHE 40 (ESQ. DARWIN) COL. ANZURES, CDMX, MÉXICO.  C.P. 11590  TELS. 555254-0011  555254-0084   Email: femadac@femadac.org.mx', 108, yPie + 3, {align:'center'});
+      // Si todavía no subiste los archivos de imagen, avisa en el propio PDF en vez de fallar silenciosamente.
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(200,0,0);
+      doc.text('Falta frontend/assets/femadac-pagina1.png y femadac-pagina2.png en el proyecto.', 15, 15);
+      doc.setTextColor(0,0,0);
     }
 
     // ── Init ──────────────────────────────────────────────────────────────────
@@ -403,13 +394,13 @@
       if (preps.length > 0) {
         pvPrep.style.display = 'block';
         document.getElementById('pvPreparadoresLista').innerHTML = preps.map(prep => `
-          <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #1e1e1e;border-radius:8px;margin-bottom:8px">
-            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:#0a0a0a;border:1px solid #1e1e1e;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';color:#666">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--borde);border-radius:8px;margin-bottom:8px">
+            <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;background:var(--dark);border:1px solid var(--borde);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';color:var(--muted)">
               ${prep.foto_perfil ? `<img src="${UPLOADS_BASE}${prep.foto_perfil}" style="width:100%;height:100%;object-fit:cover"/>` : esc((prep.nombres||'?')[0].toUpperCase())}
             </div>
             <div style="flex:1;min-width:0">
               <div style="font-weight:600;font-size:0.85rem">${esc(prep.nombre_completo)}</div>
-              <div style="font-size:0.72rem;color:#666">${[prep.telefono, prep.tipo_sangre].filter(Boolean).join(' · ') || 'Sin datos adicionales'}</div>
+              <div style="font-size:0.72rem;color:var(--muted)">${[prep.telefono, prep.tipo_sangre].filter(Boolean).join(' · ') || 'Sin datos adicionales'}</div>
             </div>
             <button class="btn-secundario" style="padding:6px 12px;font-size:0.7rem" onclick="pdfFemadacPreparador(${prep.id})">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -488,9 +479,10 @@
     }
 
     // ── FEMADAC ───────────────────────────────────────────────────────────────
-    // Página 1 (solicitud) reproduce el formato oficial campo por campo, en el
-    // mismo orden. Página 2 (convenio de liberación) usa el texto literal del
-    // documento oficial de FEMADAC — ver agregarConvenioFemadac() más abajo.
+    // Dibuja la hoja oficial (femadac-pagina1.png / femadac-pagina2.png) como
+    // fondo exacto y escribe encima SOLO los valores, en los espacios en blanco.
+    // Las posiciones son un primer ajuste a ojo sobre la imagen real — si algún
+    // campo no cae exacto en la línea, se corrige moviendo su x/y aquí.
     function pdfFemadac() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'letter' });
@@ -498,63 +490,47 @@
       const i   = inscripcionActual;
       const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
 
-      dibujarLogoFemadac(doc);
-      doc.setFont('helvetica','bold'); doc.setFontSize(10);
-      doc.text('FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C.', 108, 22, {align:'center'});
-      doc.setFont('helvetica','normal'); doc.setFontSize(8);
-      doc.text('Solicitud de Licencia / Registro de Piloto', 108, 27, {align:'center'});
-      doc.setLineWidth(0.4); doc.line(15, 30, 201, 30);
+      dibujarFondoFemadac(doc, femadacPag1Img);
+      doc.setTextColor(20,20,120);
+      doc.setFont('helvetica','normal');
 
-      let y = 37;
-      const campo = (lbl, val, x1, x2, yp) => {
-        doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
-        doc.text(lbl.toUpperCase(), x1, yp - 1);
-        doc.setFont('helvetica','normal'); doc.setFontSize(9);
-        doc.text(String(val||''), x1, yp + 4);
-        doc.setLineWidth(0.2); doc.setDrawColor(160,160,160);
-        doc.line(x1, yp + 5.5, x2, yp + 5.5);
+      const val = (x, y, texto, tamano = 8.5) => {
+        if (!texto) return;
+        doc.setFontSize(tamano);
+        doc.text(String(texto), x, y);
       };
+      const marca = (x, y) => { doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.text('X', x, y); doc.setFont('helvetica','normal'); };
 
-      campo('Apellido Paterno',  p.apellido_paterno, 15,  80,  y);
-      campo('Apellido Materno',  p.apellido_materno, 85,  145, y);
-      campo('Nombre(s)',         p.nombres,          150, 201, y);
-      y += 14;
+      // Fila 1: Apellido Paterno / Materno / Nombre(s) — sobre la línea, antes de la etiqueta
+      val(17,  38, p.apellido_paterno);
+      val(97,  38, p.apellido_materno);
+      val(162, 38, p.nombres);
 
-      campo('Calle',    p.calle,    15,  90,  y);
-      campo('Núm. Ext', p.num_ext,  95,  120, y);
-      campo('Núm. Int', p.num_int,  125, 150, y);
-      campo('Colonia',  p.colonia,  155, 185, y);
-      campo('C.P.',     p.cp,       187, 201, y);
-      y += 14;
+      // Fila 2: Calle / Núm Ext / Núm Int / Colonia / C.P.
+      val(17,  50, p.calle);
+      val(100, 50, p.num_ext);
+      val(127, 50, p.num_int);
+      val(153, 50, p.colonia);
+      val(186, 50, p.cp);
 
-      campo('Ciudad',            p.ciudad,    15, 80,  y);
-      campo('Estado',            p.estado,    85, 145, y);
-      campo('Teléfono Domicilio',p.telefono,  150, 201, y);
-      y += 14;
+      // Ciudad / Estado / Teléfono domicilio
+      val(32,  60, p.ciudad);
+      val(100, 60, p.estado);
+      val(163, 60, p.telefono);
 
-      campo('Email',  p.email,     15,  110, y);
-      campo('Celular',p.telefono,  115, 201, y);
-      y += 14;
+      // Email / Celular
+      val(28,  68, p.email);
+      val(140, 68, p.telefono);
 
-      // Escolaridad + Nacionalidad (misma fila, como en el formato oficial)
-      doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
-      doc.text('ESCOLARIDAD', 15, y - 1);
-      const escOps = ['Primaria','Secundaria','Media Superior','Superior Cursando','Superior Terminada'];
-      let ex = 15;
-      escOps.forEach(op => {
-        doc.rect(ex, y + 1, 3.5, 3.5);
-        if ((p.escolaridad||'') === op) { doc.setFont('helvetica','bold'); doc.text('✓', ex+0.4, y+4); doc.setFont('helvetica','normal'); }
-        doc.setFont('helvetica','normal'); doc.setFontSize(6.8);
-        doc.text(op, ex + 5, y + 4.2);
-        ex += 26;
-      });
-      campo('Nacionalidad', p.nacionalidad, 172, 201, y - 1);
-      doc.setLineWidth(0.2); doc.setDrawColor(160,160,160); doc.line(15, y + 7, 201, y + 7);
-      y += 14;
+      // Escolaridad (marca la que aplique) — Primaria/Secundaria/Media Sup./Superior Cursando/Superior Terminada
+      const escXs = { 'Primaria':36, 'Secundaria':76, 'Media Superior':116, 'Superior Cursando':158, 'Superior Terminada':198 };
+      if (p.escolaridad && escXs[p.escolaridad] != null) marca(escXs[p.escolaridad], 76);
+      val(178, 76, p.nacionalidad, 8);
 
-      campo('Lugar de nacimiento', p.lugar_nacimiento, 15, 201, y);
-      y += 14;
+      // Lugar de nacimiento
+      val(60, 84, p.lugar_nacimiento);
 
+      // Fecha de nacimiento / Edad / CURP
       const fechaNac = p.fecha_nacimiento ? new Date(p.fecha_nacimiento).toLocaleDateString('es-MX') : '';
       let edad = '';
       if (p.fecha_nacimiento) {
@@ -562,159 +538,57 @@
         const hoyD = new Date();
         edad = hoyD.getFullYear() - nac.getFullYear() - ((hoyD.getMonth() < nac.getMonth() || (hoyD.getMonth() === nac.getMonth() && hoyD.getDate() < nac.getDate())) ? 1 : 0);
       }
-      campo('Fecha de nacimiento', fechaNac,     15, 70,  y);
-      campo('Edad',                edad,          75, 100, y);
-      campo('CURP o RFC',          p.curp,        105, 201, y);
-      y += 14;
+      val(48,  90, fechaNac, 7.5);
+      val(103, 90, edad);
+      val(143, 90, p.curp);
 
-      campo('Nombre de contacto en caso de emergencia', p.contacto_emergencia, 15, 201, y);
-      y += 14;
+      // Nombre de contacto en caso de emergencia
+      val(97, 98, p.contacto_emergencia);
 
-      campo('Parentesco', p.parentesco_emergencia, 15,  90,  y);
-      campo('Teléfono',   p.telefono_emergencia,    95, 201, y);
-      y += 14;
+      // Parentesco / Teléfono
+      val(42,  106, p.parentesco_emergencia);
+      val(113, 106, p.telefono_emergencia);
 
-      campo('Año de licencia deportiva anterior', p.anio_licencia_anterior, 15, 201, y);
-      y += 14;
+      // Año de licencia deportiva anterior
+      val(82, 118, p.anio_licencia_anterior);
 
-      campo('Tipo de Sangre', p.tipo_sangre, 15, 90,  y);
-      campo('Alergias',       p.alergias,     95, 201, y);
-      y += 14;
+      // Tipo de sangre / Alergias
+      val(47, 127, p.tipo_sangre);
+      val(98, 127, p.alergias);
 
-      campo('Condiciones médicas especiales', p.condiciones_medicas, 15, 201, y);
-      y += 14;
+      // Condiciones médicas especiales
+      val(70, 136, p.condiciones_medicas);
 
-      // Comisión nacional
-      doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
-      doc.text('COMISIÓN NACIONAL', 15, y - 1);
-      const comOps = ['PISTA','KARTISMO','RALLIES','ACELERACIÓN','OFF-ROAD','VINTAGE','CLÁSICOS DE COMPETENCIA'];
+      // Comisión nacional (marca la(s) que apliquen)
+      const comXs = { 'PISTA':32, 'KARTISMO':62, 'RALLIES':92, 'ACELERACIÓN':122, 'OFF-ROAD':152, 'VINTAGE':175, 'CLÁSICOS DE COMPETENCIA':200 };
       const selCom = (p.comision_nacional||'').split(',').map(s=>s.trim());
-      ex = 15;
-      comOps.forEach(op => {
-        doc.rect(ex, y + 1, 3.5, 3.5);
-        if (selCom.includes(op)) { doc.setFont('helvetica','bold'); doc.text('✓', ex+0.4, y+4); doc.setFont('helvetica','normal'); }
-        doc.setFont('helvetica','normal'); doc.setFontSize(7);
-        doc.text(op, ex + 5, y + 4.2);
-        ex += 27;
-      });
-      doc.line(15, y + 7, 201, y + 7);
-      y += 14;
+      selCom.forEach(op => { if (comXs[op] != null) marca(comXs[op], 145); });
 
+      // Serial o evento / Categoría
       const catNombre = i?.categoria_nombre || '';
-      campo('Serial o evento en el que participa', 'Campeonato 1/4 de milla', 15, 130, y);
-      campo('Categoría', catNombre, 135, 201, y);
-      y += 14;
+      val(92,  154, 'Campeonato 1/4 de milla');
+      val(173, 154, catNombre);
 
-      campo('Nombre del equipo o del club al que pertenece', p.nombre_equipo, 15, 201, y);
-      y += 16;
+      // Nombre del equipo o del club
+      val(107, 163, p.nombre_equipo);
 
-      const escribirP1 = (texto, opciones = {}) => {
-        const { negrita = false, tamano = 6.2, x = 15, ancho = 186, espacio = 3, centrado = false } = opciones;
-        doc.setFont('helvetica', negrita ? 'bold' : 'normal');
-        doc.setFontSize(tamano);
-        const lineas = doc.splitTextToSize(texto, ancho);
-        lineas.forEach(linea => {
-          if (y > 279 - 20) { doc.addPage(); dibujarLogoFemadac(doc); y = 30; }
-          doc.text(linea, centrado ? 108 : x, y, centrado ? { align: 'center' } : undefined);
-          y += espacio;
-        });
-      };
-
-      escribirP1('EL SOLICITANTE DECLARA Y ACEPTA CONOCER EL CÓDIGO DEPORTIVO DE FEMADAC Y REGLAMENTOS DE LA(S) COMISIÓN(ES) NACIONAL(ES) EN LA(S) QUE PARTICIPA Y SE COMPROMETE A CUMPLIRLOS Y RESPETARLOS EN TODO MOMENTO. EL SOLICITANTE EXPRESA QUE LOS DATOS MANIFESTADOS, SON VERIDICOS Y VIGENTES EN LA FECHA QUE SEÑALA ESTA SOLICITUD. FEMADAC Y LAS COMISIONES NACIONALES AFILIADAS, CONSIDERAN OFICIALES LOS DATOS MANIFESTADOS, PARA RECIBIR NOTIFICACIONES DE LAS AUTORIDADES DEPORTIVAS MENCIONADAS. EL SOLICITANTE SE OBLIGA DE INMEDIATO A DAR AVISO POR ESCRITO, A FEMADAC DE CUALQUIER CAMBIO DE DATOS CONTENIDOS EN ESTA SOLICITUD, QUE TUVIERA DURANTE EL AÑO DE LA VIGENCIA DE SU LICENCIA DEPORTIVA O ACREDITACIÓN. EL SOLICITANTE ACUERDA Y ACEPTA QUE LOS DATOS FALSOS, U OMISIONES, SERAN MOTIVO DE LA PENALIZACION QUE SEÑALE EL CODIGO DEPORTIVO.');
-      y += 2;
-      escribirP1('AVISO DE PRIVACIDAD', { negrita: true, tamano: 6.8, centrado: true });
-      escribirP1('Con el objeto de poder atender sus necesidades y brindarle un mejor servicio, la FEDERACION MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C., con domicilio en Calle Goethe número 40, Colonia Anzures, Delegación Miguel Hidalgo, Distrito Federal, código postal 11590; utilizará sus datos personales aquí recabados para proveer nuestra actividad de sancionar, regular y promover el automovilismo deportivo en sus diferentes especialidades, de conformidad con los lineamientos establecidos por la propia FEMADAC y sus Comisiones Nacionales, incluyendo toda la información requerida para la expedición de su Licencia Deportiva y/o demás acreditaciones. Así como para darle aviso sobre cambios, notificaciones, trámites relacionados con el seguro deportivo, importaciones temporales, dar cumplimiento a obligaciones contraídas, brindar información a las autoridades competentes en su caso, evaluar la calidad del servicio que le brindamos y para fines estadísticos. Siendo todas estas finalidades necesarias para la relación jurídica que existirá entre Usted y la FEMADAC, por lo que no es aplicable en nuestro caso la implementación de la mecánica para la negativa al tratamiento de datos personales para finalidades no necesarias. Los únicos datos considerados como sensibles por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares que le serán requeridos son los relativos a su grupo sanguíneo y alergias, para el caso de su atención médica en caso de accidente debido al riesgo que implica la participación en eventos de automovilismo deportivo, así como un certificado médico en caso de solicitar su licencia deportiva como piloto, con la única finalidad de acreditar que se encuentra físicamente apto para participar como piloto o copiloto en un evento de automovilismo deportivo con el objeto de garantizar la mayor seguridad posible en los eventos.');
-      escribirP1('Para mayor información acerca del tratamiento y de los derechos que puede hacer valer, Usted puede acceder a nuestro aviso de privacidad completo a través de nuestra página de Internet (sección aviso de privacidad), www.femadac.org.mx, así como al teléfono (55) 5254 0011 o al (55) 5254 0084, o bien presentar un escrito en nuestras oficinas, o enviar correo electrónico a femadac@femadac.org.mx.');
-      escribirP1('El Aviso de Privacidad de la FEMADAC fue puesto a mi disposición de manera personal antes de recabar mis datos personales, aceptando expresamente los términos y condiciones del mismo y autorizando la transferencia de mis datos a los terceros y para los fines expresamente indicados en dicho aviso.');
-      y += 1;
-      escribirP1('EL SOLICITANTE SE OBLIGA A PRESENTAR SU RECLAMACIÓN CORRESPONDIENTE AL SIGUIENTE DÍA HÁBIL DE OCURRIDO EL INCIDENTE.', { negrita: true, tamano: 6.4 });
-      y += 10;
-
-      if (y > 279 - 30) { doc.addPage(); dibujarLogoFemadac(doc); y = 30; }
-      doc.setLineWidth(0.3);
-      doc.line(15, y, 90, y);  doc.line(115, y, 201, y);
-      doc.setFontSize(6.6);
-      doc.text('NOMBRE Y FIRMA DEL PADRE O TUTOR EN CASO DE SER MENOR DE EDAD', 52, y+4, {align:'center'});
-      doc.text('FIRMA DEL SOLICITANTE', 158, y+4, {align:'center'});
-      y += 10;
+      doc.setTextColor(0,0,0);
       doc.setFontSize(7);
-      doc.text(`FECHA: ${hoy}`, 115, y);
+      doc.text(hoy, 165, 220);
 
-      dibujarPiePaginaFemadac(doc);
-
-      agregarConvenioFemadac(doc, p.nombre_completo);
+      // Página 2 — convenio, tal cual, solo se llena el nombre del solicitante en la declaración III
+      doc.addPage();
+      dibujarFondoFemadac(doc, femadacPag2Img);
+      doc.setTextColor(20,20,120);
+      doc.setFontSize(6.8);
+      doc.text(String(p.nombre_completo || ''), 55, 45);
+      doc.setTextColor(0,0,0);
 
       doc.save(`FEMADAC_${p.nombre_completo.replace(/ /g,'_')}.pdf`);
     }
 
-    // ── Convenio de eliminación y liberación de responsabilidades (página 2 FEMADAC) ──
-    // Texto literal proporcionado por el cliente — no parafrasear ni resumir.
-    function agregarConvenioFemadac(doc, nombreSolicitante) {
-      doc.addPage();
-      const marginBottom = 20;
-      let y = 16;
-
-      const escribir = (texto, opciones = {}) => {
-        const { negrita = false, tamano = 6.6, x = 15, ancho = 186, espacio = 3.2, centrado = false } = opciones;
-        doc.setFont('helvetica', negrita ? 'bold' : 'normal');
-        doc.setFontSize(tamano);
-        const lineas = doc.splitTextToSize(texto, ancho);
-        lineas.forEach(linea => {
-          if (y > 279 - marginBottom) { doc.addPage(); y = 16; }
-          doc.text(linea, centrado ? 108 : x, y, centrado ? { align: 'center' } : undefined);
-          y += espacio;
-        });
-      };
-
-      escribir('CONVENIO DE ELIMINACIÓN Y LIBERACIÓN DE RESPONSABILIDADES, DAÑOS, INDEMNIZACIONES Y RIESGOS QUE CELEBRAN POR UNA PARTE LA FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C. (FEMADAC) Y POR LA OTRA EL SOLICITANTE DE LA LICENCIA DEPORTIVA QUE SE MENCIONA EN EL CAPITULO DE DECLARACIONES Y QUE SE OTORGA EN BASE A LAS SIGUIENTES:', { negrita: true, tamano: 7.2, centrado: true });
-      y += 2;
-      escribir('D E C L A R A C I O N E S', { negrita: true, tamano: 7.5, centrado: true });
-      y += 1.5;
-
-      escribir('I.- Declara la FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C. (FEMADAC) por conducto de su representante que es una Asociación Civil constituida legalmente según consta en escritura pública 70343 de fecha 24 de septiembre de 1986, pasada ante la fe de Notario Público No. 42 del Distrito Federal, Lic. Salvador Godínez Viera y cuyo objeto social es fomentar, encauzar, reglamentar, supervisar, sancionar y coordinar la práctica sistemática del automovilismo deportivo en territorio nacional, siendo la máxima autoridad del automovilismo deportivo nacional.');
-      escribir('II.- Que dentro de sus funciones como autoridad del automovilismo deportivo nacional se encuentra la de expedir licencias deportivas tanto a pilotos, mecánicos, Comisarios deportivos, oficiales de pista y a todas aquellas personas que desempeñen labores oficiales y reconocidas en los eventos de automovilismo deportivo en las distintas Comisiones Nacionales afiliadas a FEMADAC.');
-      escribir(`III.- Por su parte el solicitante ${nombreSolicitante || '_______________________________'}, declara que previamente ha formulado a la FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C., (FEMADAC) solicitud de licencia deportiva o acreditación.`);
-      escribir('IV.- En virtud de las declaraciones anteriores las partes otorgan el presente convenio el cual se sujeta a los dispuesto en las siguientes:');
-      y += 2;
-      escribir('C L A U S U L A S', { negrita: true, tamano: 7.5, centrado: true });
-      y += 1.5;
-
-      const clausulas = [
-        ['PRIMERA.-', 'El solicitante libera, descarga y acuerda no reservarse ninguna acción de tipo legal ni demandar o considerar responsable o reclamar indemnización alguna en contra de las instituciones y personas físicas o morales que se describen en el párrafo cuatro del presente convenio, sobre cualquier reclamación o riesgo que pueda ocasionar daños, lesiones o muerte ya sea en propiedades, equipos o en su persona y que se originen como resultado de sus participaciones en cualquier evento sancionado por FEMADAC, cualquiera que sea su causa, incluyendo la de negligencia de las personas a las cuales se libera de responsabilidad o instituciones señaladas o por la negligencia de cualquier otra persona. Este convenio incluye pero no limita, su compromiso de participar o en su preparación para su práctica, por consiguiente su participación como observador, trabajador o en una posición de Oficial en cualquier Evento sancionado, en su llegada o en su retiro de las instalaciones en las cuales este Evento se lleva a cabo, de cualquier daño que pudiera infringirse, incluyendo sin limitantes la falta de cumplimiento de los reglamentos, la falla al efectuar las revisiones, las condiciones de cualquier parte de la pista o caminos y recorridos y de las instalaciones y áreas para servicio del evento, productos defectuosos y cualquier acto u omisión de cualquiera de las personas anteriormente liberadas en cualquier hecho causado o no por cualquier grado de negligencia.'],
-        ['SEGUNDA.-', 'El solicitante acuerda y acepta que no existe ningún tipo de garantías implícitas o comerciales o capacidad para un uso particular, garantías expresas o implícitas aplicables a cualquier auto de competencia, sus partes, equipo, accesorios, instrumentos, componentes o cualquiera otros productos o bienes utilizados, relacionados de alguna forma con cualquiera de los eventos sancionados, no importando el origen de los mismos. Asimismo el solicitante acuerda y acepta renunciar a cualquier remedio, garantía o responsabilidad expresa o implícita que se presente, por ley o por otra razón incluyendo todas las consecuencias, los daños sean o no ocasionados por negligencia del proveedor de tales bienes, o por cualquier otra persona, la muerte o lesiones de alguna persona causados por o resultantes de la fabricación, construcción, diseño, fórmulas, desarrollos de los mismos, preparación, procesamiento, armado, inspección, pruebas, listados, certificados, avisos, instrucciones, venta, anuncios, empaques, envolturas, o etiquetas de este tipo de productos o de los componentes de un producto.'],
-        ['TERCERA.-', 'El solicitante expresamente reconoce y acepta que las actividades en las carreras automovilísticas son muy peligrosas y que involucran el riesgo de lesiones graves, muerte o daños materiales. El solicitante acepta que su presencia dentro de las instalaciones, participación o asistencia a los eventos sancionados es voluntaria y que dependerá totalmente de su juicio y habilidades y no de la propiedad, equipo, participación, asistencia y de las condiciones previstas por otros. El solicitante asume la responsabilidad de todos los riesgos de lesiones corporales, muerte o daños en bienes materiales que sean causadas por cualquier motivo, incluyendo el de negligencia de las partes que anteriormente libera de otros, cuando se encuentre en las áreas restringidas, que son definidas en el párrafo nueve, que sigue o cuando se encuentre compitiendo, oficiando, observando, trabajando para o en cualquier forma durante su participación en cualquier evento sancionado por FEMADAC.'],
-        ['CUARTA.-', 'El solicitante expresa y manifiesta que las instituciones y personas a las que releva y elimina de toda responsabilidad y que se aluden en la cláusula primera son: FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C., las COMISIONES NACIONALES afiliadas que integran a FEMADAC, el PROMOTOR y los organizadores de los eventos sancionados por FEMADAC y las Comisiones Nacionales, los propietarios de las instalaciones registradas y avaladas por la Federación, los arrendadores, operadores, diseñadores, constructores de las instalaciones en donde se llevan a cabo los eventos sancionados, los participantes de los eventos sancionados, los Oficiales de los eventos sancionados y sus ayudantes, los propietarios de los autos, los pilotos, los miembros de los equipos y todas aquellas personas que se encuentren ubicadas en áreas restringidas como se describe en el párrafo nueve de este acuerdo durante la celebración de los eventos sancionados. Los patrocinadores y anunciantes, incluyendo sin limitaciones a todos los patrocinadores y anunciantes de los equipos, eventos y de los campeonatos, así como a los anunciantes, patrocinadores, dueños, arrendadores, fabricantes, distribuidores, vendedores, mayoristas, inspectores y patrocinadores de todos los autos y de todos los equipos de carreras, que se encuentren en las instalaciones durante el evento sancionado. Todas las compañías, personas o firmas aseguradas con una póliza de daños corporales, muerte y/o responsabilidad civil tramitada por medio de FEMADAC, por cualquier organizador de un evento sancionado, promotor, patrocinador o equipo y cada una de las personas liberadas, oficiales, comisarios deportivos, directores, agentes, representantes, empleados, dueños, sucesores, administradores, representantes personales y personas designadas.'],
-        ['QUINTA.-', 'El solicitante expresa y acepta que el presente convenio surtirá efectos y podrá hacerse valer en su contra, en contra de sus representantes, administradores, guardianes herederos, parientes, cónyuges y cualquier otro causa-habiente.'],
-        ['SEXTA.-', 'Manifiesta el solicitante de que el presente convenio es otorgado en consideración a que si se acepta su solicitud de afiliación, tendrá el derecho de participar y/o competir en eventos sancionados, se le permita ingresar para tal fin en las áreas de seguridad restringidas descritas en la cláusula nueve.'],
-        ['SÉPTIMA.-', 'El suscrito solicitante manifiesta, que acepta, acuerda y entiende que ha visto o vera tan pronto como ingrese en un área restringida tal como se describe en el párrafo nueve, en cualquier evento sancionado, que inspeccionará estas áreas restringidas en todas y cada una de sus porciones tan pronto ingrese en ellas. El solicitante garantiza que su ingreso en estas áreas y que su participación, si la hubiera en el evento, constituye su aceptación de que las ha inspeccionado y encontrado razonablemente seguras y aptas para los propósitos de su uso. El solicitante acepta y garantiza que en cualquier momento en el que se encuentre en alguna de estas áreas y las considere inseguras, lo comunicará de inmediato a los Oficiales y se retirará de estas áreas restringidas.'],
-        ['OCTAVA.-', 'El solicitante acepta expresamente que las personas que ha liberado de responsabilidades aún en el caso de un acto de negligencia de su parte, ya sea activo o pasivo, acto de omisión, pasado, presente o futuro en cualquier grado o que emane de alguna forma de responsabilidad, garantía implícita o confiabilidad de un producto y que este acuerdo tiene la intención de ser tan amplio como lo permita la ley y que si una porción de este es declarado nulo, las cláusulas restantes continuarán teniendo toda su validez legal, responsabilidades y efectos.'],
-        ['NOVENA.-', 'Para los efectos del presente convenio, las partes manifiestan y convienen que las áreas restringidas están definidas pero no limitadas a los caminos, recorridos, zonas de servicio, controles, metas, pista, pits, paddock y estacionamientos, a la parte interna de la pista, las áreas de desaceleración, los garages, las áreas de observadores, todos los caminos de acceso dentro de la pista y de la ruta, las áreas de concesiones y cualquier área en donde se desarrollen actividades relacionadas con el evento.'],
-        ['DÉCIMA.-', 'El solicitante acepta y acuerda que el presente convenio podría ser extendido en relación de futuras reclamaciones que en el presente desconoce que existan y que al momento de firmarlo aún no se ha definido y que pueden o podrán afectar cualquier decisión en el caso de aplicar el presente convenio.'],
-        ['DÉCIMA PRIMERA.-', 'El solicitante se compromete a relevar e indemnizar respectivamente de cualquier responsabilidad a las personas e instituciones que ha liberado en caso de ocurrir cualquier incidente como resultado de su presencia en las áreas e instalaciones, de su participación en un evento sancionado, o cualquier lesión o daño que resulte de esta, incluyendo pero no limitando cualquier responsabilidad hacia otros, resultante de un acto de omisión de su parte, sus agentes, empleados, colaboradores, socios o cualquier otra persona relacionada con la misma.'],
-        ['DÉCIMA SEGUNDA.-', 'El solicitante reconoce expresamente que por el simple hecho de solicitar licencia deportiva o acreditación como piloto, mecánico, oficiales de pista y de controles, directores de carrera, comisarios deportivos, delegados estatales, medios de comunicación, directores de equipo, organizadores, médicos, y cualquier otra categoría análoga o auxiliar, según sea el caso, acepta contar con las aptitudes físicas y mentales que se requieren en una actividad de alto riesgo como lo es el automovilismo deportivo en todas y cada una de las categorías que lo conforman, reconociendo contar con la experiencia mínima que se requiere para desempeñar la actividad del automovilismo deportivo, ya sea en la categoría de piloto y de las que se describen en este párrafo o cualquier otra análoga o auxiliar en dicha actividad.'],
-        ['DÉCIMA TERCERA.-', 'En el caso del solicitante de licencia deportiva de piloto, el solicitante declara bajo protesta de decir verdad, que cuenta con licencia de conducir vigente legalmente expedida por la autoridad que corresponda. FEMADAC, las Comisiones Nacionales afiliadas a esta, el comisario deportivo y/o los promotores u organizadores, tiene la facultad de corroborar que el solicitante cuente con licencia de conducir, con la licencia deportiva que corresponda y en su caso de corroborar que cuenta con la habilidad física, mental, de conocimientos básicos, de reglamentos federales y estatales en materia de tránsito vehicular y de destreza requerida para esta actividad, para lo cual podrán auxiliarse con especialistas que en cada materia sea necesario.'],
-        ['DÉCIMA CUARTA.-', 'La FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C. y las COMISIONES NACIONALES que integran a FEMADAC, expresan su conformidad con todas y cada una de las cláusulas anteriores y reunidos los requisitos administrativos, técnicos, médicos y reglamentarios están de acuerdo en expedir al solicitante la licencia deportiva o acreditación No.________ la cual se otorga en los términos y condiciones y con las reservas contenidas en el presente convenio y en los términos a que se refieren los artículos 1869, 1870, 1871 y 1872 del Código Civil y en la inteligencia de que el solicitante renuncia expresamente a los derechos que en su caso puedan corresponderle y que se deriven de lo contenido en los artículos 1910, 1911, 1912, 1913, 1914, 1915, 1916, 1917 y 1918 del Código Civil.'],
-        ['DÉCIMA QUINTA.-', 'Las partes señalan que han leído el presente instrumento en todas y cada una de sus partes y comprendido sus términos, condiciones y alcance y que no existe en el mismo, lesión, error, dolo o violencia, por lo que lo ratifican en todas y cada una de sus partes y se sujetan para su interpretación y cumplimiento a la jurisdicción y competencia de los Tribunales Civiles de la ciudad de México, Distrito Federal, renunciando a cualquier fuero presente o futuro que por razones de domicilio pudiera corresponderles.'],
-        ['DÉCIMA SEXTA.-', 'El solicitante acepta expresamente que las fotografías que le sean tomadas en cualquier evento deportivo sancionado por la FEMADAC y/o sus Comisiones Nacionales, incluyendo exposiciones, a él o al automóvil deportivo que conduzca, podrán ser utilizadas para publicaciones, medios electrónicos, etc., de FEMADAC, cediendo desde este momento de manera gratuita todos los derechos de autor y patrimoniales que ello pudiere implicar, a favor de la propia FEMADAC.'],
-      ];
-      clausulas.forEach(([titulo, texto]) => escribir(`${titulo} ${texto}`));
-
-      y += 4;
-      escribir('FIRMADO EN ________________________________________ A LOS ________ DEL MES DE ____________________________________________________ DE _________', { tamano: 6.6 });
-      y += 10;
-      if (y > 279 - marginBottom) { doc.addPage(); y = 20; }
-      doc.setLineWidth(0.3);
-      doc.line(15, y, 90, y);  doc.line(115, y, 201, y);
-      doc.setFontSize(6.5);
-      doc.text('FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C. (FEMADAC)', 52, y+4, {align:'center'});
-      doc.text('EL SOLICITANTE', 158, y+4, {align:'center'});
-      y += 16;
-      doc.line(15, y, 90, y);  doc.line(115, y, 201, y);
-      doc.text('TESTIGO NOMBRE Y FIRMA', 52, y+4, {align:'center'});
-      doc.text('TESTIGO NOMBRE Y FIRMA', 158, y+4, {align:'center'});
-    }
-
     // ── FEMADAC (preparador/crew) ────────────────────────────────────────────
+    // Misma hoja oficial de fondo, llenada con los datos del preparador.
     function pdfFemadacPreparador(prepId) {
       if (!pilotoActual) return;
       const prep = (pilotoActual.preparadores || []).find(x => x.id === prepId);
@@ -723,36 +597,26 @@
       const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'letter' });
       const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
 
-      dibujarLogoFemadac(doc);
-      doc.setFont('helvetica','bold'); doc.setFontSize(10);
-      doc.text('FEDERACIÓN MEXICANA DE AUTOMOVILISMO DEPORTIVO, A.C.', 108, 22, {align:'center'});
-      doc.setFont('helvetica','normal'); doc.setFontSize(8);
-      doc.text('Registro de Preparador / Crew', 108, 27, {align:'center'});
-      doc.setLineWidth(0.4); doc.line(15, 30, 201, 30);
+      dibujarFondoFemadac(doc, femadacPag1Img);
+      doc.setTextColor(20,20,120);
+      doc.setFont('helvetica','normal');
 
-      let y = 37;
-      const campo = (lbl, val, x1, x2, yp) => {
-        doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
-        doc.text(lbl.toUpperCase(), x1, yp - 1);
-        doc.setFont('helvetica','normal'); doc.setFontSize(9);
-        doc.text(String(val||''), x1, yp + 4);
-        doc.setLineWidth(0.2); doc.setDrawColor(160,160,160);
-        doc.line(x1, yp + 5.5, x2, yp + 5.5);
+      const val = (x, y, texto, tamano = 8.5) => {
+        if (!texto) return;
+        doc.setFontSize(tamano);
+        doc.text(String(texto), x, y);
       };
 
-      campo('Apellido Paterno', prep.apellido_paterno, 15,  80,  y);
-      campo('Apellido Materno', prep.apellido_materno, 85,  145, y);
-      campo('Nombre(s)',        prep.nombres,          150, 201, y);
-      y += 14;
+      val(17,  38, prep.apellido_paterno);
+      val(97,  38, prep.apellido_materno);
+      val(162, 38, prep.nombres);
 
-      campo('Ciudad',   prep.ciudad,   15, 80,  y);
-      campo('Estado',   prep.estado,   85, 145, y);
-      campo('Teléfono', prep.telefono, 150, 201, y);
-      y += 14;
+      val(32,  60, prep.ciudad);
+      val(100, 60, prep.estado);
+      val(163, 60, prep.telefono);
 
-      campo('Email',        prep.email,        15,  110, y);
-      campo('Nacionalidad', prep.nacionalidad, 115, 201, y);
-      y += 14;
+      val(28,  68, prep.email);
+      val(178, 76, prep.nacionalidad, 8);
 
       const fechaNac = prep.fecha_nacimiento ? new Date(prep.fecha_nacimiento).toLocaleDateString('es-MX') : '';
       let edad = '';
@@ -761,36 +625,27 @@
         const hoyD = new Date();
         edad = hoyD.getFullYear() - nac.getFullYear() - ((hoyD.getMonth() < nac.getMonth() || (hoyD.getMonth() === nac.getMonth() && hoyD.getDate() < nac.getDate())) ? 1 : 0);
       }
-      campo('Fecha de nacimiento', fechaNac,  15,  70,  y);
-      campo('Edad',                edad,       75,  100, y);
-      campo('CURP',                prep.curp,  105, 201, y);
-      y += 14;
+      val(48,  90, fechaNac, 7.5);
+      val(103, 90, edad);
+      val(143, 90, prep.curp);
 
-      campo('Contacto emergencia', prep.contacto_emergencia,  15,  100, y);
-      campo('Tel. emergencia',     prep.telefono_emergencia,  105, 201, y);
-      y += 14;
+      val(97, 98, prep.contacto_emergencia);
+      val(113, 106, prep.telefono_emergencia);
 
-      campo('Tipo de Sangre', prep.tipo_sangre, 15, 90, y);
-      y += 14;
+      val(47, 127, prep.tipo_sangre);
 
-      campo('Preparador de (piloto)', pilotoActual.nombre_completo, 15, 201, y);
-      y += 18;
+      val(107, 163, `Preparador de: ${pilotoActual.nombre_completo || ''}`, 7.5);
 
+      doc.setTextColor(0,0,0);
       doc.setFontSize(7);
-      const txt = 'El presente registro se realiza a solicitud del piloto responsable, con el fin de tramitar la cobertura de seguro correspondiente para el personal de preparación (mecánico/crew) durante su participación en Autódromo Monterrey.';
-      doc.text(doc.splitTextToSize(txt, 186), 15, y);
-      y += 14;
+      doc.text(hoy, 165, 220);
 
-      doc.setLineWidth(0.3);
-      doc.line(15, y, 90, y);  doc.line(115, y, 201, y);
-      doc.setFontSize(7);
-      doc.text('FIRMA DEL PREPARADOR', 52, y+4, {align:'center'});
-      doc.text('FIRMA DEL PILOTO RESPONSABLE', 158, y+4, {align:'center'});
-      y += 10;
-      doc.text(`Fecha: ${hoy}`, 15, y);
-
-      dibujarPiePaginaFemadac(doc);
-      agregarConvenioFemadac(doc, prep.nombre_completo);
+      doc.addPage();
+      dibujarFondoFemadac(doc, femadacPag2Img);
+      doc.setTextColor(20,20,120);
+      doc.setFontSize(6.8);
+      doc.text(String(prep.nombre_completo || ''), 55, 45);
+      doc.setTextColor(0,0,0);
 
       doc.save(`FEMADAC_Preparador_${prep.nombre_completo.replace(/ /g,'_')}.pdf`);
     }

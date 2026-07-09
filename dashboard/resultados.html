@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="dashboard.css" />
   <style>
-    .estatus-select.dnf, .estatus-select.dsq { color: #f87171; border-color: rgba(239,68,68,0.4); }
-    .fila-tocada { background: rgba(230,57,70,0.04); }
+    .estatus-select.dnf, .estatus-select.dsq { color: #b91c1c; border-color: rgba(185,28,28,0.4); }
+    .fila-tocada { background: rgba(193,18,31,0.04); }
   </style>
 </head>
 <body>
@@ -182,7 +182,7 @@
               </td>
               <td><input class="input input-posicion" type="number" min="1" step="1" value="${posicion}" ${posDisabled} oninput="onFilaInput(this)" /></td>
               <td><input class="input input-tiempo" type="text" placeholder="Ej: 1:23.456" value="${esc(tiempo)}" oninput="onFilaInput(this)" /></td>
-              <td class="td-puntos" style="color:#4ade80;font-weight:700">${puntosPreview(posicion || null, estatus)}</td>
+              <td class="td-puntos" style="color:#15803d;font-weight:700">${puntosPreview(posicion || null, estatus)}</td>
             </tr>
           `;
         }).join('');

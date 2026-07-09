@@ -10,26 +10,26 @@
     .cat-chip {
       padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
       letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
-      border: 1px solid #2a2a2a; background: #0a0a0a; color: #555;
+      border: 1px solid var(--borde); background: var(--dark); color: var(--muted);
       transition: all 0.18s; font-family: 'Barlow', sans-serif;
     }
-    .cat-chip.sel { color: #fff; }
-    .camp-card { border: 1px solid #1e1e1e; border-radius: 12px; margin-bottom: 14px; overflow: hidden; transition: border-color 0.2s; }
-    .camp-card:hover { border-color: rgba(230,57,70,0.3); }
-    .camp-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; cursor: pointer; background: #111; }
-    .camp-header:hover { background: #131313; }
-    .etapas-panel { border-top: 1px solid #1e1e1e; padding: 16px 20px; background: #0a0a0a; }
-    .etapa-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 8px; border: 1px solid #1a1a1a; margin-bottom: 8px; background: #111; transition: border-color 0.18s; }
-    .etapa-row:hover { border-color: #2a2a2a; }
-    .etapa-num { font-family: 'Bebas Neue'; font-size: 2rem; color: #e63946; min-width: 40px; text-align: center; line-height: 1; }
+    .cat-chip.sel { color: var(--texto); }
+    .camp-card { border: 1px solid var(--borde); border-radius: 12px; margin-bottom: 14px; overflow: hidden; transition: border-color 0.2s; }
+    .camp-card:hover { border-color: rgba(193,18,31,0.3); }
+    .camp-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; cursor: pointer; background: var(--card); }
+    .camp-header:hover { background: var(--dark); }
+    .etapas-panel { border-top: 1px solid var(--borde); padding: 16px 20px; background: var(--dark); }
+    .etapa-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--borde); margin-bottom: 8px; background: var(--card); transition: border-color 0.18s; }
+    .etapa-row:hover { border-color: var(--muted); }
+    .etapa-num { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--rojo); min-width: 40px; text-align: center; line-height: 1; }
     .etapa-info { flex: 1; min-width: 0; }
     .btn-eliminar {
       display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-      background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: #e63946;
+      background: rgba(193,18,31,0.1); border: 1px solid rgba(193,18,31,0.3); color: var(--rojo);
       border-radius: 8px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 600;
       transition: all 0.18s;
     }
-    .btn-eliminar:hover { background: rgba(230,57,70,0.2); border-color: #e63946; }
+    .btn-eliminar:hover { background: rgba(193,18,31,0.2); border-color: var(--rojo); }
   </style>
 </head>
 <body>
@@ -88,7 +88,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div id="formCategoria" style="display:none;border:1px solid #1e1e1e;border-radius:10px;padding:14px;margin-bottom:14px;background:#0a0a0a">
+        <div id="formCategoria" style="display:none;border:1px solid var(--borde);border-radius:10px;padding:14px;margin-bottom:14px;background:var(--dark)">
           <input type="hidden" id="catId" />
           <div class="campo">
             <label class="etiqueta">Nombre *</label>
@@ -97,7 +97,7 @@
           <div class="grid-2" style="margin-top:10px">
             <div class="campo">
               <label class="etiqueta">Color</label>
-              <input class="input" type="color" id="catColor" value="#e63946" style="height:38px;padding:4px" />
+              <input class="input" type="color" id="catColor" value="#c1121f" style="height:38px;padding:4px" />
             </div>
             <div class="campo">
               <label class="etiqueta">Costo por defecto</label>
@@ -139,7 +139,7 @@
         <div class="campo" style="margin-top:16px">
           <label class="etiqueta">Categorías que participan</label>
           <div id="catToggle" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px"></div>
-          <div style="font-size:0.7rem;color:#555;margin-top:6px">Selecciona las categorías y define el costo de inscripción de cada una</div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:6px">Selecciona las categorías y define el costo de inscripción de cada una</div>
           <div id="catCostos"></div>
         </div>
       </div>
@@ -192,7 +192,7 @@
             <input class="input" type="date" id="eCierreInsc" />
           </div>
         </div>
-        <div style="font-size:0.7rem;color:#555;margin-top:4px">Opcional — si las dejas vacías, la etapa siempre está disponible para inscripción pública. Si las llenas, solo aparecerá en el formulario público y el portal del piloto dentro de esas fechas.</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-top:4px">Opcional — si las dejas vacías, la etapa siempre está disponible para inscripción pública. Si las llenas, solo aparecerá en el formulario público y el portal del piloto dentro de esas fechas.</div>
       </div>
       <div class="modal-footer">
         <button class="btn-secundario flex-1" onclick="cerrarModalEtapa()">Cancelar</button>
@@ -229,7 +229,7 @@
         document.getElementById('contador').textContent = `${camps.length} campeonato(s)`;
         const lista = document.getElementById('listaCamps');
         if (camps.length === 0) {
-          lista.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:#555">Sin campeonatos — crea el primero arriba</div>';
+          lista.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:var(--muted)">Sin campeonatos — crea el primero arriba</div>';
           return;
         }
         lista.innerHTML = camps.map(c => {
@@ -243,18 +243,18 @@
           <div class="camp-card" id="campCard-${c.id}">
             <div class="camp-header" onclick="toggleEtapas(${c.id})">
               <div style="display:flex;align-items:center;gap:14px">
-                <div style="padding:8px;background:rgba(230,57,70,0.1);border-radius:8px;flex-shrink:0">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63946" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                <div style="padding:8px;background:rgba(193,18,31,0.1);border-radius:8px;flex-shrink:0">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c1121f" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
                 </div>
                 <div>
-                  <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;color:#e63946;text-transform:uppercase;margin-bottom:1px">Campeonato</div>
+                  <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;color:var(--rojo);text-transform:uppercase;margin-bottom:1px">Campeonato</div>
                   <div style="font-family:'Bebas Neue';font-size:1.45rem;letter-spacing:0.05em;line-height:1.1">${esc(c.nombre)}</div>
                   <div style="display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap">
-                    <span style="font-size:0.7rem;color:#666;display:flex;align-items:center;gap:4px">
+                    <span style="font-size:0.7rem;color:var(--muted);display:flex;align-items:center;gap:4px">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
                       ${etapaLabel}
                     </span>
-                    ${catChips ? `<span style="color:#2a2a2a">|</span>${catChips}` : ''}
+                    ${catChips ? `<span style="color:var(--borde)">|</span>${catChips}` : ''}
                   </div>
                 </div>
               </div>
@@ -269,12 +269,12 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/></svg>
                   </button>
                 ` : ''}
-                <svg id="chev-${c.id}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6,9 12,15 18,9"/></svg>
+                <svg id="chev-${c.id}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a7057" stroke-width="2" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6,9 12,15 18,9"/></svg>
               </div>
             </div>
             <div class="etapas-panel" id="panel-${c.id}" style="display:none">
               <div id="etapasList-${c.id}">
-                <div style="color:#555;font-size:0.8rem;padding:4px 0">Cargando etapas...</div>
+                <div style="color:var(--muted);font-size:0.8rem;padding:4px 0">Cargando etapas...</div>
               </div>
               ${usuario.rol === 'admin' ? `
                 <button onclick="abrirModalEtapa(${c.id})" class="btn-secundario" style="margin-top:10px;width:100%;padding:8px;font-size:0.75rem;display:flex;align-items:center;justify-content:center;gap:6px">
@@ -316,7 +316,7 @@
       try {
         const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
         if (etapas.length === 0) {
-          listEl.innerHTML = '<div style="color:#555;font-size:0.8rem;padding:4px 0">Sin etapas — agrega la primera</div>';
+          listEl.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:4px 0">Sin etapas — agrega la primera</div>';
           return;
         }
         const ahora = new Date();
@@ -325,26 +325,26 @@
           const fechaStr = e.fecha ? e.fecha.split('T')[0] : '';
           const aperturaStr = e.fecha_apertura_inscripcion ? e.fecha_apertura_inscripcion.split('T')[0] : '';
           const cierreStr   = e.fecha_cierre_inscripcion   ? e.fecha_cierre_inscripcion.split('T')[0]   : '';
-          const costoStr = e.costo ? `<span style="color:#4ade80;font-weight:700">$${parseFloat(e.costo).toLocaleString('es-MX',{minimumFractionDigits:2})}</span>` : '<span style="color:#444">Sin costo definido</span>';
-          let inscBadge = '<span style="color:#4ade80">● Inscripción siempre disponible</span>';
+          const costoStr = e.costo ? `<span style="color:#15803d;font-weight:700">$${parseFloat(e.costo).toLocaleString('es-MX',{minimumFractionDigits:2})}</span>` : '<span style="color:var(--muted)">Sin costo definido</span>';
+          let inscBadge = '<span style="color:#15803d">● Inscripción siempre disponible</span>';
           if (aperturaStr || cierreStr) {
-            if (aperturaStr && hoy < aperturaStr) inscBadge = `<span style="color:#fbbf24">● Abre ${formatFecha(aperturaStr)}</span>`;
-            else if (cierreStr && hoy > cierreStr) inscBadge = `<span style="color:#f87171">● Inscripción cerrada</span>`;
-            else inscBadge = `<span style="color:#4ade80">● Abierta${cierreStr ? ' hasta ' + formatFecha(cierreStr) : ''}</span>`;
+            if (aperturaStr && hoy < aperturaStr) inscBadge = `<span style="color:#92400e">● Abre ${formatFecha(aperturaStr)}</span>`;
+            else if (cierreStr && hoy > cierreStr) inscBadge = `<span style="color:#b91c1c">● Inscripción cerrada</span>`;
+            else inscBadge = `<span style="color:#15803d">● Abierta${cierreStr ? ' hasta ' + formatFecha(cierreStr) : ''}</span>`;
           }
           return `
           <div class="etapa-row">
             <div class="etapa-num">${e.numero}</div>
             <div class="etapa-info">
               <div style="font-weight:600;font-size:0.9rem">${esc(e.nombre)}</div>
-              <div style="font-size:0.75rem;color:#555;margin-top:3px;display:flex;flex-wrap:wrap;gap:8px">
+              <div style="font-size:0.75rem;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:8px">
                 <span>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                   ${formatFecha(fechaStr)}
                 </span>
                 <span>${esc(e.ubicacion)}</span>
                 <span>${costoStr}</span>
-                <span style="color:#888">${e.total_inscritos} inscrito(s)</span>
+                <span style="color:var(--muted)">${e.total_inscritos} inscrito(s)</span>
                 <span style="font-weight:600">${inscBadge}</span>
               </div>
             </div>
@@ -365,7 +365,7 @@
           </div>`;
         }).join('');
       } catch (err) {
-        listEl.innerHTML = `<div style="color:#e63946;font-size:0.8rem">${err.message}</div>`;
+        listEl.innerHTML = `<div style="color:var(--rojo);font-size:0.8rem">${err.message}</div>`;
       }
     }
 
@@ -584,15 +584,15 @@
     function renderizarListaCategorias() {
       const cont = document.getElementById('listaCategorias');
       if (todasCats.length === 0) {
-        cont.innerHTML = '<div style="color:#555;font-size:0.8rem;text-align:center;padding:12px">Sin categorías — crea la primera arriba</div>';
+        cont.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Sin categorías — crea la primera arriba</div>';
         return;
       }
       cont.innerHTML = todasCats.map(cat => `
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #1e1e1e;border-radius:8px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--borde);border-radius:8px;margin-bottom:8px">
           <span style="width:14px;height:14px;border-radius:50%;background:${cat.color};flex-shrink:0"></span>
           <div style="flex:1;min-width:0">
             <div style="font-weight:600;font-size:0.85rem">${esc(cat.nombre)}</div>
-            <div style="font-size:0.7rem;color:#666">${cat.costo_default ? '$' + Number(cat.costo_default).toLocaleString('es-MX') : 'Sin costo por defecto'} · ${cat.total_inscritos || 0} inscrito(s)</div>
+            <div style="font-size:0.7rem;color:var(--muted)">${cat.costo_default ? '$' + Number(cat.costo_default).toLocaleString('es-MX') : 'Sin costo por defecto'} · ${cat.total_inscritos || 0} inscrito(s)</div>
           </div>
           <button class="btn-secundario" style="padding:6px 10px;font-size:0.68rem" onclick="abrirFormCategoria(${cat.id})">Editar</button>
           <button class="btn-eliminar" style="padding:6px 10px;font-size:0.68rem" onclick="eliminarCategoria(${cat.id})">Eliminar</button>
@@ -604,7 +604,7 @@
       const cat = id ? todasCats.find(c => c.id === id) : null;
       document.getElementById('catId').value     = cat ? cat.id : '';
       document.getElementById('catNombre').value = cat ? cat.nombre : '';
-      document.getElementById('catColor').value  = cat ? cat.color : '#e63946';
+      document.getElementById('catColor').value  = cat ? cat.color : '#c1121f';
       document.getElementById('catCosto').value  = cat ? (cat.costo_default || '') : '';
       document.getElementById('formCategoria').style.display = 'block';
       document.getElementById('btnNuevaCategoria').style.display = 'none';
