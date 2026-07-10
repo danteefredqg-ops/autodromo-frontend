@@ -351,10 +351,10 @@
     #bannerPerfil .bp-icon{font-size:1.3rem;flex-shrink:0}
     #bannerPerfil .bp-texto{flex:1;min-width:0}
     #bannerPerfil .bp-titulo{font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:0.06em;color:#92400e;margin-bottom:2px}
-    #bannerPerfil .bp-sub{font-size:0.72rem;color:#b8892a;line-height:1.4}
+    #bannerPerfil .bp-sub{font-size:0.72rem;color:#7a5312;line-height:1.4}
     #bannerPerfil .bp-btn{
       padding:8px 16px;background:#92400e;border:none;border-radius:3px;
-      color:#000;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:0.08em;
+      color:#fef6e0;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:0.08em;
       cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity 0.15s;
     }
     #bannerPerfil .bp-btn:hover{opacity:0.85}
@@ -430,7 +430,7 @@
         <label>Correo electrónico</label>
         <input class="input-login" type="email" id="cEmail" placeholder="tu@correo.com"/>
       </div>
-      <div class="campo-login">
+      <div class="campo-login" id="cNumeroWrap">
         <label>Número de piloto <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.62rem;color:var(--sub2)">(opcional si no tienes asignado)</span></label>
         <input class="input-login" type="number" id="cNumero" placeholder="Ej: 42 — déjalo vacío si no tienes"/>
       </div>
@@ -869,7 +869,7 @@ async function crearAcceso(){
   if(pass.length<6) return mostrarError('La contraseña debe tener al menos 6 caracteres');
 
   const mostrandoNuevo = document.getElementById('crearNuevoWrap').style.display !== 'none';
-  const body = { email, numero: numero||undefined, password: pass };
+  const body = { email, numero: mostrandoNuevo ? undefined : (numero||undefined), password: pass };
   if (mostrandoNuevo) {
     const apPat = document.getElementById('cApPat').value.trim();
     const nombres = document.getElementById('cNombres').value.trim();
@@ -894,6 +894,7 @@ async function crearAcceso(){
     if (!res.ok) {
       if (data.requiere_datos_nuevos && !mostrandoNuevo) {
         document.getElementById('crearNuevoWrap').style.display = 'block';
+        document.getElementById('cNumeroWrap').style.display = 'none';
         return mostrarError('Es tu primera vez aquí — completa tus datos abajo para crear tu cuenta.');
       }
       throw new Error(data.error || 'Error al crear acceso');
