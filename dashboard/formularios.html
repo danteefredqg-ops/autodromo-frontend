@@ -510,16 +510,16 @@
       };
 
       // Fila 1: Apellido Paterno / Materno / Nombre(s) — sobre la línea, antes de la etiqueta
-      val(17,  29, p.apellido_paterno);
-      val(97,  29, p.apellido_materno);
-      val(162, 29, p.nombres);
+      val(17,  30.8, p.apellido_paterno);
+      val(97,  30.8, p.apellido_materno);
+      val(162, 30.8, p.nombres);
 
       // Fila 2: Calle / Núm Ext / Núm Int / Colonia / C.P.
-      val(17,  39, p.calle);
-      val(100, 39, p.num_ext);
-      val(127, 39, p.num_int);
-      val(153, 39, p.colonia);
-      val(186, 39, p.cp);
+      val(17,  39.4, p.calle);
+      val(100, 39.4, p.num_ext);
+      val(127, 39.4, p.num_int);
+      val(153, 39.4, p.colonia);
+      val(186, 39.4, p.cp);
 
       // Ciudad / Estado / Teléfono domicilio
       val(32,  48, p.ciudad, 7.5);
@@ -527,16 +527,16 @@
       val(163, 48, p.telefono, 7.5);
 
       // Email / Celular
-      val(28,  54, p.email);
-      val(140, 54, p.telefono);
+      val(28,  55.9, p.email);
+      val(140, 55.9, p.telefono);
 
       // Escolaridad (marca la que aplique) — Primaria/Secundaria/Media Sup./Superior Cursando/Superior Terminada
       const escXs = { 'Primaria':36, 'Secundaria':76, 'Media Superior':116, 'Superior Cursando':158, 'Superior Terminada':198 };
-      if (p.escolaridad && escXs[p.escolaridad] != null) marca(escXs[p.escolaridad], 64);
+      if (p.escolaridad && escXs[p.escolaridad] != null) marca(escXs[p.escolaridad], 65.5);
 
       // Lugar de nacimiento / Nacionalidad
-      val(45, 72, p.lugar_nacimiento);
-      val(178, 72, p.nacionalidad, 8);
+      val(45, 73.2, p.lugar_nacimiento);
+      val(178, 73.2, p.nacionalidad, 8);
 
       // Fecha de nacimiento / Edad / CURP
       const fechaNac = p.fecha_nacimiento ? new Date(p.fecha_nacimiento).toLocaleDateString('es-MX') : '';
@@ -546,45 +546,45 @@
         const hoyD = new Date();
         edad = hoyD.getFullYear() - nac.getFullYear() - ((hoyD.getMonth() < nac.getMonth() || (hoyD.getMonth() === nac.getMonth() && hoyD.getDate() < nac.getDate())) ? 1 : 0);
       }
-      val(48,  82, fechaNac, 7.5);
-      val(103, 82, edad);
-      val(143, 82, p.curp);
+      val(48,  83.2, fechaNac, 7.5);
+      val(103, 83.2, edad);
+      val(143, 83.2, p.curp);
 
       // Nombre de contacto en caso de emergencia
-      val(97, 91, p.contacto_emergencia);
+      val(97, 91.7, p.contacto_emergencia);
 
       // Parentesco / Teléfono
-      val(42,  98, p.parentesco_emergencia);
-      val(113, 98, p.telefono_emergencia);
+      val(42,  100.2, p.parentesco_emergencia);
+      val(113, 100.2, p.telefono_emergencia);
 
       // Año de licencia deportiva anterior
-      val(82, 106, p.anio_licencia_anterior);
+      val(82, 108.7, p.anio_licencia_anterior);
 
       // Tipo de sangre / Alergias
-      val(47, 114, p.tipo_sangre);
-      val(98, 114, p.alergias);
+      val(47, 117.3, p.tipo_sangre);
+      val(98, 117.3, p.alergias);
 
       // Condiciones médicas especiales
-      val(70, 121, p.condiciones_medicas);
+      val(70, 125.7, p.condiciones_medicas);
 
       // Comisión nacional (marca la(s) que apliquen)
       const comXs = { 'PISTA':32, 'KARTISMO':62, 'RALLIES':92, 'ACELERACIÓN':122, 'OFF-ROAD':152, 'VINTAGE':175, 'CLÁSICOS DE COMPETENCIA':200 };
       const selCom = (p.comision_nacional||'').split(',').map(s=>s.trim());
-      selCom.forEach(op => { if (comXs[op] != null) marca(comXs[op], 133); });
+      selCom.forEach(op => { if (comXs[op] != null) marca(comXs[op], 134.3); });
 
       // Serial o evento / Categoría
       const catNombre = i?.categoria_nombre || '';
-      val(92,  138, 'Campeonato 1/4 de milla');
-      val(173, 138, catNombre);
+      val(92,  142.8, 'Campeonato 1/4 de milla');
+      val(173, 142.8, catNombre);
 
       // Nombre del equipo o del club
-      val(107, 146, p.nombre_equipo);
+      val(107, 150.6, p.nombre_equipo);
 
-      page1.drawText(hoy, { x: 165*MM_TO_PT, y: h1 - 257*MM_TO_PT, size: 7, font, color: negro });
+      page1.drawText(hoy, { x: 150*MM_TO_PT, y: h1 - 258*MM_TO_PT, size: 7, font, color: negro });
 
       // Página 2 — convenio, tal cual, solo se llena el nombre del solicitante en la declaración III
       const { height: h2 } = page2.getSize();
-      page2.drawText(String(p.nombre_completo || ''), { x: 50*MM_TO_PT, y: h2 - 50*MM_TO_PT, size: 6.8, font, color: azul });
+      page2.drawText(String(p.nombre_completo || ''), { x: 50*MM_TO_PT, y: h2 - 49.2*MM_TO_PT, size: 6.8, font, color: azul });
 
       const outBytes = await outDoc.save();
       descargarPdfLib(outBytes, `FEMADAC_${p.nombre_completo.replace(/ /g,'_')}.pdf`);
@@ -619,16 +619,16 @@
         page1.drawText(String(texto), { x: x*MM_TO_PT, y: h1 - y*MM_TO_PT, size: tamano, font, color: azul });
       };
 
-      val(17,  29, prep.apellido_paterno);
-      val(97,  29, prep.apellido_materno);
-      val(162, 29, prep.nombres);
+      val(17,  30.8, prep.apellido_paterno);
+      val(97,  30.8, prep.apellido_materno);
+      val(162, 30.8, prep.nombres);
 
       val(32,  48, prep.ciudad, 7.5);
       val(100, 48, prep.estado, 7.5);
       val(163, 48, prep.telefono, 7.5);
 
-      val(28,  54, prep.email);
-      val(178, 72, prep.nacionalidad, 8);
+      val(28,  55.9, prep.email);
+      val(178, 73.2, prep.nacionalidad, 8);
 
       const fechaNac = prep.fecha_nacimiento ? new Date(prep.fecha_nacimiento).toLocaleDateString('es-MX') : '';
       let edad = '';
@@ -637,21 +637,21 @@
         const hoyD = new Date();
         edad = hoyD.getFullYear() - nac.getFullYear() - ((hoyD.getMonth() < nac.getMonth() || (hoyD.getMonth() === nac.getMonth() && hoyD.getDate() < nac.getDate())) ? 1 : 0);
       }
-      val(48,  82, fechaNac, 7.5);
-      val(103, 82, edad);
-      val(143, 82, prep.curp);
+      val(48,  83.2, fechaNac, 7.5);
+      val(103, 83.2, edad);
+      val(143, 83.2, prep.curp);
 
-      val(97, 91, prep.contacto_emergencia);
-      val(113, 98, prep.telefono_emergencia);
+      val(97, 91.7, prep.contacto_emergencia);
+      val(113, 100.2, prep.telefono_emergencia);
 
-      val(47, 114, prep.tipo_sangre);
+      val(47, 117.3, prep.tipo_sangre);
 
-      val(107, 146, `Preparador de: ${pilotoActual.nombre_completo || ''}`, 7.5);
+      val(107, 150.6, `Preparador de: ${pilotoActual.nombre_completo || ''}`, 7.5);
 
-      page1.drawText(hoy, { x: 165*MM_TO_PT, y: h1 - 257*MM_TO_PT, size: 7, font, color: negro });
+      page1.drawText(hoy, { x: 150*MM_TO_PT, y: h1 - 258*MM_TO_PT, size: 7, font, color: negro });
 
       const { height: h2 } = page2.getSize();
-      page2.drawText(String(prep.nombre_completo || ''), { x: 50*MM_TO_PT, y: h2 - 50*MM_TO_PT, size: 6.8, font, color: azul });
+      page2.drawText(String(prep.nombre_completo || ''), { x: 50*MM_TO_PT, y: h2 - 49.2*MM_TO_PT, size: 6.8, font, color: azul });
 
       const outBytes = await outDoc.save();
       descargarPdfLib(outBytes, `FEMADAC_Preparador_${prep.nombre_completo.replace(/ /g,'_')}.pdf`);
