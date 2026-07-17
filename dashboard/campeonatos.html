@@ -265,7 +265,7 @@
                   <button class="btn-primario" style="padding:6px 12px;font-size:0.72rem"
                     onclick="event.stopPropagation();abrirModalEtapa(${c.id})">+ Etapa</button>
                   <button class="btn-eliminar" style="padding:6px 10px;font-size:0.72rem"
-                    onclick="event.stopPropagation();eliminarCampeonato(${c.id},'${esc(c.nombre).replace(/'/g,"\\'")}')">
+                    onclick="event.stopPropagation();eliminarCampeonato(${c.id},'${esc(c.nombre.replace(/'/g,"\\'"))}')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1V6"/></svg>
                   </button>
                 ` : ''}
@@ -353,11 +353,11 @@
               <a href="reportes.html?etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Corte</a>
               ${usuario.rol === 'admin' ? `
                 <button class="btn-secundario" style="padding:6px 10px;font-size:0.7rem"
-                  onclick="editarEtapa(${campId},${e.id},${e.numero},'${esc(e.nombre).replace(/'/g,"\\'")}','${fechaStr}','${esc(e.ubicacion).replace(/'/g,"\\'")}','${esc(e.descripcion||'').replace(/'/g,"\\'")}','${aperturaStr}','${cierreStr}')">
+                  onclick="editarEtapa(${campId},${e.id},${e.numero},'${esc(e.nombre.replace(/'/g,"\\'"))}','${fechaStr}','${esc(e.ubicacion.replace(/'/g,"\\'"))}','${esc((e.descripcion||'').replace(/'/g,"\\'"))}','${aperturaStr}','${cierreStr}')">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
                 <button class="btn-eliminar" style="padding:6px 10px;font-size:0.7rem"
-                  onclick="eliminarEtapa(${campId},${e.id},'${esc(e.nombre).replace(/'/g,"\\'")}')">
+                  onclick="eliminarEtapa(${campId},${e.id},'${esc(e.nombre.replace(/'/g,"\\'"))}')">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/></svg>
                 </button>
               ` : ''}
@@ -519,11 +519,17 @@
       if (apertura && cierre && apertura > cierre) {
         return mostrarToast('La apertura de inscripciones no puede ser después del cierre', 'error');
       }
+      const numeroIngresado = parseInt(document.getElementById('eNumero').value) || null;
+      // Al editar, un número en blanco NO debe reasignarse silenciosamente a 1 —
+      // solo al crear una etapa nueva tiene sentido dejarlo vacío (se autoasigna).
+      if (etapaEditId && !numeroIngresado) {
+        return mostrarToast('El número de etapa es obligatorio', 'error');
+      }
       const btn = document.getElementById('btnGuardarEtapa');
       btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
       try {
         const payload = {
-          numero:      parseInt(document.getElementById('eNumero').value) || null,
+          numero:      numeroIngresado,
           nombre:      document.getElementById('eNombre').value.trim() || null,
           fecha,
           ubicacion:   document.getElementById('eUbicacion').value || 'Autódromo Monterrey',
@@ -532,7 +538,7 @@
           fecha_cierre_inscripcion:   cierre,
         };
         if (etapaEditId) {
-          await apiFetch(`/etapas/${etapaEditId}`, { method: 'PUT', body: JSON.stringify({ ...payload, numero: payload.numero || 1 }) });
+          await apiFetch(`/etapas/${etapaEditId}`, { method: 'PUT', body: JSON.stringify(payload) });
           mostrarToast('Etapa actualizada');
         } else {
           await apiFetch(`/campeonatos/${etapaCampId}/etapas`, { method: 'POST', body: JSON.stringify(payload) });

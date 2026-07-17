@@ -276,7 +276,10 @@
           body: JSON.stringify({ etapa_id: parseInt(etapaId), categoria_id: parseInt(catId), resultados: payload }),
         });
         mostrarToast('Resultados guardados correctamente');
-        cargarPilotosYResultados();
+        // Esperar a que la tabla se recargue antes de reactivar el botón: si no,
+        // un doble clic puede leer la tabla ya vacía ("Cargando...") y mandar un
+        // guardado vacío que borra los resultados recién guardados.
+        await cargarPilotosYResultados();
       } catch (err) {
         mostrarToast(err.message, 'error');
       } finally {

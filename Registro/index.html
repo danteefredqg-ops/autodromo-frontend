@@ -367,11 +367,21 @@
   let campeonatoSel = null;
   let cats = [], campeonatos = [];
   let contratoFirmado = false;
+  let registroCompletado = false;
+
+  // Avisa antes de recargar/cerrar si ya empezó a llenar el formulario, para
+  // que no pierda todo el progreso sin darse cuenta.
+  window.addEventListener('beforeunload', (e) => {
+    if (modo && !registroCompletado) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
 
   // ─── Inicializar ─────────────────────────────────────────────────────────────
   async function init() {
     try {
-      campeonatos = await apiFetch('/campeonatos');
+      campeonatos = await apiFetch('/campeonatos', { sinSesion: true });
       const sel = document.getElementById('iCampeonato');
       sel.innerHTML = '<option value="">Selecciona el campeonato...</option>' +
         campeonatos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
@@ -427,12 +437,7 @@
     const btn = document.getElementById('btnBuscar');
     btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verificando...';
     try {
-      const piloto = await apiFetch('/pilotos/buscar-por-email?email=' + encodeURIComponent(email));
-
-      if (piloto.numero_piloto !== numero) {
-        alerta('a0b', 'El número de piloto no coincide con el email. Si eres nuevo, selecciona "Soy Nuevo".');
-        return;
-      }
+      const piloto = await apiFetch('/pilotos/buscar-por-email?email=' + encodeURIComponent(email) + '&numero=' + numero, { sinSesion: true });
 
       pilotoId            = piloto.id;
       pilotoNumero        = piloto.numero_piloto;
@@ -480,7 +485,7 @@
     if (pilotoId) {
       try {
         const anio = new Date().getFullYear();
-        const estado = await apiFetch(`/contratos/estado?piloto_id=${pilotoId}&anio=${anio}`);
+        const estado = await apiFetch(`/contratos/estado?piloto_id=${pilotoId}&anio=${anio}`, { sinSesion: true });
         contratoFirmado = estado.firmado;
       } catch {}
     }
@@ -552,8 +557,8 @@
     grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Cargando...</div>';
     try {
       const [etapas, catsData] = await Promise.all([
-        apiFetch(`/campeonatos/${campeonatoSel}/etapas?disponibles=1`),
-        apiFetch(`/campeonatos/${campeonatoSel}/categorias`),
+        apiFetch(`/campeonatos/${campeonatoSel}/etapas?disponibles=1`, { sinSesion: true }),
+        apiFetch(`/campeonatos/${campeonatoSel}/categorias`, { sinSesion: true }),
       ]);
       // Llenar etapas
       if (etapas.length === 0) {
@@ -567,7 +572,7 @@
       let catsFinal = catsData;
       let esFallback = false;
       if (catsData.length === 0) {
-        try { catsFinal = await apiFetch('/categorias'); } catch { catsFinal = []; }
+        try { catsFinal = await apiFetch('/categorias', { sinSesion: true }); } catch { catsFinal = []; }
         esFallback = true;
       }
       cats = catsFinal;
@@ -677,6 +682,7 @@
       document.getElementById('cCampeonato').textContent= i.campeonato_nombre;
       document.getElementById('cEtapa').textContent     = i.etapa_nombre || '';
       document.getElementById('cVeh').textContent       = vehTexto || i.vehiculo;
+      registroCompletado = true;
       step(5); show('p5');
     } catch(e) {
       alerta('a4', e.message);
@@ -688,6 +694,7 @@
   // ─── Reiniciar ────────────────────────────────────────────────────────────
   function reiniciar() {
     modo = ''; pilotoId = null; pilotoNumero = null; catSel = null; campeonatoSel = null; contratoFirmado = false;
+    registroCompletado = false;
     document.getElementById('iEtapa').innerHTML = '<option value="">Selecciona el campeonato primero...</option>';
     ['pAPaterno','pAMaterno','pNombres','pTel','pEmail','pNac','pEmerg','pTelEmerg',
      'iNum','iMarca','iAnio','iModelo','iColor','iApodo','emailBuscar','numeroBuscar'].forEach(id => {

@@ -330,21 +330,26 @@
       } catch (err) { mostrarToast(err.message, 'error'); }
     }
 
+    let filtroCampReqId = 0; // evita que una respuesta vieja pise a la más nueva si se cambia rápido
     async function onFiltroCampChange() {
       const campId = document.getElementById('filtroCampeonato').value;
+      const miReqId = ++filtroCampReqId;
       const etapaSelect = document.getElementById('filtroEtapa');
       etapaSelect.innerHTML = '<option value="">Todas las etapas</option>';
       if (!campId) return;
       try {
         const etapas = await apiFetch(`/campeonatos/${campId}/etapas`);
+        if (miReqId !== filtroCampReqId) return;
         etapaSelect.innerHTML = '<option value="">Todas las etapas</option>' +
           etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
       } catch {}
-      cargarInscripciones();
+      if (miReqId === filtroCampReqId) cargarInscripciones();
     }
 
+    let modalCampReqId = 0; // evita que una respuesta vieja pise a la más nueva si se cambia rápido
     async function onModalCampChange() {
       const campId = document.getElementById('iCampeonato').value;
+      const miReqId = ++modalCampReqId;
       categoriaSeleccionada = '';
       document.getElementById('gridCategorias').innerHTML = '';
       const etapaSelect = document.getElementById('iEtapa');
@@ -355,6 +360,7 @@
           apiFetch(`/campeonatos/${campId}/etapas`),
           apiFetch(`/campeonatos/${campId}/categorias`),
         ]);
+        if (miReqId !== modalCampReqId) return; // el usuario ya eligió otro campeonato
         etapaSelect.innerHTML = '<option value="">Seleccionar etapa...</option>' +
           etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
         // Si el campeonato no tiene categorías asignadas, usar todas las disponibles
@@ -514,7 +520,12 @@
       document.getElementById('modalInsc').style.display = 'flex';
     }
 
-    function cerrarModalInsc() { document.getElementById('modalInsc').style.display = 'none'; }
+    function cerrarModalInsc() {
+      document.getElementById('modalInsc').style.display = 'none';
+      // Cancela cualquier búsqueda pendiente: si no, puede resolver después de
+      // reabrir el modal y sobrescribir el piloto que se esté buscando ahora.
+      clearTimeout(buscarTimeout);
+    }
 
     let buscarTimeout = null;
     function buscarPilotoPorNumero(val) {

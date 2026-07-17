@@ -39,13 +39,16 @@
   <script>
     // Redirigir según sesión activa
     const token = localStorage.getItem('autodromo_token');
-    const usuario = JSON.parse(localStorage.getItem('autodromo_usuario') || 'null');
+    let usuario = null;
+    try {
+      usuario = JSON.parse(localStorage.getItem('autodromo_usuario') || 'null');
+    } catch {
+      // Datos corruptos en localStorage: se limpian para no quedar atorados aquí.
+      localStorage.removeItem('autodromo_token');
+      localStorage.removeItem('autodromo_usuario');
+    }
     if (token && usuario) {
-      if (usuario.rol === 'admin' || usuario.rol === 'inscripciones') {
-        window.location.href = './dashboard/index.html';
-      } else {
-        window.location.href = './dashboard/index.html';
-      }
+      window.location.href = './dashboard/index.html';
     } else {
       window.location.href = './Login/index.html';
     }

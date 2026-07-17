@@ -254,13 +254,17 @@
     // se genera copiando las páginas reales del documento (texto vectorial, no una
     // foto) y escribiendo encima solo los valores, en vez de recrear el formato.
     let femadacBytesPromise = null;
-    function cargarPdfOriginalFemadac() {
+    async function cargarPdfOriginalFemadac() {
       if (!femadacBytesPromise) {
         femadacBytesPromise = fetch('../assets/femadac-original.pdf')
           .then(r => r.ok ? r.arrayBuffer() : null)
           .catch(() => null);
       }
-      return femadacBytesPromise;
+      const bytes = await femadacBytesPromise;
+      // Si falló (sin red, archivo movido), no dejar el fallo cacheado para
+      // siempre — el siguiente intento debe volver a pedirlo.
+      if (!bytes) femadacBytesPromise = null;
+      return bytes;
     }
 
     const MM_TO_PT = 72 / 25.4;
@@ -287,8 +291,10 @@
       } catch(e) { mostrarToast(e.message, 'error'); }
     }
 
+    let pilotoChangeReqId = 0; // evita que una respuesta vieja (piloto cambiado rápido) pise a la más nueva
     async function onPilotoChange() {
       const id = document.getElementById('selPiloto').value;
+      const miReqId = ++pilotoChangeReqId;
       pilotoActual = null; inscripcionActual = null; todasLasInscripciones = [];
       document.getElementById('selInscripcion').innerHTML = '<option value="">— Más reciente —</option>';
       document.getElementById('selInscripcion').disabled = true;
@@ -303,6 +309,7 @@
           apiFetch(`/formularios/piloto/${id}`),
           apiFetch(`/inscripciones?piloto_id=${id}`).catch(() => []),
         ]);
+        if (miReqId !== pilotoChangeReqId) return; // el usuario ya eligió otro piloto
         pilotoActual = datos.piloto;
         todasLasInscripciones = Array.isArray(insc) ? insc : [];
 
@@ -318,7 +325,7 @@
           inscripcionActual = todasLasInscripciones[0];
         }
         renderPreview();
-      } catch(e) { mostrarToast(e.message, 'error'); }
+      } catch(e) { if (miReqId === pilotoChangeReqId) mostrarToast(e.message, 'error'); }
     }
 
     function onInscripcionChange() {
@@ -468,11 +475,18 @@
     // ═══════════════════════════════════════════════════════════════════════════
     // GENERAR PDF
     // ═══════════════════════════════════════════════════════════════════════════
-    function generarPDF(tipo) {
+    let generandoPDF = false;
+    async function generarPDF(tipo) {
       if (!pilotoActual) return mostrarToast('Selecciona un piloto primero', 'error');
-      if (tipo === 'femadac')    pdfFemadac();
-      else if (tipo === 'liberacion') pdfLiberacion();
-      else pdfFjo1();
+      if (generandoPDF) return; // evita descargas duplicadas por doble clic
+      generandoPDF = true;
+      try {
+        if (tipo === 'femadac')    await pdfFemadac();
+        else if (tipo === 'liberacion') await pdfLiberacion();
+        else await pdfFjo1();
+      } finally {
+        generandoPDF = false;
+      }
     }
 
     // ── FEMADAC ───────────────────────────────────────────────────────────────
@@ -594,8 +608,11 @@
     // Misma hoja oficial real, llenada con los datos del preparador.
     async function pdfFemadacPreparador(prepId) {
       if (!pilotoActual) return;
+      if (generandoPDF) return; // evita descargas duplicadas por doble clic
       const prep = (pilotoActual.preparadores || []).find(x => x.id === prepId);
       if (!prep) return mostrarToast('Preparador no encontrado', 'error');
+      generandoPDF = true;
+      try {
       const bytes = await cargarPdfOriginalFemadac();
       if (!bytes) {
         return mostrarToast('No se pudo cargar la hoja oficial del FEMADAC. Intenta de nuevo.', 'error');
@@ -655,6 +672,9 @@
 
       const outBytes = await outDoc.save();
       descargarPdfLib(outBytes, `FEMADAC_Preparador_${prep.nombre_completo.replace(/ /g,'_')}.pdf`);
+      } finally {
+        generandoPDF = false;
+      }
     }
 
     // ── LIBERACIÓN ────────────────────────────────────────────────────────────

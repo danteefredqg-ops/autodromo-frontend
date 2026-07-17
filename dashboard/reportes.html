@@ -121,7 +121,14 @@
     let todasCats = [];
 
     async function inicializar() {
-      const [camps, cats] = await Promise.all([apiFetch('/campeonatos'), apiFetch('/categorias')]);
+      let camps, cats;
+      try {
+        [camps, cats] = await Promise.all([apiFetch('/campeonatos'), apiFetch('/categorias')]);
+      } catch (err) {
+        mostrarToast(err.message || 'Error al cargar campeonatos y categorías', 'error');
+        document.getElementById('selCampeonato').innerHTML = '<option value="">Error al cargar — recarga la página</option>';
+        return;
+      }
       todasCats = cats;
 
       const selCamp = document.getElementById('selCampeonato');

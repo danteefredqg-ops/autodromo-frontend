@@ -17,7 +17,14 @@ function obtenerToken() {
 }
 
 function obtenerUsuario() {
-  return JSON.parse(localStorage.getItem('autodromo_usuario') || 'null');
+  try {
+    return JSON.parse(localStorage.getItem('autodromo_usuario') || 'null');
+  } catch {
+    // Datos corruptos: se limpian para no dejar la sesión atorada para siempre.
+    localStorage.removeItem('autodromo_token');
+    localStorage.removeItem('autodromo_usuario');
+    return null;
+  }
 }
 
 function cerrarSesion() {
@@ -70,24 +77,34 @@ function _iniciarMonitorSesion(token) {
 }
 
 // ─── Fetch con autenticación y timeout ───────────────────────────────────────
+// Pasa { sinSesion: true } desde páginas públicas (Registro) para que un token
+// viejo/ajeno que haya quedado en localStorage no se mande, y para que un 401
+// no expulse al usuario a Login (ahí no hay ninguna "sesión" que cerrar).
 async function apiFetch(ruta, opciones = {}) {
-  const token = obtenerToken();
-  const headers = { 'Content-Type': 'application/json', ...opciones.headers };
+  const { sinSesion, ...fetchOpciones } = opciones;
+  const token = sinSesion ? null : obtenerToken();
+  const headers = { 'Content-Type': 'application/json', ...fetchOpciones.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const res = await fetch(`${API_URL}${ruta}`, { ...opciones, headers, signal: controller.signal });
+    const res = await fetch(`${API_URL}${ruta}`, { ...fetchOpciones, headers, signal: controller.signal });
     clearTimeout(timer);
 
     if (res.status === 401) {
+      if (sinSesion) throw new Error('No autorizado');
       cerrarSesion();
       return;
     }
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error(res.ok ? 'Respuesta inválida del servidor' : `Error del servidor (${res.status}). Intenta de nuevo en unos minutos.`);
+    }
     if (!res.ok) throw new Error(data.error || 'Error en la petición');
     return data;
   } catch (err) {

@@ -304,7 +304,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
         });
-        const data = await res.json();
+        let data;
+        try { data = await res.json(); }
+        catch { throw new Error(res.ok ? 'Respuesta inválida del servidor' : `El servidor no respondió correctamente (${res.status}). Intenta de nuevo en unos minutos.`); }
         if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
         localStorage.setItem('autodromo_token', data.token);
         localStorage.setItem('autodromo_usuario', JSON.stringify(data.usuario));
@@ -333,7 +335,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
         });
-        const data = await res.json();
+        let data;
+        try { data = await res.json(); }
+        catch { throw new Error(res.ok ? 'Respuesta inválida del servidor' : `El servidor no respondió correctamente (${res.status}). Intenta de nuevo en unos minutos.`); }
         if (!res.ok) throw new Error(data.error || 'Correo o contraseña incorrectos');
         localStorage.setItem('piloto_token', data.token);
         localStorage.setItem('piloto_data', JSON.stringify(data.piloto));

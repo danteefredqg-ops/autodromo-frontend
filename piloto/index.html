@@ -850,9 +850,11 @@ function mostrarTab(tab){
   document.getElementById('form-crear').style.display = tab==='crear'?'block':'none';
 }
 
-// ── Enter para submit ──
+// ── Enter para submit (solo mientras la pantalla de login está visible —
+// si no, queda pegado y re-dispara el login desde cualquier parte del portal) ──
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
+  if(document.getElementById('pantalla-login').style.display==='none') return;
   if(document.getElementById('form-login').style.display!=='none') iniciarSesion();
   else crearAcceso();
 });
@@ -901,6 +903,14 @@ async function crearAcceso(){
     }
     mostrarToast('¡Acceso creado! Ahora inicia sesión.','exito');
     document.getElementById('lEmail').value=email;
+    // Limpiar el formulario de "crear cuenta" para que el siguiente intento
+    // (ej. registrar a otra persona en el mismo equipo/kiosco) empiece en blanco.
+    ['cEmail','cNumero','cPass','cPass2','cApPat','cApMat','cNombres'].forEach(id=>{
+      document.getElementById(id).value='';
+    });
+    document.getElementById('cSangre').value='';
+    document.getElementById('crearNuevoWrap').style.display='none';
+    document.getElementById('cNumeroWrap').style.display='block';
     mostrarTab('login');
   } catch(err){ mostrarError(err.message); }
   finally{ btn.disabled=false; btn.textContent='Crear mi acceso'; }
@@ -1224,7 +1234,9 @@ async function eliminarPreparador(id){
   try{
     await apiFetch(`/piloto/mis-preparadores/${id}`, {method:'DELETE'});
     mostrarToast('Preparador eliminado');
-    cerrarFormPreparador();
+    // Solo cerrar el form si estaba editando justo al preparador que se borró —
+    // si está editando a otro, no perder esos cambios sin guardar.
+    if(document.getElementById('prepId').value == id) cerrarFormPreparador();
     await cargarPreparadores();
   } catch(err){ mostrarToast(err.message,'error'); }
 }
@@ -1469,6 +1481,7 @@ async function cambiarPass(){
 
 // ── Inscripción desde portal ──
 let inscCatId = null;
+let inscCampReqId = 0; // evita que una respuesta vieja (campeonato cambiado rápido) pise a la más nueva
 
 function poblarCampeonatosInscripcion(){
   const sel = document.getElementById('inscCamp');
@@ -1495,6 +1508,7 @@ function poblarCampeonatosInscripcion(){
 
 async function onInscCampChange(){
   const campId = document.getElementById('inscCamp').value;
+  const miReqId = ++inscCampReqId;
   inscCatId = null;
   const selEtapa = document.getElementById('inscEtapa');
   const catGrid  = document.getElementById('inscCatGrid');
@@ -1510,12 +1524,16 @@ async function onInscCampChange(){
       apiFetch(`/campeonatos/${campId}/etapas?disponibles=1`),
       apiFetch(`/campeonatos/${campId}/categorias`),
     ]);
+    if(miReqId !== inscCampReqId) return; // el usuario ya cambió de campeonato otra vez
     selEtapa.innerHTML = etapas.length
       ? '<option value="">Selecciona una etapa...</option>' +
         etapas.map(e=>`<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)}${e.fecha?' ('+formatFecha(e.fecha)+')':''}</option>`).join('')
       : '<option value="">Sin etapas con inscripciones abiertas</option>';
-    renderCatsInscripcion(cats.length ? cats : await apiFetch('/categorias'));
+    const catsFinal = cats.length ? cats : await apiFetch('/categorias');
+    if(miReqId !== inscCampReqId) return;
+    renderCatsInscripcion(catsFinal);
   } catch(err){
+    if(miReqId !== inscCampReqId) return;
     selEtapa.innerHTML = '<option value="">Error al cargar</option>';
     catGrid.innerHTML  = `<div class="vacio" style="width:100%;padding:16px;color:#b91c1c">${esc(err.message)}</div>`;
   }
