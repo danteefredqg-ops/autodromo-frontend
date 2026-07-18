@@ -14,15 +14,22 @@ frontend/
 ├── admin/
 │   └── config.js           ← API_URL + helpers globales (apiFetch, toast, badges)
 ├── Login/
-│   └── index.html          ← Inicio de sesión
+│   └── index.html          ← Inicio de sesión (staff y piloto)
 ├── Registro/
 │   └── index.html          ← Auto-registro público para pilotos
+├── piloto/
+│   └── index.html          ← Portal de auto-servicio del piloto
+├── assets/
+│   ├── logo.png
+│   └── femadac-original.pdf ← Hoja oficial FEMADAC usada de base para el PDF
 └── dashboard/
     ├── dashboard.css        ← Estilos compartidos de todo el dashboard
     ├── index.html           ← Dashboard principal
     ├── pilotos.html         ← Gestión de pilotos
-    ├── carreras.html        ← Gestión de carreras/etapas
+    ├── campeonatos.html     ← Campeonatos, etapas y categorías
     ├── inscripciones.html   ← Inscripciones + cobros
+    ├── resultados.html      ← Captura de resultados por etapa/categoría
+    ├── formularios.html     ← Generación de PDFs oficiales (FEMADAC, etc.)
     ├── reportes.html        ← Reportes por categoría y corte general
     └── usuarios.html        ← Gestión de usuarios (solo admin)
 ```
