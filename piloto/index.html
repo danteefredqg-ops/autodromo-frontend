@@ -585,7 +585,7 @@
             </div>
           </div>
           <div style="margin-top:14px">
-            <label style="font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:8px">Categoría</label>
+            <label style="font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:8px">Categorías <span style="text-transform:none;letter-spacing:normal;font-weight:400">(puedes elegir varias)</span></label>
             <div id="inscCatGrid" class="insc-cat-grid">
               <div class="vacio" style="width:100%;padding:16px">Selecciona un campeonato para ver las categorías</div>
             </div>
@@ -1480,7 +1480,7 @@ async function cambiarPass(){
 }
 
 // ── Inscripción desde portal ──
-let inscCatId = null;
+let inscCatIds = new Set();
 let inscCampReqId = 0; // evita que una respuesta vieja (campeonato cambiado rápido) pise a la más nueva
 
 function poblarCampeonatosInscripcion(){
@@ -1509,7 +1509,7 @@ function poblarCampeonatosInscripcion(){
 async function onInscCampChange(){
   const campId = document.getElementById('inscCamp').value;
   const miReqId = ++inscCampReqId;
-  inscCatId = null;
+  inscCatIds.clear();
   const selEtapa = document.getElementById('inscEtapa');
   const catGrid  = document.getElementById('inscCatGrid');
   selEtapa.innerHTML = '<option value="">Cargando...</option>';
@@ -1555,9 +1555,13 @@ function renderCatsInscripcion(cats){
 }
 
 function seleccionarCatInscripcion(id, color, precio, btn){
-  document.querySelectorAll('.insc-cat-btn').forEach(b=>b.classList.remove('seleccionada'));
-  btn.classList.add('seleccionada');
-  inscCatId = id;
+  if(inscCatIds.has(id)){
+    inscCatIds.delete(id);
+    btn.classList.remove('seleccionada');
+  } else {
+    inscCatIds.add(id);
+    btn.classList.add('seleccionada');
+  }
 }
 
 async function enviarInscripcion(){
@@ -1565,7 +1569,7 @@ async function enviarInscripcion(){
   const vehiculo = document.getElementById('inscVehiculo').value.trim();
   if(!document.getElementById('inscCamp').value) return mostrarToast('Selecciona un campeonato','error');
   if(!etapaId)   return mostrarToast('Selecciona una etapa','error');
-  if(!inscCatId) return mostrarToast('Selecciona una categoría','error');
+  if(!inscCatIds.size) return mostrarToast('Selecciona al menos una categoría','error');
   if(!vehiculo)  return mostrarToast('Ingresa la marca o nombre de tu vehículo','error');
 
   const btn = document.getElementById('btnInscribirse');
@@ -1573,7 +1577,7 @@ async function enviarInscripcion(){
   try{
     const body = {
       etapa_id:       parseInt(etapaId),
-      categoria_id:   inscCatId,
+      categoria_ids:  [...inscCatIds],
       numero_piloto:  pilotoData.numero_piloto,
       email:          pilotoData.email,
       vehiculo,
@@ -1584,7 +1588,7 @@ async function enviarInscripcion(){
       contrato_aceptado: document.getElementById('inscContrato').checked,
     };
     const resp = await apiFetch('/inscripciones/auto-registro',{method:'POST',body:JSON.stringify(body)});
-    mostrarExitoInscripcion(resp.inscripcion);
+    mostrarExitoInscripcion(resp.inscripciones||[resp.inscripcion], resp.duplicadas||[]);
     cargarDashboard();
   } catch(err){
     if(err.message.toLowerCase().includes('contrato')){
@@ -1598,10 +1602,12 @@ async function enviarInscripcion(){
   }
 }
 
-function mostrarExitoInscripcion(insc){
+function mostrarExitoInscripcion(inscripciones, duplicadas){
   document.getElementById('inscForm').style.display='none';
   const ok=document.getElementById('inscExito');
   ok.style.display='block';
+  const insc = inscripciones[0];
+  const catsTexto = inscripciones.map(i=>esc(i.categoria_nombre)).join(', ');
   ok.innerHTML=`<div class="insc-exito">
     <div class="insc-exito-icon">🏁</div>
     <div class="insc-exito-titulo">Pre-inscripción confirmada</div>
@@ -1609,8 +1615,9 @@ function mostrarExitoInscripcion(insc){
     <div class="insc-exito-sub">
       <strong style="color:var(--texto)">${esc(insc.campeonato_nombre)}</strong><br/>
       ${insc.etapa_nombre?`Etapa: <strong style="color:var(--texto)">${esc(insc.etapa_nombre)}</strong><br/>`:''}
-      Categoría: <strong style="color:var(--texto)">${esc(insc.categoria_nombre)}</strong>
+      ${inscripciones.length>1?'Categorías':'Categoría'}: <strong style="color:var(--texto)">${catsTexto}</strong>
     </div>
+    ${duplicadas&&duplicadas.length?`<div style="font-size:0.76rem;color:#b45309;margin-bottom:12px">Ya estabas inscrito en ${duplicadas.length===1?'otra categoría':'otras categorías'} seleccionada${duplicadas.length===1?'':'s'} — se omitió.</div>`:''}
     <div style="font-size:0.76rem;color:var(--sub);margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto">El personal del autódromo confirmará tu inscripción antes del evento.</div>
     <button class="btn-guardar-perfil" onclick="resetInscripcion()">Inscribir otra carrera</button>
   </div>`;
@@ -1629,7 +1636,7 @@ function resetInscripcion(){
   document.getElementById('inscApodo').value='';
   document.getElementById('inscContrato').checked=false;
   document.getElementById('inscContratoRow').style.display='none';
-  inscCatId=null;
+  inscCatIds.clear();
 }
 
 // ── Arranque ──

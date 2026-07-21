@@ -305,7 +305,7 @@
       </div>
 
       <div class="f" style="margin-top:14px">
-        <label class="lbl">Categoría <span class="req">*</span></label>
+        <label class="lbl">Categoría(s) <span class="req">*</span> <span style="font-weight:400;text-transform:none">— puedes elegir varias</span></label>
         <div class="g3" id="catGrid" style="margin-top:6px">
           <div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Selecciona un campeonato primero</div>
         </div>
@@ -362,7 +362,7 @@
   let modo = '';       // 'nuevo' | 'existente'
   let pilotoId  = null;
   let pilotoNumero = null; // numero_piloto del piloto existente
-  let catSel = null;
+  let catSelIds = new Set();
   let campeonatoSel = null;
   let cats = [], campeonatos = [];
   let contratoFirmado = false;
@@ -542,7 +542,7 @@
   // ─── Campeonato → Categorías ──────────────────────────────────────────────
   async function onCampeonatoChange() {
     campeonatoSel = document.getElementById('iCampeonato').value;
-    catSel = null;
+    catSelIds.clear();
     const grid = document.getElementById('catGrid');
     const etapaSel = document.getElementById('iEtapa');
     etapaSel.innerHTML = '<option value="">Selecciona una etapa...</option>';
@@ -587,11 +587,13 @@
   }
 
   function selCat(id, color, btn) {
-    catSel = id;
-    document.querySelectorAll('.cat-btn').forEach(b => {
-      b.style.background = 'var(--dark)'; b.style.borderColor = 'var(--borde)'; b.style.color = 'var(--muted)';
-    });
-    btn.style.background = color+'22'; btn.style.borderColor = color+'66'; btn.style.color = color;
+    if (catSelIds.has(id)) {
+      catSelIds.delete(id);
+      btn.style.background = 'var(--dark)'; btn.style.borderColor = 'var(--borde)'; btn.style.color = 'var(--muted)';
+    } else {
+      catSelIds.add(id);
+      btn.style.background = color+'22'; btn.style.borderColor = color+'66'; btn.style.color = color;
+    }
   }
 
   // ─── Enviar ───────────────────────────────────────────────────────────────
@@ -603,7 +605,7 @@
     const marca        = document.getElementById('iMarca').value.trim();
     if (!campeonatoId) return alerta('a4', 'Selecciona el campeonato');
     if (!etapaId)       return alerta('a4', 'Selecciona la etapa (carrera)');
-    if (!catSel)        return alerta('a4', 'Selecciona tu categoría');
+    if (!catSelIds.size) return alerta('a4', 'Selecciona al menos una categoría');
     if (!numero)        return alerta('a4', 'Ingresa tu número de piloto');
     if (parseInt(numero) < 1) return alerta('a4', 'El número debe ser mayor a 0');
     if (!marca)         return alerta('a4', 'Ingresa la marca de tu vehículo');
@@ -614,7 +616,7 @@
     const body = {
       campeonato_id:   parseInt(campeonatoId),
       etapa_id:        parseInt(etapaId),
-      categoria_id:    parseInt(catSel),
+      categoria_ids:   [...catSelIds],
       numero_piloto:   parseInt(numero),
       vehiculo:        marca,
       modelo_vehiculo: document.getElementById('iModelo').value.trim() || null,
@@ -669,12 +671,13 @@
         } catch {}
       }
 
-      const i = data.inscripcion;
+      const inscripciones = data.inscripciones || [data.inscripcion];
+      const i = inscripciones[0];
       const vehTexto = [i.vehiculo, i.modelo_vehiculo, i.anio_vehiculo, i.color_vehiculo]
         .filter(Boolean).join(' · ');
       document.getElementById('cNum').textContent       = '#' + i.numero_piloto;
       document.getElementById('cNombre').textContent    = i.piloto_nombre;
-      document.getElementById('cCat').textContent       = i.categoria_nombre;
+      document.getElementById('cCat').textContent       = inscripciones.map(x => x.categoria_nombre).join(', ');
       document.getElementById('cCampeonato').textContent= i.campeonato_nombre;
       document.getElementById('cEtapa').textContent     = i.etapa_nombre || '';
       document.getElementById('cVeh').textContent       = vehTexto || i.vehiculo;
@@ -689,7 +692,7 @@
 
   // ─── Reiniciar ────────────────────────────────────────────────────────────
   function reiniciar() {
-    modo = ''; pilotoId = null; pilotoNumero = null; catSel = null; campeonatoSel = null; contratoFirmado = false;
+    modo = ''; pilotoId = null; pilotoNumero = null; catSelIds.clear(); campeonatoSel = null; contratoFirmado = false;
     registroCompletado = false;
     document.getElementById('iEtapa').innerHTML = '<option value="">Selecciona el campeonato primero...</option>';
     ['pAPaterno','pAMaterno','pNombres','pTel','pEmail','pNac','pEmerg','pTelEmerg',
