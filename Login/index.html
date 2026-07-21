@@ -48,24 +48,17 @@
     .subtitulo { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-top: 5px; }
     .linea { height: 1px; margin-top: 16px; background: linear-gradient(to right, transparent, var(--rojo), transparent); }
 
-    /* Tabs selector */
-    .tabs-selector {
-      display: flex; margin-bottom: 24px;
-      background: var(--dark); border: 1px solid var(--borde); border-radius: 10px; padding: 4px; gap: 4px;
+    /* Acceso al sistema — enlace pequeño y secundario, el portal del piloto es el protagonista */
+    .switch-tipo {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; margin-bottom: 18px; padding: 8px;
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-family: 'Inter', sans-serif;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.18s;
     }
-    .tab-sel {
-      flex: 1; padding: 10px 8px; border: none; border-radius: 7px;
-      background: transparent; color: var(--muted);
-      font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.18s;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-    }
-    .tab-sel.activo {
-      background: var(--card); color: var(--texto);
-      box-shadow: 0 1px 6px rgba(0,0,0,0.12);
-    }
-    .tab-sel svg { flex-shrink: 0; }
+    .switch-tipo:hover { color: var(--rojo); }
+    .switch-tipo svg { flex-shrink: 0; }
 
     /* Card */
     .card {
@@ -152,48 +145,18 @@
       <div class="linea"></div>
     </div>
 
-    <!-- Selector Sistema / Piloto -->
-    <div class="tabs-selector">
-      <button class="tab-sel activo" id="tabSistema" onclick="cambiarTipo('sistema')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        Sistema
-      </button>
-      <button class="tab-sel" id="tabPiloto" onclick="cambiarTipo('piloto')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-        Piloto
-      </button>
-    </div>
+    <!-- Enlace pequeño para cambiar a acceso del sistema (visible en vista piloto) -->
+    <button class="switch-tipo" id="btnIrSistema" onclick="cambiarTipo('sistema')">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Acceso para personal del autódromo
+    </button>
 
     <!-- Card -->
     <div class="card">
       <div id="alerta" class="alerta"></div>
 
-      <!-- Form Sistema (admin/staff) -->
-      <div id="formSistema">
-        <div class="tipo-badge">Acceso al sistema</div>
-        <div class="campo">
-          <label class="etiqueta" for="username">Usuario</label>
-          <input class="input" type="text" id="username" placeholder="usuario" autocomplete="username" />
-        </div>
-        <div class="campo">
-          <label class="etiqueta" for="password">Contraseña</label>
-          <div class="input-wrap">
-            <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:42px" />
-            <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
-              <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <button class="btn-primario" id="btnSistema" onclick="loginSistema()">
-          Entrar al sistema
-        </button>
-      </div>
-
-      <!-- Form Piloto -->
-      <div id="formPiloto" style="display:none">
+      <!-- Form Piloto (vista principal) -->
+      <div id="formPiloto">
         <div class="tipo-badge">Portal del piloto</div>
         <div class="campo">
           <label class="etiqueta" for="pEmail">Correo electrónico</label>
@@ -222,12 +185,40 @@
           <a href="../Registro/index.html" style="color:var(--muted);text-decoration:none">Pre-registro</a>
         </div>
       </div>
+
+      <!-- Form Sistema (admin/staff) -->
+      <div id="formSistema" style="display:none">
+        <div class="tipo-badge">Acceso al sistema</div>
+        <div class="campo">
+          <label class="etiqueta" for="username">Usuario</label>
+          <input class="input" type="text" id="username" placeholder="usuario" autocomplete="username" />
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="password">Contraseña</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:42px" />
+            <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
+              <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn-primario" id="btnSistema" onclick="loginSistema()">
+          Entrar al sistema
+        </button>
+        <button type="button" class="switch-tipo" style="margin:14px 0 0" onclick="cambiarTipo('piloto')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          ← Volver al portal del piloto
+        </button>
+      </div>
     </div>
   </div>
 
   <script src="../admin/config.js"></script>
   <script>
-    let tipoActivo = 'sistema';
+    let tipoActivo = 'piloto';
 
     // Redirigir si ya hay sesión admin
     if (localStorage.getItem('autodromo_token')) {
@@ -268,10 +259,9 @@
     function cambiarTipo(tipo) {
       tipoActivo = tipo;
       ocultarAlerta();
-      document.getElementById('tabSistema').classList.toggle('activo', tipo === 'sistema');
-      document.getElementById('tabPiloto').classList.toggle('activo', tipo === 'piloto');
       document.getElementById('formSistema').style.display = tipo === 'sistema' ? 'block' : 'none';
       document.getElementById('formPiloto').style.display  = tipo === 'piloto'  ? 'block' : 'none';
+      document.getElementById('btnIrSistema').style.display = tipo === 'sistema' ? 'none' : 'flex';
     }
 
     // Enter key
@@ -344,7 +334,7 @@
     }
 
     // Si viene con hash #piloto, abrir tab piloto directamente
-    if (window.location.hash === '#piloto') cambiarTipo('piloto');
+    if (window.location.hash === '#sistema') cambiarTipo('sistema');
   </script>
 </body>
 </html>
