@@ -197,12 +197,14 @@
 
     // ── Login único: el backend decide si es piloto o personal del sistema ──
     async function entrar() {
+      const btn = document.getElementById('btnEntrar');
+      if (btn.disabled) return; // evita doble envío si Enter se presiona dos veces rápido
+
       ocultarAlerta();
       const identificador = document.getElementById('identificador').value.trim();
       const password       = document.getElementById('pass').value;
       if (!identificador || !password) return mostrarAlerta('Ingresa tu correo/usuario y contraseña');
 
-      const btn = document.getElementById('btnEntrar');
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner"></div> Entrando...';
 

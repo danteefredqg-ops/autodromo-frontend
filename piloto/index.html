@@ -1617,7 +1617,7 @@ function mostrarExitoInscripcion(inscripciones, duplicadas){
       ${insc.etapa_nombre?`Etapa: <strong style="color:var(--texto)">${esc(insc.etapa_nombre)}</strong><br/>`:''}
       ${inscripciones.length>1?'Categorías':'Categoría'}: <strong style="color:var(--texto)">${catsTexto}</strong>
     </div>
-    ${duplicadas&&duplicadas.length?`<div style="font-size:0.76rem;color:#b45309;margin-bottom:12px">Ya estabas inscrito en ${duplicadas.length===1?'otra categoría':'otras categorías'} seleccionada${duplicadas.length===1?'':'s'} — se omitió.</div>`:''}
+    ${duplicadas&&duplicadas.length?`<div style="font-size:0.76rem;color:#b45309;margin-bottom:12px">Ya estabas inscrito en ${duplicadas.length===1?'otra categoría seleccionada':'otras categorías seleccionadas'} — se ${duplicadas.length===1?'omitió':'omitieron'}.</div>`:''}
     <div style="font-size:0.76rem;color:var(--sub);margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto">El personal del autódromo confirmará tu inscripción antes del evento.</div>
     <button class="btn-guardar-perfil" onclick="resetInscripcion()">Inscribir otra carrera</button>
   </div>`;
