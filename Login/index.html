@@ -48,18 +48,6 @@
     .subtitulo { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-top: 5px; }
     .linea { height: 1px; margin-top: 16px; background: linear-gradient(to right, transparent, var(--rojo), transparent); }
 
-    /* Acceso al sistema — enlace pequeño y secundario, el portal del piloto es el protagonista */
-    .switch-tipo {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      width: 100%; margin-bottom: 18px; padding: 8px;
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-family: 'Inter', sans-serif;
-      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-      transition: color 0.18s;
-    }
-    .switch-tipo:hover { color: var(--rojo); }
-    .switch-tipo svg { flex-shrink: 0; }
-
     /* Card */
     .card {
       background: var(--card); border: 1px solid var(--borde);
@@ -122,13 +110,6 @@
     .pie-sep span { flex: 1; height: 1px; background: var(--borde); }
     .pie-sep em { font-size: 0.62rem; font-style: normal; color: var(--muted); letter-spacing: 0.1em; }
 
-    /* Indicador de tipo activo */
-    .tipo-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--rojo); margin-bottom: 18px;
-    }
-    .tipo-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--rojo); }
   </style>
 </head>
 <body>
@@ -145,81 +126,41 @@
       <div class="linea"></div>
     </div>
 
-    <!-- Enlace pequeño para cambiar a acceso del sistema (visible en vista piloto) -->
-    <button class="switch-tipo" id="btnIrSistema" onclick="cambiarTipo('sistema')">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      Acceso para personal del autódromo
-    </button>
-
     <!-- Card -->
     <div class="card">
       <div id="alerta" class="alerta"></div>
 
-      <!-- Form Piloto (vista principal) -->
-      <div id="formPiloto">
-        <div class="tipo-badge">Portal del piloto</div>
-        <div class="campo">
-          <label class="etiqueta" for="pEmail">Correo electrónico</label>
-          <input class="input" type="email" id="pEmail" placeholder="tu@correo.com" autocomplete="email" />
-        </div>
-        <div class="campo">
-          <label class="etiqueta" for="pPass">Contraseña</label>
-          <div class="input-wrap">
-            <input class="input" type="password" id="pPass" placeholder="••••••" autocomplete="current-password" style="padding-right:42px" />
-            <button type="button" class="btn-ver" onclick="togglePassPiloto()" title="Mostrar/ocultar">
-              <svg id="ojoPiloto" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <button class="btn-primario" id="btnPiloto" onclick="loginPiloto()">
-          Entrar al portal
-        </button>
-        <div class="pie-sep"><span></span><em>¿primera vez?</em><span></span></div>
-        <div style="text-align:center;font-size:0.76rem;color:var(--muted)">
-          ¿No tienes acceso aún?
-          <a href="../piloto/index.html#crear" style="color:var(--rojo);text-decoration:none;font-weight:600"> Crear acceso</a>
-          &nbsp;·&nbsp;
-          <a href="../Registro/index.html" style="color:var(--muted);text-decoration:none">Pre-registro</a>
+      <div class="campo">
+        <label class="etiqueta" for="identificador">Correo o usuario</label>
+        <input class="input" type="text" id="identificador" placeholder="tu@correo.com o tu usuario" autocomplete="username" />
+      </div>
+      <div class="campo">
+        <label class="etiqueta" for="pass">Contraseña</label>
+        <div class="input-wrap">
+          <input class="input" type="password" id="pass" placeholder="••••••" autocomplete="current-password" style="padding-right:42px" />
+          <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
+            <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
         </div>
       </div>
-
-      <!-- Form Sistema (admin/staff) -->
-      <div id="formSistema" style="display:none">
-        <div class="tipo-badge">Acceso al sistema</div>
-        <div class="campo">
-          <label class="etiqueta" for="username">Usuario</label>
-          <input class="input" type="text" id="username" placeholder="usuario" autocomplete="username" />
-        </div>
-        <div class="campo">
-          <label class="etiqueta" for="password">Contraseña</label>
-          <div class="input-wrap">
-            <input class="input" type="password" id="password" placeholder="••••••••" autocomplete="current-password" style="padding-right:42px" />
-            <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
-              <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <button class="btn-primario" id="btnSistema" onclick="loginSistema()">
-          Entrar al sistema
-        </button>
-        <button type="button" class="switch-tipo" style="margin:14px 0 0" onclick="cambiarTipo('piloto')">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          ← Volver al portal del piloto
-        </button>
+      <button class="btn-primario" id="btnEntrar" onclick="entrar()">
+        Entrar
+      </button>
+      <div class="pie-sep"><span></span><em>¿primera vez?</em><span></span></div>
+      <div style="text-align:center;font-size:0.76rem;color:var(--muted)">
+        ¿No tienes acceso aún?
+        <a href="../piloto/index.html#crear" style="color:var(--rojo);text-decoration:none;font-weight:600"> Crear acceso</a>
+        &nbsp;·&nbsp;
+        <a href="../Registro/index.html" style="color:var(--muted);text-decoration:none">Pre-registro</a>
       </div>
     </div>
   </div>
 
   <script src="../admin/config.js"></script>
   <script>
-    let tipoActivo = 'piloto';
-
     // Redirigir si ya hay sesión admin
     if (localStorage.getItem('autodromo_token')) {
       window.location.href = '../dashboard/index.html';
@@ -230,20 +171,13 @@
       window.location.href = '../piloto/index.html';
     }
 
-    // Mostrar/ocultar contraseña admin
+    // Mostrar/ocultar contraseña
     document.getElementById('btnVer').addEventListener('click', () => {
-      const input = document.getElementById('password');
+      const input = document.getElementById('pass');
       const esTexto = input.type === 'text';
       input.type = esTexto ? 'password' : 'text';
       document.getElementById('iconoOjo').style.opacity = esTexto ? '1' : '0.4';
     });
-
-    function togglePassPiloto() {
-      const input = document.getElementById('pPass');
-      const esTexto = input.type === 'text';
-      input.type = esTexto ? 'password' : 'text';
-      document.getElementById('ojoPiloto').style.opacity = esTexto ? '1' : '0.4';
-    }
 
     function mostrarAlerta(msg, tipo = 'error') {
       const el = document.getElementById('alerta');
@@ -256,85 +190,48 @@
       document.getElementById('alerta').style.display = 'none';
     }
 
-    function cambiarTipo(tipo) {
-      tipoActivo = tipo;
-      ocultarAlerta();
-      document.getElementById('formSistema').style.display = tipo === 'sistema' ? 'block' : 'none';
-      document.getElementById('formPiloto').style.display  = tipo === 'piloto'  ? 'block' : 'none';
-      document.getElementById('btnIrSistema').style.display = tipo === 'sistema' ? 'none' : 'flex';
-    }
-
     // Enter key
     document.addEventListener('keydown', e => {
-      if (e.key !== 'Enter') return;
-      if (tipoActivo === 'sistema') loginSistema();
-      else loginPiloto();
+      if (e.key === 'Enter') entrar();
     });
 
-    // ── Login sistema (admin/staff) ──
-    async function loginSistema() {
+    // ── Login único: el backend decide si es piloto o personal del sistema ──
+    async function entrar() {
       ocultarAlerta();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      if (!username || !password) return mostrarAlerta('Ingresa usuario y contraseña');
+      const identificador = document.getElementById('identificador').value.trim();
+      const password       = document.getElementById('pass').value;
+      if (!identificador || !password) return mostrarAlerta('Ingresa tu correo/usuario y contraseña');
 
-      const btn = document.getElementById('btnSistema');
-      btn.disabled = true;
-      btn.innerHTML = '<div class="spinner"></div> Autenticando...';
-
-      try {
-        const res  = await fetch(`${API_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        });
-        let data;
-        try { data = await res.json(); }
-        catch { throw new Error(res.ok ? 'Respuesta inválida del servidor' : `El servidor no respondió correctamente (${res.status}). Intenta de nuevo en unos minutos.`); }
-        if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
-        localStorage.setItem('autodromo_token', data.token);
-        localStorage.setItem('autodromo_usuario', JSON.stringify(data.usuario));
-        window.location.href = '../dashboard/index.html';
-      } catch (err) {
-        mostrarAlerta(err.message);
-        btn.disabled = false;
-        btn.textContent = 'Entrar al sistema';
-      }
-    }
-
-    // ── Login piloto ──
-    async function loginPiloto() {
-      ocultarAlerta();
-      const email    = document.getElementById('pEmail').value.trim();
-      const password = document.getElementById('pPass').value;
-      if (!email || !password) return mostrarAlerta('Ingresa tu correo y contraseña');
-
-      const btn = document.getElementById('btnPiloto');
+      const btn = document.getElementById('btnEntrar');
       btn.disabled = true;
       btn.innerHTML = '<div class="spinner"></div> Entrando...';
 
       try {
-        const res  = await fetch(`${API_URL}/piloto/login`, {
+        const res  = await fetch(`${API_URL}/auth/login-unico`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ identificador, password }),
         });
         let data;
         try { data = await res.json(); }
         catch { throw new Error(res.ok ? 'Respuesta inválida del servidor' : `El servidor no respondió correctamente (${res.status}). Intenta de nuevo en unos minutos.`); }
-        if (!res.ok) throw new Error(data.error || 'Correo o contraseña incorrectos');
-        localStorage.setItem('piloto_token', data.token);
-        localStorage.setItem('piloto_data', JSON.stringify(data.piloto));
-        window.location.href = '../piloto/index.html';
+        if (!res.ok) throw new Error(data.error || 'Credenciales incorrectas');
+
+        if (data.tipo === 'piloto') {
+          localStorage.setItem('piloto_token', data.token);
+          localStorage.setItem('piloto_data', JSON.stringify(data.piloto));
+          window.location.href = '../piloto/index.html';
+        } else {
+          localStorage.setItem('autodromo_token', data.token);
+          localStorage.setItem('autodromo_usuario', JSON.stringify(data.usuario));
+          window.location.href = '../dashboard/index.html';
+        }
       } catch (err) {
         mostrarAlerta(err.message);
         btn.disabled = false;
-        btn.textContent = 'Entrar al portal';
+        btn.textContent = 'Entrar';
       }
     }
-
-    // Si viene con hash #piloto, abrir tab piloto directamente
-    if (window.location.hash === '#sistema') cambiarTipo('sistema');
   </script>
 </body>
 </html>
