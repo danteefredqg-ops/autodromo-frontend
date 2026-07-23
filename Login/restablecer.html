@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restablecer contraseña — Autódromo Monterrey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --rojo: #2563eb; --rojo-d: #1e40af;
+      --oscuro: #0b0d11; --dark: #161a21; --card: #1a1e26; --borde: #2a2f3a; --muted: #8b93a3; --texto: #f2f4f7;
+      --verde: #4ade80;
+    }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      background: var(--oscuro); color: var(--texto);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px 20px; overflow: hidden; position: relative;
+    }
+    body::before {
+      content: 'AMT';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(160px, 30vw, 340px);
+      color: rgba(255,255,255,0.025);
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none; letter-spacing: 0.05em; line-height: 1;
+    }
+    .contenedor { position: relative; z-index: 1; width: 100%; max-width: 400px; }
+    .encabezado { text-align: center; margin-bottom: 32px; }
+    .logo {
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 14px; background: #fff; border-radius: 16px; padding: 10px 22px;
+    }
+    .logo img { width: 110px; height: auto; display: block; }
+    .titulo { font-family: 'Bebas Neue'; font-size: clamp(2rem, 5vw, 2.4rem); letter-spacing: 0.1em; line-height: 1; }
+    .subtitulo { font-size: 0.65rem; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; margin-top: 5px; }
+    .linea { height: 1px; margin-top: 16px; background: linear-gradient(to right, transparent, var(--rojo), transparent); }
+    .card { background: var(--card); border: 1px solid var(--borde); border-radius: 14px; padding: 28px; }
+    .campo { margin-bottom: 16px; }
+    .etiqueta { display: block; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .input-wrap { position: relative; }
+    .input {
+      width: 100%; padding: 11px 14px;
+      background: var(--dark); border: 1px solid var(--borde);
+      color: var(--texto); border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem;
+      transition: border-color 0.18s; outline: none;
+    }
+    .input:focus { border-color: rgba(37,99,235,0.5); }
+    .input::placeholder { color: var(--muted); }
+    .btn-ver {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      display: flex; align-items: center; padding: 0; transition: color 0.18s;
+    }
+    .btn-ver:hover { color: var(--texto); }
+    .btn-primario {
+      width: 100%; padding: 13px; background: var(--rojo); border: none; border-radius: 8px;
+      color: #fff; font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem; letter-spacing: 0.12em;
+      cursor: pointer; margin-top: 8px; transition: background 0.18s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primario:hover  { background: var(--rojo-d); }
+    .btn-primario:active { transform: scale(0.98); }
+    .btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }
+    .alerta { padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 14px; display: none; }
+    .alerta.error { background: rgba(220,38,38,0.12); border: 1px solid rgba(220,38,38,0.4); color: #f87171; }
+    .alerta.exito { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.4); color: var(--verde); }
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35); border-top-color: currentColor;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .volver { text-align: center; margin-top: 16px; font-size: 0.76rem; color: var(--muted); }
+    .volver a { color: var(--rojo); text-decoration: none; font-weight: 600; }
+    .hint { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="encabezado">
+      <div class="logo"><img src="../assets/logo.png" alt="Autódromo Monterrey" /></div>
+      <h1 class="titulo">Nueva contraseña</h1>
+      <p class="subtitulo">Portal del piloto</p>
+      <div class="linea"></div>
+    </div>
+
+    <div class="card">
+      <div id="alerta" class="alerta"></div>
+
+      <div id="pasoForm">
+        <div class="campo">
+          <label class="etiqueta" for="pass">Nueva contraseña</label>
+          <div class="input-wrap">
+            <input class="input" type="password" id="pass" placeholder="Mínimo 6 caracteres" autocomplete="new-password" style="padding-right:42px" />
+            <button type="button" class="btn-ver" id="btnVer" title="Mostrar/ocultar">
+              <svg id="iconoOjo" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="campo">
+          <label class="etiqueta" for="pass2">Confirmar contraseña</label>
+          <input class="input" type="password" id="pass2" placeholder="Repite tu contraseña" autocomplete="new-password" />
+        </div>
+        <button class="btn-primario" id="btnGuardar" onclick="guardar()">Guardar contraseña</button>
+      </div>
+
+      <div class="volver">
+        <a href="index.html">← Volver a iniciar sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../admin/config.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    function mostrarAlerta(msg, tipo = 'error') {
+      const el = document.getElementById('alerta');
+      el.textContent = msg;
+      el.className = `alerta ${tipo}`;
+      el.style.display = 'block';
+    }
+    function ocultarAlerta() { document.getElementById('alerta').style.display = 'none'; }
+
+    if (!token) {
+      document.getElementById('pasoForm').style.display = 'none';
+      mostrarAlerta('Este enlace no es válido. Solicita uno nuevo desde "¿Olvidaste tu contraseña?".');
+    }
+
+    document.getElementById('btnVer').addEventListener('click', () => {
+      const input = document.getElementById('pass');
+      const esTexto = input.type === 'text';
+      input.type = esTexto ? 'password' : 'text';
+      document.getElementById('iconoOjo').style.opacity = esTexto ? '1' : '0.4';
+    });
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') guardar(); });
+
+    async function guardar() {
+      const btn = document.getElementById('btnGuardar');
+      if (btn.disabled || !token) return;
+
+      ocultarAlerta();
+      const pass  = document.getElementById('pass').value;
+      const pass2 = document.getElementById('pass2').value;
+      if (!pass || !pass2) return mostrarAlerta('Completa ambos campos');
+      if (pass.length < 6) return mostrarAlerta('La contraseña debe tener al menos 6 caracteres');
+      if (pass !== pass2) return mostrarAlerta('Las contraseñas no coinciden');
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Guardando...';
+
+      try {
+        const res = await fetch(`${API_URL}/piloto/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, password: pass }),
+        });
+        let data;
+        try { data = await res.json(); }
+        catch { throw new Error(res.ok ? 'Respuesta inválida del servidor' : `El servidor no respondió correctamente (${res.status}). Intenta de nuevo en unos minutos.`); }
+        if (!res.ok) throw new Error(data.error || 'Error al restablecer la contraseña');
+
+        document.getElementById('pasoForm').style.display = 'none';
+        mostrarAlerta('¡Contraseña actualizada! Redirigiendo a iniciar sesión...', 'exito');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+      } catch (err) {
+        mostrarAlerta(err.message);
+        btn.disabled = false;
+        btn.textContent = 'Guardar contraseña';
+      }
+    }
+  </script>
+</body>
+</html>
