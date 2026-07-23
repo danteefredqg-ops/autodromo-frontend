@@ -7,16 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    :root{--rojo:#c1121f;--oscuro:#f6f1e4;--dark:#efe8d4;--card:#fffcf4;--borde:#ddd2b4;--muted:#7a7057;--texto:#2b2620;--verde:#15803d}
-    body{background:var(--oscuro);color:var(--texto);font-family:'Barlow',sans-serif;min-height:100vh;background-image:url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232b2620' fill-opacity='0.02'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E")}
+    :root{--rojo:#2563eb;--oscuro:#0b0d11;--dark:#161a21;--card:#1a1e26;--borde:#2a2f3a;--muted:#8b93a3;--texto:#f2f4f7;--verde:#4ade80}
+    body{background:var(--oscuro);color:var(--texto);font-family:'Barlow',sans-serif;min-height:100vh;background-image:url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E")}
     .blob{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-    .b1{width:500px;height:500px;background:rgba(193,18,31,0.05);top:-150px;right:-150px}
-    .b2{width:400px;height:400px;background:rgba(244,80,30,0.04);bottom:-100px;left:-100px}
+    .b1{width:500px;height:500px;background:rgba(37,99,235,0.06);top:-150px;right:-150px}
+    .b2{width:400px;height:400px;background:rgba(96,165,250,0.05);bottom:-100px;left:-100px}
     .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:32px 20px 60px}
     .head{text-align:center;margin-bottom:28px}
-    .logo{display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px}
-    /* El PNG trae fondo blanco rectangular — se recorta al óvalo del logo */
-    .logo img{width:92px;height:auto;clip-path:ellipse(46% 42% at 50% 50%)}
+    /* El PNG trae fondo blanco propio — se le da una placa blanca a propósito
+       en vez de recortarlo (el recorte deja un sobrante visible en fondo oscuro) */
+    .logo{display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;background:#fff;border-radius:16px;padding:10px 20px}
+    .logo img{width:100px;height:auto;display:block}
     h1{font-family:'Bebas Neue';font-size:2.8rem;letter-spacing:0.12em;line-height:1}
     .sub{font-size:0.7rem;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;margin-top:4px}
     .line{height:1px;margin-top:14px;background:linear-gradient(to right,transparent,var(--rojo),transparent)}
@@ -44,17 +45,17 @@
     .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
     /* Alert */
-    .alert{padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:14px;display:none;background:rgba(193,18,31,0.12);border:1px solid rgba(193,18,31,0.3);color:#b91c1c}
+    .alert{padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:14px;display:none;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);color:#f87171}
     /* Buttons */
     .btn{width:100%;padding:13px;background:var(--rojo);border:none;border-radius:8px;color:#fff;font-family:'Barlow',sans-serif;font-size:0.85rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.2s}
-    .btn:hover{background:#c1121f}
+    .btn:hover{background:#1e40af}
     .btn:disabled{opacity:0.5;cursor:not-allowed}
     .btn2{width:100%;padding:11px;background:none;border:1px solid var(--borde);border-radius:8px;color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:all 0.18s}
     .btn2:hover{border-color:var(--muted);color:var(--texto)}
     /* Opciones inicio */
     .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
     .opt-card{background:var(--dark);border:2px solid var(--borde);border-radius:12px;padding:20px 14px;text-align:center;cursor:pointer;transition:all 0.2s}
-    .opt-card:hover{border-color:var(--rojo);background:rgba(193,18,31,0.05)}
+    .opt-card:hover{border-color:var(--rojo);background:rgba(37,99,235,0.06)}
     .opt-icon{font-size:2rem;margin-bottom:8px}
     .opt-titulo{font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:0.08em;margin-bottom:4px}
     .opt-desc{font-size:0.75rem;color:var(--muted);line-height:1.4}
@@ -68,9 +69,9 @@
     .dato{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--borde);font-size:0.85rem}
     .dato:last-child{border-bottom:none}
     .dk{color:var(--muted)}
-    .aviso{background:rgba(193,18,31,0.1);border:1px solid rgba(193,18,31,0.25);border-radius:10px;padding:14px;margin-top:16px;font-size:0.82rem;color:#b91c1c;text-align:center;line-height:1.6}
-    .aviso-amarillo{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:14px;font-size:0.82rem;color:#92400e;line-height:1.6;margin-bottom:14px}
-    .spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,0.15);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite}
+    .aviso{background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);border-radius:10px;padding:14px;margin-top:16px;font-size:0.82rem;color:#60a5fa;text-align:center;line-height:1.6}
+    .aviso-amarillo{background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.4);border-radius:10px;padding:14px;font-size:0.82rem;color:#fbbf24;line-height:1.6;margin-bottom:14px}
+    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.15);border-top-color:currentColor;border-radius:50%;animation:spin 0.7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .pie{text-align:center;margin-top:20px;font-size:0.8rem;color:var(--muted)}
     .pie a{color:var(--rojo);text-decoration:none}
@@ -89,7 +90,7 @@
 
   <!-- Header -->
   <div style="text-align:right;margin-bottom:12px">
-    <a href="../piloto/index.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid rgba(193,18,31,0.35);border-radius:8px;color:#c1121f;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;background:rgba(193,18,31,0.07);transition:background 0.18s">
+    <a href="../piloto/index.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid rgba(37,99,235,0.35);border-radius:8px;color:#60a5fa;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;background:rgba(37,99,235,0.08);transition:background 0.18s">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       Portal del piloto
     </a>
@@ -134,13 +135,13 @@
             <div class="opt-desc">Ya me registré antes — buscaré mi cuenta con email y número</div>
           </div>
         </div>
-        <a href="../piloto/index.html" class="opt-card" style="display:flex;align-items:center;gap:16px;text-align:left;text-decoration:none;border-color:rgba(193,18,31,0.35);background:rgba(193,18,31,0.04)">
+        <a href="../piloto/index.html" class="opt-card" style="display:flex;align-items:center;gap:16px;text-align:left;text-decoration:none;border-color:rgba(37,99,235,0.35);background:rgba(37,99,235,0.05)">
           <div class="opt-icon" style="font-size:1.8rem;flex-shrink:0">🏎</div>
           <div>
             <div class="opt-titulo" style="color:var(--rojo)">Mi Portal de Piloto</div>
             <div class="opt-desc">Ver mis carreras, posiciones y completar mi perfil</div>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c1121f" stroke-width="2" style="margin-left:auto;flex-shrink:0"><polyline points="9,18 15,12 9,6"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" style="margin-left:auto;flex-shrink:0"><polyline points="9,18 15,12 9,6"/></svg>
         </a>
       </div>
     </div>
@@ -162,7 +163,7 @@
           <input class="inp" type="number" id="numeroBuscar" placeholder="Ej: 42" min="1" max="9999" onkeydown="if(event.key==='Enter')buscar()" />
         </div>
       </div>
-      <button id="btnBuscar" onclick="buscar()" style="width:100%;padding:11px;background:var(--rojo);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.18s" onmouseover="this.style.background='#950e18'" onmouseout="this.style.background='var(--rojo)'"
+      <button id="btnBuscar" onclick="buscar()" style="width:100%;padding:11px;background:var(--rojo);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Barlow',sans-serif;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.18s" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background='var(--rojo)'"
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Verificar datos
       </button>
@@ -173,7 +174,7 @@
             <div id="pilotoNombre" style="font-weight:700;font-size:1.05rem"></div>
             <div id="pilotoDatos" style="font-size:0.78rem;color:var(--muted);margin-top:2px"></div>
           </div>
-          <a href="../piloto/index.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(193,18,31,0.12);border:1px solid rgba(193,18,31,0.4);border-radius:8px;color:#c1121f;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;flex-shrink:0">
+          <a href="../piloto/index.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.4);border-radius:8px;color:#60a5fa;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;flex-shrink:0">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg>
             Mi portal
           </a>
@@ -249,7 +250,7 @@
       <p style="font-size:0.8rem;color:var(--muted);margin-bottom:16px">Requerido una vez por año para participar en los campeonatos</p>
       <div id="a3" class="alert"></div>
 
-      <div id="contratoYaFirmado" style="display:none" class="aviso" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#15803d;margin-bottom:14px">
+      <div id="contratoYaFirmado" style="display:none" class="aviso" style="background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.4);color:#4ade80;margin-bottom:14px">
         ✓ Ya tienes el contrato firmado para este año. Puedes continuar.
       </div>
 
@@ -336,7 +337,7 @@
   <!-- ═══ PASO 5: Confirmación ═══ -->
   <div id="p5" style="display:none">
     <div class="card" style="text-align:center">
-      <div class="check-circle"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg></div>
+      <div class="check-circle"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg></div>
       <h2 style="font-family:'Bebas Neue';font-size:2.2rem;color:var(--verde);letter-spacing:0.1em;margin-bottom:4px">¡Pre-inscripción Exitosa!</h2>
       <p style="color:var(--muted);font-size:0.85rem;margin-bottom:16px">Guarda esta info para el día del evento</p>
       <div class="num-big" id="cNum"></div>
@@ -348,7 +349,7 @@
         <div class="dato"><span class="dk">Etapa</span>      <span id="cEtapa" style="font-size:0.82rem;color:var(--muted)"></span></div>
         <div class="dato"><span class="dk">Vehículo</span>   <span id="cVeh" style="color:var(--muted)"></span></div>
         <div class="dato"><span class="dk">Estatus</span>
-          <span style="font-size:0.72rem;padding:2px 10px;border-radius:9999px;font-weight:700;text-transform:uppercase;background:rgba(245,158,11,0.15);color:#92400e;border:1px solid rgba(245,158,11,0.3)">Pendiente de pago</span>
+          <span style="font-size:0.72rem;padding:2px 10px;border-radius:9999px;font-weight:700;text-transform:uppercase;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.4)">Pendiente de pago</span>
         </div>
       </div>
       <div class="aviso">📍 Preséntate a la <strong>ventanilla de inscripciones</strong> el día del evento.<br/>El staff verificará tu registro, cobrará el pago y te dará acceso a pista.</div>
@@ -578,13 +579,13 @@
         grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Sin categorías disponibles</div>';
         return;
       }
-      grid.innerHTML = (esFallback ? '<div style="grid-column:span 3;font-size:0.7rem;color:#92400e;margin-bottom:6px">Selecciona tu categoría</div>' : '') +
+      grid.innerHTML = (esFallback ? '<div style="grid-column:span 3;font-size:0.7rem;color:#fbbf24;margin-bottom:6px">Selecciona tu categoría</div>' : '') +
         cats.map(c =>
           `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
              onclick="selCat(${c.id},'${c.color}',this)">${c.nombre}</button>`
         ).join('');
     } catch(e) {
-      grid.innerHTML = '<div style="grid-column:span 3;color:#b91c1c;font-size:0.8rem;text-align:center;padding:12px">Error al cargar datos</div>';
+      grid.innerHTML = '<div style="grid-column:span 3;color:#f87171;font-size:0.8rem;text-align:center;padding:12px">Error al cargar datos</div>';
     }
   }
 
