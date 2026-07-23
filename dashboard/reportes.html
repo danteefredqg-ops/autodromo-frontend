@@ -11,9 +11,9 @@
       display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
       border-radius: 9999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
     }
-    .corte-pagado      { background: rgba(21,128,61,0.12); color: #15803d; border: 1px solid rgba(21,128,61,0.3); }
-    .corte-pendiente   { background: rgba(146,64,14,0.12);  color: #92400e; border: 1px solid rgba(146,64,14,0.3); }
-    .corte-desc        { background: rgba(185,28,28,0.12);   color: #b91c1c; border: 1px solid rgba(185,28,28,0.3); }
+    .corte-pagado      { background: rgba(21,128,61,0.12); color: #4ade80; border: 1px solid rgba(21,128,61,0.3); }
+    .corte-pendiente   { background: rgba(146,64,14,0.12);  color: #fbbf24; border: 1px solid rgba(146,64,14,0.3); }
+    .corte-desc        { background: rgba(185,28,28,0.12);   color: #f87171; border: 1px solid rgba(185,28,28,0.3); }
     .metodo-tag { font-size:0.68rem;color:var(--muted);padding:2px 6px;border:1px solid var(--borde);border-radius:4px }
     .stat-corte { background:var(--dark);border:1px solid var(--borde);border-radius:10px;padding:16px 18px;text-align:center }
     .denom-row { display:grid; grid-template-columns:70px 1fr 90px 110px; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--borde); }
@@ -83,7 +83,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             Por Categoría
           </button>
-          <button class="btn-secundario" id="btnCorte" style="border-color:rgba(74,222,128,0.5);color:#15803d" onclick="cargarCorteGeneral()" title="Ingresos, pagados/pendientes y desglose por método de pago">
+          <button class="btn-secundario" id="btnCorte" style="border-color:rgba(74,222,128,0.5);color:#4ade80" onclick="cargarCorteGeneral()" title="Ingresos, pagados/pendientes y desglose por método de pago">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             Corte de Caja
           </button>
@@ -91,7 +91,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18,15 12,9 6,15"/></svg>
             Clasificación
           </button>
-          <button class="btn-secundario" id="btnArqueo" style="border-color:rgba(96,165,250,0.5);color:#1d4ed8" onclick="cargarArqueo()" title="Contador de billetes y monedas para el precorte de caja">
+          <button class="btn-secundario" id="btnArqueo" style="border-color:rgba(96,165,250,0.5);color:#60a5fa" onclick="cargarArqueo()" title="Contador de billetes y monedas para el precorte de caja">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
             Precorte
           </button>
@@ -209,8 +209,8 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
             <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em">Reporte por Categoría</h2>
             <div style="display:flex;gap:10px;align-items:center">
-              ${costo > 0 ? `<span style="font-size:0.78rem;color:#15803d">Costo: $${costo.toLocaleString('es-MX',{minimumFractionDigits:2})}/inscripción</span>` : ''}
-              <span style="font-size:0.75rem;padding:3px 12px;border-radius:9999px;background:rgba(193,18,31,0.15);color:var(--rojo);border:1px solid rgba(193,18,31,0.3)">${data.total} total</span>
+              ${costo > 0 ? `<span style="font-size:0.78rem;color:#4ade80">Costo: $${costo.toLocaleString('es-MX',{minimumFractionDigits:2})}/inscripción</span>` : ''}
+              <span style="font-size:0.75rem;padding:3px 12px;border-radius:9999px;background:rgba(37,99,235,0.15);color:var(--rojo);border:1px solid rgba(37,99,235,0.3)">${data.total} total</span>
             </div>
           </div>
           ${grupos.map(([nombre, g]) => `
@@ -222,11 +222,11 @@
                   ${g.categoria.descripcion ? `<span style="font-size:0.75rem;color:var(--muted)">${esc(g.categoria.descripcion)}</span>` : ''}
                 </div>
                 <div style="display:flex;gap:16px;font-size:0.78rem;align-items:center;flex-wrap:wrap">
-                  <span style="color:#15803d">✓ ${g.pagados} pagados</span>
-                  <span style="color:#92400e">⏳ ${g.total - g.pagados} pendientes</span>
+                  <span style="color:#4ade80">✓ ${g.pagados} pagados</span>
+                  <span style="color:#fbbf24">⏳ ${g.total - g.pagados} pendientes</span>
                   <span style="color:var(--texto);font-weight:700">${g.total} total</span>
                   ${costo > 0 ? `
-                    <span style="color:#15803d;font-weight:700">$${g.total_cobrado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
+                    <span style="color:#4ade80;font-weight:700">$${g.total_cobrado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
                     <span style="color:var(--muted)">/ $${g.total_esperado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
                   ` : ''}
                 </div>
@@ -279,7 +279,7 @@
       document.getElementById('contenidoReporte').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:8px">
           <div>
-            <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em;color:#1d4ed8">Precorte — Arqueo de Efectivo</h2>
+            <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em;color:#60a5fa">Precorte — Arqueo de Efectivo</h2>
             ${contexto ? `<div style="font-size:0.8rem;color:var(--muted);margin-top:2px">${esc(contexto)}</div>` : ''}
           </div>
         </div>
@@ -290,7 +290,7 @@
           ${DENOMINACIONES.map((d, i) => `
             <div class="denom-row">
               <div style="color:var(--muted);font-size:0.78rem">${d.tipo}</div>
-              <div style="font-family:'Bebas Neue';font-size:1.2rem;color:${d.tipo==='Billete'?'#15803d':'#92400e'}">$${d.valor}</div>
+              <div style="font-family:'Bebas Neue';font-size:1.2rem;color:${d.tipo==='Billete'?'#4ade80':'#fbbf24'}">$${d.valor}</div>
               <input class="denom-input" type="number" min="0" step="1" id="denom-${i}" oninput="actualizarArqueo()" placeholder="0" />
               <div id="sub-${i}" style="text-align:right;color:var(--muted);font-family:'Bebas Neue';font-size:1.1rem">$0</div>
             </div>
@@ -308,7 +308,7 @@
             ` : ''}
             <div style="text-align:right">
               <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">Total contado</div>
-              <div id="totalArqueo" style="font-family:'Bebas Neue';font-size:2.2rem;color:#1d4ed8">$0.00</div>
+              <div id="totalArqueo" style="font-family:'Bebas Neue';font-size:2.2rem;color:#60a5fa">$0.00</div>
             </div>
           </div>
         </div>
@@ -330,7 +330,7 @@
         const dif = total - esperado;
         const el = document.getElementById('diferenciaArqueo');
         el.textContent = `${dif >= 0 ? '+' : ''}$${dif.toLocaleString('es-MX',{minimumFractionDigits:2})}`;
-        el.style.color = dif === 0 ? '#15803d' : (dif > 0 ? '#92400e' : '#b91c1c');
+        el.style.color = dif === 0 ? '#4ade80' : (dif > 0 ? '#fbbf24' : '#f87171');
       }
     }
 
@@ -364,12 +364,12 @@
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px">
             ${[
               ['Total',           c.total,                          'var(--texto)'],
-              ['Pagados',         c.pagados,                        '#15803d'],
-              ['Pendientes',      c.pendientes,                     '#92400e'],
-              ['Efectivo',        c.efectivo,                       '#1d4ed8'],
+              ['Pagados',         c.pagados,                        '#4ade80'],
+              ['Pendientes',      c.pendientes,                     '#fbbf24'],
+              ['Efectivo',        c.efectivo,                       '#60a5fa'],
               ['Transferencia',   c.transferencia,                  '#7e22ce'],
               ['Intercambio',     c.intercambio,                    '#c2410c'],
-              ['Recaudado',       '$'+c.ingresos.toLocaleString('es-MX',{minimumFractionDigits:2}), '#15803d'],
+              ['Recaudado',       '$'+c.ingresos.toLocaleString('es-MX',{minimumFractionDigits:2}), '#4ade80'],
               ...(costo > 0 ? [['Esperado', '$'+c.esperado.toLocaleString('es-MX',{minimumFractionDigits:2}), 'var(--muted)']] : []),
             ].map(([label, val, color]) => `
               <div class="stat-corte">
@@ -390,8 +390,8 @@
                     <tr>
                       <td><span style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${g.categoria.color}"></span><strong>${esc(nombre)}</strong></span></td>
                       <td style="font-family:'Bebas Neue';font-size:1.1rem">${g.total}</td>
-                      <td style="color:#15803d;font-family:'Bebas Neue';font-size:1.1rem">${g.pagados}</td>
-                      <td style="color:#92400e;font-family:'Bebas Neue';font-size:1.1rem">${g.total - g.pagados}</td>
+                      <td style="color:#4ade80;font-family:'Bebas Neue';font-size:1.1rem">${g.pagados}</td>
+                      <td style="color:#fbbf24;font-family:'Bebas Neue';font-size:1.1rem">${g.total - g.pagados}</td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -431,7 +431,7 @@
                         }
                       </td>
                       <td>${r.metodo_pago ? `<span class="metodo-tag">${esc(r.metodo_pago)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
-                      <td style="font-size:0.82rem;color:#15803d">${r.monto_pago ? '$'+parseFloat(r.monto_pago).toLocaleString('es-MX',{minimumFractionDigits:2}) : (r.estatus === 'Pagado' && costo > 0 ? '$'+costo.toLocaleString('es-MX',{minimumFractionDigits:2}) : '—')}</td>
+                      <td style="font-size:0.82rem;color:#4ade80">${r.monto_pago ? '$'+parseFloat(r.monto_pago).toLocaleString('es-MX',{minimumFractionDigits:2}) : (r.estatus === 'Pagado' && costo > 0 ? '$'+costo.toLocaleString('es-MX',{minimumFractionDigits:2}) : '—')}</td>
                       <td style="font-size:0.75rem;color:var(--muted)">${r.pagado_en ? new Date(r.pagado_en).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}) : '—'}</td>
                     </tr>
                   `).join('')}

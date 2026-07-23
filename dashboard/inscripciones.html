@@ -107,7 +107,7 @@
               <option value="">— o selecciona de la lista —</option>
             </select>
           </div>
-          <div id="infoPilotoBuscado" style="font-size:0.75rem;margin-top:4px;color:#15803d;display:none"></div>
+          <div id="infoPilotoBuscado" style="font-size:0.75rem;margin-top:4px;color:#4ade80;display:none"></div>
         </div>
         <div class="grid-2" style="margin-top:12px">
           <div class="campo">
@@ -241,7 +241,7 @@
       cursor: pointer; border: 1px solid var(--borde); background: var(--dark); color: var(--muted);
       transition: all 0.18s; display: flex; align-items: center; justify-content: center;
     }
-    .metodo-btn.activo { background: rgba(193,18,31,0.15); border-color: rgba(193,18,31,0.4); color: var(--rojo); }
+    .metodo-btn.activo { background: rgba(37,99,235,0.15); border-color: rgba(37,99,235,0.4); color: var(--rojo); }
     .cat-btn {
       padding: 8px 6px; border-radius: 8px; font-family: 'Barlow',sans-serif;
       font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
@@ -375,7 +375,7 @@
         grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem">Sin categorías disponibles</div>';
         return;
       }
-      grid.innerHTML = (esFallback ? `<div style="grid-column:span 3;font-size:0.72rem;color:#92400e;margin-bottom:4px">⚠ Campeonato sin categorías asignadas — mostrando todas</div>` : '') +
+      grid.innerHTML = (esFallback ? `<div style="grid-column:span 3;font-size:0.72rem;color:#fbbf24;margin-bottom:4px">⚠ Campeonato sin categorías asignadas — mostrando todas</div>` : '') +
         cats.map(c => {
           const precio = c.costo ?? c.costo_default ?? null;
           return `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${precio ?? ''}"
@@ -417,7 +417,7 @@
       filtroPagaronHoy = !filtroPagaronHoy;
       const btn = document.getElementById('btnPagaronHoy');
       btn.style.borderColor = filtroPagaronHoy ? 'rgba(21,128,61,0.5)' : '';
-      btn.style.color = filtroPagaronHoy ? '#15803d' : '';
+      btn.style.color = filtroPagaronHoy ? '#4ade80' : '';
       filtrarTabla();
     }
 
@@ -467,7 +467,7 @@
           <td><span class="num-piloto">${i.numero_piloto}</span></td>
           <td>
             <div style="font-weight:600">${esc(i.piloto_nombre)}</div>
-            ${i.auto_registro ? '<div style="font-size:0.72rem;color:#1d4ed8">auto-registro</div>' : ''}
+            ${i.auto_registro ? '<div style="font-size:0.72rem;color:#60a5fa">auto-registro</div>' : ''}
           </td>
           <td>${usuario.rol === 'torre' ? '<span style="color:var(--muted)">—</span>' : `<span style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">${i.tipo_sangre}</span>`}</td>
           <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${i.categoria_color}22;color:${i.categoria_color};border:1px solid ${i.categoria_color}44">${esc(i.categoria_nombre)}</span></td>
@@ -538,11 +538,11 @@
           document.getElementById('iPiloto').value = piloto.id;
           document.getElementById('iNumero').value  = piloto.numero_piloto;
           info.textContent = `✓ ${piloto.nombre_completo}`;
-          info.style.color = '#15803d';
+          info.style.color = '#4ade80';
           info.style.display = 'block';
         } else {
           info.textContent = '✗ Número no encontrado';
-          info.style.color = '#b91c1c';
+          info.style.color = '#f87171';
           info.style.display = 'block';
         }
       }, 400);

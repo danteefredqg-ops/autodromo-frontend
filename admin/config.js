@@ -119,10 +119,10 @@ async function apiFetch(ruta, opciones = {}) {
 // ─── Toast de notificaciones ──────────────────────────────────────────────────
 function mostrarToast(mensaje, tipo = 'exito') {
   const colores = {
-    exito:       { bg: 'rgba(21,128,61,0.1)',  borde: 'rgba(21,128,61,0.4)',  texto: '#15803d' },
-    error:       { bg: 'rgba(185,28,28,0.1)',  borde: 'rgba(185,28,28,0.4)',  texto: '#b91c1c' },
-    info:        { bg: 'rgba(29,78,216,0.1)', borde: 'rgba(29,78,216,0.4)', texto: '#1d4ed8' },
-    advertencia: { bg: 'rgba(146,64,14,0.1)', borde: 'rgba(146,64,14,0.4)', texto: '#92400e' },
+    exito:       { bg: 'rgba(21,128,61,0.15)',  borde: 'rgba(21,128,61,0.4)',  texto: '#4ade80' },
+    error:       { bg: 'rgba(185,28,28,0.15)',  borde: 'rgba(185,28,28,0.4)',  texto: '#f87171' },
+    info:        { bg: 'rgba(29,78,216,0.15)', borde: 'rgba(29,78,216,0.4)', texto: '#60a5fa' },
+    advertencia: { bg: 'rgba(146,64,14,0.15)', borde: 'rgba(146,64,14,0.4)', texto: '#fbbf24' },
   };
   const c = colores[tipo] || colores.info;
   const toast = document.createElement('div');
@@ -131,7 +131,7 @@ function mostrarToast(mensaje, tipo = 'exito') {
     background: ${c.bg}; border: 1px solid ${c.borde}; color: ${c.texto};
     padding: 12px 18px; border-radius: 10px;
     font-family: 'Barlow', sans-serif; font-size: 0.9rem; font-weight: 500;
-    max-width: 320px; box-shadow: 0 8px 32px rgba(43,38,32,0.15);
+    max-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     animation: slideIn 0.3s ease-out;
   `;
   toast.textContent = mensaje;
@@ -159,13 +159,13 @@ function formatFecha(fecha) {
 // ─── Badge de estatus ─────────────────────────────────────────────────────────
 function badgeEstatus(estatus) {
   const map = {
-    'Pagado':        { bg: 'rgba(21,128,61,0.12)',  borde: 'rgba(21,128,61,0.3)',  color: '#15803d' },
-    'Pendiente':     { bg: 'rgba(146,64,14,0.12)',  borde: 'rgba(146,64,14,0.3)',  color: '#92400e' },
-    'Descalificado': { bg: 'rgba(185,28,28,0.12)',  borde: 'rgba(185,28,28,0.3)',  color: '#b91c1c' },
-    'Vigente':       { bg: 'rgba(21,128,61,0.12)',  borde: 'rgba(21,128,61,0.3)',  color: '#15803d' },
-    'Vencida':       { bg: 'rgba(185,28,28,0.12)',  borde: 'rgba(185,28,28,0.3)',  color: '#b91c1c' },
-    'Suspendida':    { bg: 'rgba(185,28,28,0.12)',  borde: 'rgba(185,28,28,0.3)',  color: '#b91c1c' },
+    'Pagado':        { bg: 'rgba(21,128,61,0.15)',  borde: 'rgba(21,128,61,0.4)',  color: '#4ade80' },
+    'Pendiente':     { bg: 'rgba(146,64,14,0.15)',  borde: 'rgba(146,64,14,0.4)',  color: '#fbbf24' },
+    'Descalificado': { bg: 'rgba(185,28,28,0.15)',  borde: 'rgba(185,28,28,0.4)',  color: '#f87171' },
+    'Vigente':       { bg: 'rgba(21,128,61,0.15)',  borde: 'rgba(21,128,61,0.4)',  color: '#4ade80' },
+    'Vencida':       { bg: 'rgba(185,28,28,0.15)',  borde: 'rgba(185,28,28,0.4)',  color: '#f87171' },
+    'Suspendida':    { bg: 'rgba(185,28,28,0.15)',  borde: 'rgba(185,28,28,0.4)',  color: '#f87171' },
   };
-  const c = map[estatus] || { bg: 'rgba(43,38,32,0.06)', borde: 'rgba(43,38,32,0.15)', color: '#7a7057' };
+  const c = map[estatus] || { bg: 'rgba(255,255,255,0.06)', borde: 'rgba(255,255,255,0.15)', color: '#8b93a3' };
   return `<span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:9999px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${c.bg};border:1px solid ${c.borde};color:${c.color}">${esc(estatus)}</span>`;
 }

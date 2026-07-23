@@ -213,11 +213,11 @@
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px">
-              <div style="width:32px;height:32px;border-radius:50%;background:${p.foto_perfil ? `url('${UPLOADS_BASE}${p.foto_perfil}') center/cover` : (inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(193,18,31,0.15)')};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(193,18,31,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? 'var(--amarillo)' : 'var(--rojo)'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${p.foto_perfil ? '' : esc(p.nombre_completo[0])}</div>
+              <div style="width:32px;height:32px;border-radius:50%;background:${p.foto_perfil ? `url('${UPLOADS_BASE}${p.foto_perfil}') center/cover` : (inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(37,99,235,0.15)')};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(37,99,235,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? 'var(--amarillo)' : 'var(--rojo)'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0">${p.foto_perfil ? '' : esc(p.nombre_completo[0])}</div>
               <div>
                 <div style="display:flex;align-items:center;gap:6px">
                   <span style="font-weight:600">${esc(p.nombre_completo)}</span>
-                  ${p.numero_piloto ? `<span style="font-family:'Bebas Neue';font-size:0.85rem;padding:1px 7px;border-radius:5px;${p.numero_piloto===1?'background:rgba(193,18,31,0.2);color:var(--rojo);border:1px solid rgba(193,18,31,0.4)':'background:var(--dark);color:var(--muted);border:1px solid var(--borde)'}">#${p.numero_piloto}</span>` : ''}
+                  ${p.numero_piloto ? `<span style="font-family:'Bebas Neue';font-size:0.85rem;padding:1px 7px;border-radius:5px;${p.numero_piloto===1?'background:rgba(37,99,235,0.2);color:var(--rojo);border:1px solid rgba(37,99,235,0.4)':'background:var(--dark);color:var(--muted);border:1px solid var(--borde)'}">#${p.numero_piloto}</span>` : ''}
                 </div>
                 ${p.email ? `<div style="font-size:0.75rem;color:var(--muted)">${esc(p.email)}</div>` : ''}
                 ${p.anio_inicio_autodromo ? `<div style="font-size:0.7rem;color:var(--azul);margin-top:2px">🏁 ${new Date().getFullYear() - p.anio_inicio_autodromo + 1} año(s) corriendo en el autódromo</div>` : ''}
