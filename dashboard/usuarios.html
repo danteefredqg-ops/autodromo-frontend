@@ -10,7 +10,7 @@
 <body>
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" />
+      <div class="sidebar-logo-badge"><img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" /></div>
     </div>
     <nav class="nav">
       <a href="index.html"         class="nav-link">Dashboard</a>
@@ -165,10 +165,10 @@
               </div>
               <button onclick="toggleActivo(${u.id}, ${u.activo})" title="${u.activo ? 'Desactivar' : 'Activar'}"
                 style="background:none;border:none;cursor:pointer;padding:4px;border-radius:6px;transition:background 0.2s"
-                onmouseover="this.style.background='rgba(43,38,32,0.06)'" onmouseout="this.style.background='none'">
+                onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='none'">
                 ${u.activo
                   ? `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3" fill="#4ade80"/></svg>`
-                  : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a89b7c" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="8" cy="12" r="3" fill="#a89b7c"/></svg>`
+                  : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b93a3" stroke-width="2"><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="8" cy="12" r="3" fill="#8b93a3"/></svg>`
                 }
               </button>
             </div>

@@ -39,18 +39,25 @@ body {
 }
 
 .sidebar-logo {
-  padding: 14px 16px;
+  padding: 16px;
   border-bottom: 1px solid var(--borde);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+/* El PNG trae fondo blanco propio — en vez de recortarlo (se nota el
+   sobrante en un fondo oscuro), se le da una placa blanca a propósito */
+.sidebar-logo-badge {
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+}
 .sidebar-logo-img {
-  height: 64px;
+  height: 76px;
   width: auto;
   display: block;
-  /* Recorta al óvalo del logo, ocultando el fondo blanco rectangular */
-  clip-path: ellipse(46% 42% at 50% 50%);
 }
 
 .nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
