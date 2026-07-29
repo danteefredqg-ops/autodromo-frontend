@@ -117,7 +117,7 @@ async function apiFetch(ruta, opciones = {}) {
 }
 
 // ─── Toast de notificaciones ──────────────────────────────────────────────────
-function mostrarToast(mensaje, tipo = 'exito') {
+function mostrarToast(mensaje, tipo = 'exito', duracionMs = 3500) {
   const colores = {
     exito:       { bg: 'rgba(21,128,61,0.15)',  borde: 'rgba(21,128,61,0.4)',  texto: '#4ade80' },
     error:       { bg: 'rgba(185,28,28,0.15)',  borde: 'rgba(185,28,28,0.4)',  texto: '#f87171' },
@@ -142,8 +142,32 @@ function mostrarToast(mensaje, tipo = 'exito') {
     document.head.appendChild(s);
   }
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3500);
+  setTimeout(() => toast.remove(), duracionMs);
 }
+
+// ─── Chequeo silencioso del backend ───────────────────────────────────────────
+// Se ejecuta una vez al cargar cualquier página que incluya este archivo. Antes,
+// si el backend estaba caído o reiniciando, cada botón fallaba por su cuenta sin
+// contexto (o, en el portal del piloto, hasta deslogueaba al usuario). Esto avisa
+// una sola vez, apenas carga la página, en vez de dejar que el usuario lo
+// descubra a botonazos.
+(function verificarBackend() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', chequear);
+  } else {
+    chequear();
+  }
+  function chequear() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+    fetch(`${API_URL}/health`, { signal: controller.signal })
+      .then(res => { if (!res.ok) throw new Error(); })
+      .catch(() => {
+        mostrarToast('No pudimos conectar con el servidor. Algunas funciones podrían no responder — intenta recargar en un momento.', 'error', 10000);
+      })
+      .finally(() => clearTimeout(timer));
+  }
+})();
 
 // ─── Formatear fecha ──────────────────────────────────────────────────────────
 function formatFecha(fecha) {

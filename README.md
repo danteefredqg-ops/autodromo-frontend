@@ -40,11 +40,13 @@ Edita **`admin/config.js`** y cambia la URL del backend:
 
 ```js
 // Producción (Railway)
-const API_URL = 'https://autodromo-backend-production.up.railway.app/api';
+const API_URL = 'https://autodromo.up.railway.app/api';
 
 // Desarrollo local
 // const API_URL = 'http://localhost:3001/api';
 ```
+
+`API_URL` solo vive en este archivo — todas las demás páginas (incluyendo `piloto/index.html`) lo cargan vía `<script src="../admin/config.js">` en vez de tener su propia copia, para que no se puedan desincronizar.
 
 ## Deploy en GitHub Pages
 
