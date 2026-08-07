@@ -780,6 +780,14 @@ const TOKEN_KEY   = 'piloto_token';
 const PILOTO_KEY  = 'piloto_data';
 // Mismo patrón que backend/utils/validadores.js — mantenerlos iguales si se ajusta uno.
 const CURP_REGEX = /^[A-Z][AEIOUX][A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM](AS|BC|BS|CC|CL|CM|CS|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QO|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d][0-9]$/;
+const VEHICULOS_BLOQUEADOS = ["bicicleta","bici","bicicross","patin del diablo","patineta","monopatin",
+  "patin","patines","scooter","patinete","skateboard","longboard","avion","avioneta","helicoptero",
+  "dron","drone","triciclo","carreta","carreton","caballo","bestia"];
+function vehiculoValido(texto){
+  if(!texto) return true;
+  const limpio = texto.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  return !VEHICULOS_BLOQUEADOS.some(p => new RegExp(`\\b${p}\\b`).test(limpio));
+}
 
 async function apiFetch(ruta, ops={}){
   const token = localStorage.getItem(TOKEN_KEY);
@@ -1536,6 +1544,7 @@ async function enviarInscripcion(){
   if(!etapaId)   return mostrarToast('Selecciona una etapa','error');
   if(!inscCatIds.size) return mostrarToast('Selecciona al menos una categoría','error');
   if(!vehiculo)  return mostrarToast('Ingresa la marca o nombre de tu vehículo','error');
+  if(!vehiculoValido(vehiculo)) return mostrarToast('Ese vehículo no es válido para competir en el autódromo','error');
 
   const btn = document.getElementById('btnInscribirse');
   btn.disabled = true; btn.textContent = 'Enviando...';

@@ -362,6 +362,16 @@
 
 <script src="../admin/config.js"></script>
 <script>
+  // Mismo patrón que backend/utils/validadores.js — mantenerlos iguales si se ajusta uno.
+  const VEHICULOS_BLOQUEADOS = ["bicicleta","bici","bicicross","patin del diablo","patineta","monopatin",
+    "patin","patines","scooter","patinete","skateboard","longboard","avion","avioneta","helicoptero",
+    "dron","drone","triciclo","carreta","carreton","caballo","bestia"];
+  function vehiculoValido(texto){
+    if(!texto) return true;
+    const limpio = texto.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+    return !VEHICULOS_BLOQUEADOS.some(p => new RegExp(`\\b${p}\\b`).test(limpio));
+  }
+
   let modo = '';       // 'nuevo' | 'existente'
   let pilotoId  = null;
   let pilotoNumero = null; // numero_piloto del piloto existente
@@ -614,6 +624,7 @@
     if (!numero)        return alerta('a4', 'Ingresa tu número de piloto');
     if (parseInt(numero) < 1) return alerta('a4', 'El número debe ser mayor a 0');
     if (!marca)         return alerta('a4', 'Ingresa la marca de tu vehículo');
+    if (!vehiculoValido(marca)) return alerta('a4', 'Ese vehículo no es válido para competir en el autódromo');
 
     const btn = document.getElementById('btnEnviar');
     btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Enviando...';
