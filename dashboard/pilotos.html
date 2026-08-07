@@ -96,7 +96,7 @@
           <div class="grid-2" style="margin-top:12px">
             <div class="campo">
               <label class="etiqueta">Teléfono</label>
-              <input class="input" id="fTelefono" placeholder="81 1234 5678" />
+              <input class="input" id="fTelefono" type="tel" inputmode="numeric" maxlength="10" placeholder="8112345678" />
             </div>
             <div class="campo">
               <label class="etiqueta">Email</label>
@@ -136,7 +136,7 @@
             </div>
             <div class="campo">
               <label class="etiqueta">Tel. Emergencia</label>
-              <input class="input" id="fTelEmergencia" placeholder="81 0000 0000" />
+              <input class="input" id="fTelEmergencia" type="tel" inputmode="numeric" maxlength="10" placeholder="8100000000" />
             </div>
             <div class="campo col-2">
               <label class="etiqueta">Dirección</label>
@@ -318,6 +318,10 @@
       const sangre = document.getElementById('fSangre').value;
       if (!nombre) return mostrarToast('El nombre es obligatorio', 'error');
       if (!sangre) return mostrarToast('El tipo de sangre es obligatorio', 'error');
+      const telefono = document.getElementById('fTelefono').value.trim();
+      const telEmergencia = document.getElementById('fTelEmergencia').value.trim();
+      if (telefono && !/^\d{10}$/.test(telefono)) return mostrarToast('El teléfono debe tener 10 dígitos', 'error');
+      if (telEmergencia && !/^\d{10}$/.test(telEmergencia)) return mostrarToast('El teléfono de emergencia debe tener 10 dígitos', 'error');
 
       const btn = document.getElementById('btnGuardar');
       btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Guardando...';

@@ -211,7 +211,7 @@
 
       <div class="sec">Contacto</div>
       <div class="g2">
-        <div class="f"><label class="lbl">Teléfono <span class="req">*</span></label><input class="inp" id="pTel" placeholder="81 1234 5678" /></div>
+        <div class="f"><label class="lbl">Teléfono <span class="req">*</span></label><input class="inp" id="pTel" type="tel" inputmode="numeric" maxlength="10" placeholder="8112345678" /></div>
         <div class="f"><label class="lbl">Tipo de Sangre <span class="req">*</span></label>
           <select class="sel" id="pSangre">
             <option value="">Selecciona...</option>
@@ -235,7 +235,7 @@
       <div class="sec">Contacto de Emergencia</div>
       <div class="g2">
         <div class="f"><label class="lbl">Nombre <span class="req">*</span></label><input class="inp" id="pEmerg" placeholder="Nombre del familiar" /></div>
-        <div class="f"><label class="lbl">Teléfono <span class="req">*</span></label><input class="inp" id="pTelEmerg" placeholder="81 0000 0000" /></div>
+        <div class="f"><label class="lbl">Teléfono <span class="req">*</span></label><input class="inp" id="pTelEmerg" type="tel" inputmode="numeric" maxlength="10" placeholder="8100000000" /></div>
       </div>
 
       <button class="btn" onclick="irContrato()">Continuar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9,18 15,12 9,6"/></svg></button>
@@ -474,9 +474,11 @@
       if (!ap)     return alerta('a2', 'El apellido paterno es obligatorio');
       if (!nb)     return alerta('a2', 'El nombre es obligatorio');
       if (!tel)    return alerta('a2', 'El teléfono es obligatorio');
+      if (!/^\d{10}$/.test(tel)) return alerta('a2', 'El teléfono debe tener 10 dígitos');
       if (!sangre) return alerta('a2', 'Selecciona tu tipo de sangre');
       if (!emerg)  return alerta('a2', 'El nombre del contacto de emergencia es obligatorio');
       if (!telE)   return alerta('a2', 'El teléfono de emergencia es obligatorio');
+      if (!/^\d{10}$/.test(telE)) return alerta('a2', 'El teléfono de emergencia debe tener 10 dígitos');
     }
 
     // Verificar si ya tiene contrato este año (solo piloto existente con ID)

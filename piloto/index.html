@@ -619,8 +619,8 @@
           <div class="campo-p"><label>Apellido materno</label><input id="prepApMat" type="text"/></div>
           <div class="campo-p"><label>Nombre(s) *</label><input id="prepNombres" type="text"/></div>
           <div class="campo-p"><label>Fecha de nacimiento</label><input id="prepFechaNac" type="date"/></div>
-          <div class="campo-p"><label>CURP</label><input id="prepCurp" type="text" maxlength="20" style="text-transform:uppercase"/></div>
-          <div class="campo-p"><label>Teléfono</label><input id="prepTel" type="tel"/></div>
+          <div class="campo-p"><label>CURP</label><input id="prepCurp" type="text" maxlength="18" style="text-transform:uppercase"/></div>
+          <div class="campo-p"><label>Teléfono</label><input id="prepTel" type="tel" inputmode="numeric" maxlength="10"/></div>
           <div class="campo-p"><label>Email</label><input id="prepEmail" type="email"/></div>
           <div class="campo-p"><label>Tipo de sangre</label>
             <select id="prepSangre">
@@ -633,7 +633,7 @@
           <div class="campo-p"><label>Ciudad</label><input id="prepCiudad" type="text"/></div>
           <div class="campo-p"><label>Estado</label><input id="prepEstado" type="text"/></div>
           <div class="campo-p"><label>Contacto de emergencia</label><input id="prepContactoEmerg" type="text"/></div>
-          <div class="campo-p"><label>Tel. de emergencia</label><input id="prepTelEmerg" type="tel"/></div>
+          <div class="campo-p"><label>Tel. de emergencia</label><input id="prepTelEmerg" type="tel" inputmode="numeric" maxlength="10"/></div>
         </div>
         <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn-guardar-perfil" type="button" onclick="guardarPreparador()">Guardar</button>
@@ -668,8 +668,8 @@
           <div class="campo-p"><label>Apellido paterno <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pApPat" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
           <div class="campo-p"><label>Apellido materno <span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:0.6rem;color:var(--sub2)">(solo admin)</span></label><input id="pApMat" type="text" readonly style="opacity:0.4;cursor:not-allowed"/></div>
           <div class="campo-p"><label>Fecha de nacimiento</label><input id="pFechaNac" type="date"/></div>
-          <div class="campo-p"><label>CURP</label><input id="pCurp" type="text" maxlength="20" style="text-transform:uppercase"/></div>
-          <div class="campo-p"><label>Teléfono</label><input id="pTel" type="tel"/></div>
+          <div class="campo-p"><label>CURP</label><input id="pCurp" type="text" maxlength="18" style="text-transform:uppercase"/></div>
+          <div class="campo-p"><label>Teléfono</label><input id="pTel" type="tel" inputmode="numeric" maxlength="10"/></div>
           <div class="campo-p"><label>Tipo de sangre</label>
             <select id="pSangre">
               <option value="">Seleccionar...</option>
@@ -706,7 +706,7 @@
         <div class="perfil-section-title">Emergencias</div>
         <div class="grid-perfil">
           <div class="campo-p"><label>Contacto de emergencia</label><input id="pContactoEmerg" type="text"/></div>
-          <div class="campo-p"><label>Teléfono de emergencia</label><input id="pTelEmerg" type="tel"/></div>
+          <div class="campo-p"><label>Teléfono de emergencia</label><input id="pTelEmerg" type="tel" inputmode="numeric" maxlength="10"/></div>
           <div class="campo-p"><label>Parentesco</label><input id="pParentesco" type="text"/></div>
         </div>
       </div>
@@ -778,6 +778,8 @@
 // de sesión que el de admin/config.js (que es para personal del sistema).
 const TOKEN_KEY   = 'piloto_token';
 const PILOTO_KEY  = 'piloto_data';
+// Mismo patrón que backend/utils/validadores.js — mantenerlos iguales si se ajusta uno.
+const CURP_REGEX = /^[A-Z][AEIOUX][A-Z]{2}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM](AS|BC|BS|CC|CL|CM|CS|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QO|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d][0-9]$/;
 
 async function apiFetch(ruta, ops={}){
   const token = localStorage.getItem(TOKEN_KEY);
@@ -1158,6 +1160,15 @@ async function guardarPreparador(){
     contacto_emergencia: document.getElementById('prepContactoEmerg').value.trim() || null,
     telefono_emergencia: document.getElementById('prepTelEmerg').value.trim() || null,
   };
+  if(campos.telefono && !/^\d{10}$/.test(campos.telefono)) {
+    return mostrarToast('El teléfono debe tener 10 dígitos', 'error');
+  }
+  if(campos.telefono_emergencia && !/^\d{10}$/.test(campos.telefono_emergencia)) {
+    return mostrarToast('El teléfono de emergencia debe tener 10 dígitos', 'error');
+  }
+  if(campos.curp && !CURP_REGEX.test(campos.curp)) {
+    return mostrarToast('El CURP no tiene un formato válido (18 caracteres)', 'error');
+  }
   try{
     if(id){
       await apiFetch(`/piloto/mis-preparadores/${id}`, {method:'PUT', body:JSON.stringify(campos)});
@@ -1386,6 +1397,15 @@ async function guardarPerfil(){
   }
   if (campos.anio_inicio_autodromo && (campos.anio_inicio_autodromo < 1990 || campos.anio_inicio_autodromo > anioActual)) {
     return mostrarToast(`El año de inicio debe estar entre 1990 y ${anioActual}`, 'error');
+  }
+  if (campos.telefono && !/^\d{10}$/.test(campos.telefono)) {
+    return mostrarToast('El teléfono debe tener 10 dígitos', 'error');
+  }
+  if (campos.telefono_emergencia && !/^\d{10}$/.test(campos.telefono_emergencia)) {
+    return mostrarToast('El teléfono de emergencia debe tener 10 dígitos', 'error');
+  }
+  if (campos.curp && !CURP_REGEX.test(campos.curp)) {
+    return mostrarToast('El CURP no tiene un formato válido (18 caracteres)', 'error');
   }
   try{
     const updated=await apiFetch('/piloto/mi-perfil',{method:'PATCH',body:JSON.stringify(campos)});
