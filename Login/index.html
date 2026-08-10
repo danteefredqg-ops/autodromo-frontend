@@ -151,6 +151,10 @@
       <button class="btn-primario" id="btnEntrar" onclick="entrar()">
         Entrar
       </button>
+
+      <div id="googleSep" class="pie-sep" style="display:none"><span></span><em>o</em><span></span></div>
+      <div id="googleBtnBox" style="display:flex;justify-content:center"></div>
+
       <div class="pie-sep"><span></span><em>¿primera vez?</em><span></span></div>
       <div style="text-align:center;font-size:0.76rem;color:var(--muted)">
         ¿No tienes acceso aún?
@@ -162,6 +166,7 @@
   </div>
 
   <script src="../admin/config.js"></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
   <script>
     // Redirigir si ya hay sesión admin
     if (localStorage.getItem('autodromo_token')) {
@@ -236,6 +241,46 @@
         btn.textContent = 'Entrar';
       }
     }
+
+    // ── Continuar con Google (solo pilotos con cuenta ya creada) ──
+    function inicializarGoogle() {
+      if (!GOOGLE_CLIENT_ID || typeof google === 'undefined' || !google.accounts) return;
+      google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: manejarRespuestaGoogle });
+      google.accounts.id.renderButton(document.getElementById('googleBtnBox'), {
+        theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', width: 300,
+      });
+      document.getElementById('googleSep').style.display = 'flex';
+    }
+
+    async function manejarRespuestaGoogle(respuesta) {
+      ocultarAlerta();
+      try {
+        const res = await fetch(`${API_URL}/piloto/login-google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: respuesta.credential }),
+        });
+        let data;
+        try { data = await res.json(); }
+        catch { throw new Error(res.ok ? 'Respuesta inválida del servidor' : `El servidor no respondió correctamente (${res.status}). Intenta de nuevo en unos minutos.`); }
+        if (!res.ok) {
+          if (data.requiere_registro) {
+            mostrarAlerta('No tienes una cuenta con ese correo de Google todavía. Te llevamos a crear tu acceso...', 'error');
+            const email = encodeURIComponent(data.email || '');
+            setTimeout(() => { window.location.href = `../piloto/index.html?email=${email}#crear`; }, 1800);
+            return;
+          }
+          throw new Error(data.error || 'No se pudo iniciar sesión con Google');
+        }
+        localStorage.setItem('piloto_token', data.token);
+        localStorage.setItem('piloto_data', JSON.stringify(data.piloto));
+        window.location.href = '../piloto/index.html';
+      } catch (err) {
+        mostrarAlerta(err.message);
+      }
+    }
+
+    inicializarGoogle();
   </script>
 </body>
 </html>

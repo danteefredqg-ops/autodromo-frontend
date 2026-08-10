@@ -4,6 +4,11 @@ const API_URL = 'https://autodromo.up.railway.app/api';
 // Para desarrollo local usa: const API_URL = 'http://localhost:3001/api';
 const UPLOADS_BASE = API_URL.replace(/\/api$/, '');
 
+// Client ID de Google (login de pilotos con "Continuar con Google") — no es
+// secreto, es información pública pensada para ir en el frontend. Debe
+// coincidir con el GOOGLE_CLIENT_ID configurado en el backend (Railway).
+const GOOGLE_CLIENT_ID = '';
+
 // ─── Seguridad: escapar HTML para evitar XSS ──────────────────────────────────
 function esc(str) {
   return String(str ?? '')

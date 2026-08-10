@@ -1615,6 +1615,11 @@ function resetInscripcion(){
 
 // ── Arranque ──
 (function init(){
+  // Si viene de "Continuar con Google" sin cuenta todavía, precarga el correo
+  // que ya verificó Google en el formulario de crear acceso.
+  const emailPrellenado = new URLSearchParams(window.location.search).get('email');
+  if(emailPrellenado) document.getElementById('cEmail').value = emailPrellenado;
+
   const token=localStorage.getItem(TOKEN_KEY);
   const piloto=JSON.parse(localStorage.getItem(PILOTO_KEY)||'null');
   if(token&&piloto){
