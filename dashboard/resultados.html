@@ -172,7 +172,10 @@
           return `
             <tr data-piloto-id="${i.piloto_id}" data-tocado="0">
               <td><span class="num-piloto">${i.numero_piloto}</span></td>
-              <td>${esc(i.piloto_nombre)}</td>
+              <td>
+                ${esc(i.piloto_nombre)}
+                ${i.cambio_vehiculo ? `<span title="Vehículo original: ${esc(i.vehiculo_original)} — ahora: ${esc(i.vehiculo)}" style="display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:1px 7px;border-radius:9999px;font-size:0.62rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:rgba(146,64,14,0.15);color:#fbbf24;border:1px solid rgba(146,64,14,0.4)">⚠ Cambió de vehículo</span>` : ''}
+              </td>
               <td>
                 <select class="select estatus-select" onchange="onEstatusChange(this)">
                   <option value="Finalizado" ${estatus === 'Finalizado' ? 'selected' : ''}>Finalizado</option>
