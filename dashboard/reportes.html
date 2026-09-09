@@ -79,7 +79,7 @@
           </select>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-primario" onclick="cargarReporteCategoria()" title="Lista de inscritos de la etapa, agrupados por categoría">
+          <button class="btn-primario" id="btnPorCategoria" onclick="cargarReporteCategoria()" title="Lista de inscritos de la etapa, agrupados por categoría">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             Por Categoría
           </button>
@@ -115,6 +115,7 @@
     if (usuario.rol === 'torre') {
       document.getElementById('btnCorte').style.display = 'none';
       document.getElementById('btnArqueo').style.display = 'none';
+      document.getElementById('btnPorCategoria').style.display = 'none';
       document.querySelector('a[href="formularios.html"]').style.display = 'none';
     }
 
