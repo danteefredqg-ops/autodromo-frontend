@@ -95,6 +95,11 @@
           </div>
           <div class="grid-2" style="margin-top:12px">
             <div class="campo">
+              <label class="etiqueta">Número de Piloto</label>
+              <input class="input" id="fNumero" type="number" min="1" inputmode="numeric" placeholder="Ej. 42" />
+              <div style="font-size:0.7rem;color:var(--muted);margin-top:4px">Necesario para que el piloto pueda inscribirse desde su panel.</div>
+            </div>
+            <div class="campo">
               <label class="etiqueta">Teléfono</label>
               <input class="input" id="fTelefono" type="tel" inputmode="numeric" maxlength="10" placeholder="8112345678" />
             </div>
@@ -285,6 +290,7 @@
       document.getElementById('modalTitulo').textContent = piloto ? 'Editar Piloto' : 'Nuevo Piloto';
       document.getElementById('btnGuardar').textContent  = piloto ? 'Guardar Cambios' : 'Registrar Piloto';
       document.getElementById('fNombre').value       = piloto?.nombre_completo || '';
+      document.getElementById('fNumero').value       = piloto?.numero_piloto || '';
       document.getElementById('fTelefono').value     = piloto?.telefono || '';
       document.getElementById('fEmail').value        = piloto?.email || '';
       document.getElementById('fSangre').value       = piloto?.tipo_sangre || 'O+';
@@ -322,12 +328,15 @@
       const telEmergencia = document.getElementById('fTelEmergencia').value.trim();
       if (telefono && !/^\d{10}$/.test(telefono)) return mostrarToast('El teléfono debe tener 10 dígitos', 'error');
       if (telEmergencia && !/^\d{10}$/.test(telEmergencia)) return mostrarToast('El teléfono de emergencia debe tener 10 dígitos', 'error');
+      const numeroTexto = document.getElementById('fNumero').value.trim();
+      if (numeroTexto && !/^\d+$/.test(numeroTexto)) return mostrarToast('El número de piloto debe ser un número entero', 'error');
 
       const btn = document.getElementById('btnGuardar');
       btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Guardando...';
 
       const datos = {
         nombre_completo:     nombre,
+        numero_piloto:       numeroTexto ? parseInt(numeroTexto) : null,
         telefono:            document.getElementById('fTelefono').value || null,
         email:               document.getElementById('fEmail').value || null,
         tipo_sangre:         sangre,
