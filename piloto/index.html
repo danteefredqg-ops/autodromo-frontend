@@ -550,6 +550,11 @@
               </select>
             </div>
           </div>
+          <div class="campo-p" id="inscNumeroWrap" style="display:none;margin-top:10px">
+            <label>Tu número de piloto *</label>
+            <input id="inscNumero" type="number" min="1" placeholder="Ej: 42"/>
+            <div style="font-size:0.7rem;color:var(--sub2);margin-top:4px">Aún no tienes un número asignado — elige el que quieras usar para competir (no debe estar en uso por otro piloto).</div>
+          </div>
           <div style="margin-top:14px">
             <label style="font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--sub);display:block;margin-bottom:8px">Categorías <span style="text-transform:none;letter-spacing:normal;font-weight:400">(puedes elegir varias)</span></label>
             <div id="inscCatGrid" class="insc-cat-grid">
@@ -727,10 +732,10 @@
           <div class="campo-p"><label>Nombre del equipo</label><input id="pEquipo" type="text"/></div>
           <div class="campo-p" style="grid-column:1/-1"><label>Comisión nacional</label>
             <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px">
-              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="PISTA" class="chkComisionPiloto" style="width:auto"/>Pista</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="PISTA" class="chkComisionPiloto" style="width:auto"/>Pista (CNP)</label>
               <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="KARTISMO" class="chkComisionPiloto" style="width:auto"/>Kartismo</label>
               <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="RALLIES" class="chkComisionPiloto" style="width:auto"/>Rallies</label>
-              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="ACELERACIÓN" class="chkComisionPiloto" style="width:auto"/>Aceleración</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="ACELERACIÓN" class="chkComisionPiloto" style="width:auto"/>Aceleración (CNA)</label>
               <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="OFF-ROAD" class="chkComisionPiloto" style="width:auto"/>Off-Road</label>
               <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="VINTAGE" class="chkComisionPiloto" style="width:auto"/>Vintage</label>
               <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="CLÁSICOS" class="chkComisionPiloto" style="width:auto"/>Clásicos</label>
@@ -922,6 +927,7 @@ async function abrirPortal(piloto){
   // Hero
   const nombre = piloto.nombre_completo||`${piloto.nombres||''} ${piloto.apellido_paterno||''}`.trim()||'Piloto';
   document.getElementById('heroNum').textContent = '#'+(piloto.numero_piloto||'—');
+  document.getElementById('inscNumeroWrap').style.display = piloto.numero_piloto ? 'none' : 'block';
   document.getElementById('heroNombre').textContent = nombre.toUpperCase();
   document.getElementById('avatarLetra').textContent = nombre[0]?.toUpperCase()||'P';
   document.getElementById('chipNombre').textContent = nombre.split(' ')[0];
@@ -1592,9 +1598,11 @@ async function enviarInscripcion(){
     irAPerfil();
     return;
   }
-  if(!pilotoData.numero_piloto){
-    mostrarToast('Aún no tienes un número de piloto asignado. Pide al staff que te lo asigne antes de inscribirte.','error');
-    return;
+  let numeroPiloto = pilotoData.numero_piloto;
+  if(!numeroPiloto){
+    const numNuevo = document.getElementById('inscNumero').value.trim();
+    if(!numNuevo || parseInt(numNuevo) < 1) return mostrarToast('Ingresa el número de piloto que quieres usar','error');
+    numeroPiloto = parseInt(numNuevo);
   }
   const etapaId  = document.getElementById('inscEtapa').value;
   const vehiculo = document.getElementById('inscVehiculo').value.trim();
@@ -1610,7 +1618,7 @@ async function enviarInscripcion(){
     const body = {
       etapa_id:       parseInt(etapaId),
       categoria_ids:  [...inscCatIds],
-      numero_piloto:  pilotoData.numero_piloto,
+      numero_piloto:  numeroPiloto,
       email:          pilotoData.email,
       vehiculo,
       modelo_vehiculo: document.getElementById('inscModelo').value.trim()||null,
@@ -1620,6 +1628,11 @@ async function enviarInscripcion(){
       contrato_aceptado: document.getElementById('inscContrato').checked,
     };
     const resp = await apiFetch('/inscripciones/auto-registro',{method:'POST',body:JSON.stringify(body)});
+    if(!pilotoData.numero_piloto){
+      pilotoData.numero_piloto = numeroPiloto;
+      document.getElementById('inscNumeroWrap').style.display='none';
+      document.getElementById('heroNum').textContent = '#'+numeroPiloto;
+    }
     mostrarExitoInscripcion(resp.inscripciones||[resp.inscripcion], resp.duplicadas||[]);
     cargarDashboard();
   } catch(err){
