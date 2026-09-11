@@ -194,11 +194,14 @@
       return { campId, etapaId, catId, qs };
     }
 
+    let ultimoReporteCategoria = null;
+
     async function cargarReporteCategoria() {
       const { qs } = getQueryParams();
       if (!qs) return mostrarToast('Selecciona un campeonato o etapa', 'advertencia');
       try {
         const data = await apiFetch(`/reportes/por-categoria?${qs}`);
+        ultimoReporteCategoria = data;
         const grupos = Object.entries(data.agrupado);
         const div = document.getElementById('contenidoReporte');
         if (grupos.length === 0) {
@@ -212,6 +215,10 @@
             <div style="display:flex;gap:10px;align-items:center">
               ${costo > 0 ? `<span style="font-size:0.78rem;color:#4ade80">Costo: $${costo.toLocaleString('es-MX',{minimumFractionDigits:2})}/inscripción</span>` : ''}
               <span style="font-size:0.75rem;padding:3px 12px;border-radius:9999px;background:rgba(37,99,235,0.15);color:var(--rojo);border:1px solid rgba(37,99,235,0.3)">${data.total} total</span>
+              <button class="btn-secundario" onclick="exportarReporteCategoriaExcel()" style="border-color:rgba(74,222,128,0.5);color:#4ade80;padding:6px 12px;font-size:0.72rem">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Excel
+              </button>
             </div>
           </div>
           ${grupos.map(([nombre, g]) => `
@@ -253,6 +260,41 @@
           `).join('')}
         `;
       } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    // CSV con BOM: Excel lo abre directo, con acentos correctos y los montos
+    // como números editables (no como texto), que es lo que pidió el cliente.
+    function exportarReporteCategoriaExcel() {
+      if (!ultimoReporteCategoria || !ultimoReporteCategoria.total) {
+        return mostrarToast('No hay un reporte cargado para exportar', 'advertencia');
+      }
+      const q = v => { if (v == null) return ''; const s = String(v); return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g, '""')}"` : s; };
+      const heads = ['Categoría', '#', 'Piloto', 'Sangre', 'Vehículo', 'Modelo', 'Estatus', 'Método de pago', 'Monto', 'Fecha de pago'];
+      const filas = [heads.join(',')];
+      let totalGeneralCobrado = 0, totalGeneralEsperado = 0;
+      for (const [nombre, g] of Object.entries(ultimoReporteCategoria.agrupado)) {
+        for (const r of g.pilotos) {
+          const monto = r.monto_pago != null ? parseFloat(r.monto_pago) : (r.estatus === 'Pagado' ? g.costo : '');
+          filas.push([
+            q(nombre), r.numero_piloto, q(r.piloto_nombre), q(r.tipo_sangre), q(r.vehiculo), q(r.modelo_vehiculo),
+            q(r.estatus), q(r.metodo_pago), monto, q(r.pagado_en ? new Date(r.pagado_en).toLocaleDateString('es-MX') : ''),
+          ].join(','));
+        }
+        filas.push(['', '', '', '', '', '', '', `Subtotal ${nombre}`, g.total_cobrado || 0, `${g.pagados}/${g.total} pagados`].map(q).join(','));
+        totalGeneralCobrado  += g.total_cobrado  || 0;
+        totalGeneralEsperado += g.total_esperado || 0;
+      }
+      filas.push(['', '', '', '', '', '', '', 'TOTAL COBRADO', totalGeneralCobrado, ''].map(q).join(','));
+      if (totalGeneralEsperado > 0) {
+        filas.push(['', '', '', '', '', '', '', 'TOTAL ESPERADO', totalGeneralEsperado, ''].map(q).join(','));
+      }
+      const blob = new Blob(['﻿' + filas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = `reporte_por_categoria_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     const DENOMINACIONES = [
