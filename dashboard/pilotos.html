@@ -53,6 +53,13 @@
         <option value="">Todos los estatus de licencia</option>
         <option>Vigente</option><option>Vencida</option><option>Suspendida</option>
       </select>
+      <select class="select" id="filtroVencimiento" onchange="filtrarPilotos()">
+        <option value="">Cualquier vencimiento</option>
+        <option value="vencida">Ya vencidas</option>
+        <option value="30">Vencen en 30 días</option>
+        <option value="90">Vencen en 90 días</option>
+        <option value="sin_fecha">Sin fecha registrada</option>
+      </select>
       <select class="select" id="filtroActividad" onchange="filtrarPilotos()">
         <option value="">Toda la actividad</option>
         <option value="activo">Con actividad reciente</option>
@@ -123,6 +130,10 @@
             <div class="campo">
               <label class="etiqueta">Número de Licencia</label>
               <input class="input" id="fLicencia" placeholder="LIC-000" />
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Vencimiento de Licencia</label>
+              <input class="input" type="date" id="fVencimientoLicencia" />
             </div>
             <div class="campo">
               <label class="etiqueta">Nacionalidad</label>
@@ -205,6 +216,15 @@
       }
     }
 
+    function renderVencimiento(fecha) {
+      const dias = diasParaVencer(fecha);
+      if (dias === null) return '';
+      let color = 'var(--muted)', texto = formatFecha(fecha);
+      if (dias < 0)       { color = '#f87171'; texto = `Venció hace ${Math.abs(dias)}d`; }
+      else if (dias <= 30) { color = 'var(--amarillo)'; texto = `Vence en ${dias}d`; }
+      return `<div style="font-size:0.7rem;color:${color};margin-top:2px">${texto}</div>`;
+    }
+
     function renderizarPilotos(lista) {
       const tbody = document.getElementById('tbodyPilotos');
       if (lista.length === 0) {
@@ -239,7 +259,10 @@
               </span>`}</td>
           <td style="color:var(--muted)">${usuario.rol === 'torre' ? esc(p.ultima_categoria || '—') : esc(p.telefono || '—')}</td>
           <td style="color:var(--muted)">${usuario.rol === 'torre' ? '<span style="color:var(--muted)">—</span>' : esc(p.nacionalidad)}</td>
-          <td style="color:var(--muted);font-size:0.8rem">${esc(p.numero_licencia || '—')}</td>
+          <td style="color:var(--muted);font-size:0.8rem">
+            ${esc(p.numero_licencia || '—')}
+            ${renderVencimiento(p.fecha_vencimiento_licencia)}
+          </td>
           <td>${badgeEstatus(p.estatus_licencia)}</td>
           <td style="font-size:0.8rem;color:var(--muted)">${formatFecha(p.ultima_carrera_fecha) || '—'}</td>
           <td style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--muted)">${p.total_carreras}</td>
@@ -260,10 +283,19 @@
       }).join('');
     }
 
+    // Días que faltan para que venza una licencia (negativo = ya vencida). null si no hay fecha.
+    function diasParaVencer(fecha) {
+      if (!fecha) return null;
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const venc = new Date(fecha.split('T')[0] + 'T00:00:00');
+      return Math.round((venc - hoy) / 86400000);
+    }
+
     function filtrarPilotos() {
-      const buscar    = document.getElementById('inputBuscar').value.toLowerCase();
-      const estatus   = document.getElementById('filtroLicencia').value;
-      const actividad = document.getElementById('filtroActividad').value;
+      const buscar      = document.getElementById('inputBuscar').value.toLowerCase();
+      const estatus     = document.getElementById('filtroLicencia').value;
+      const vencimiento = document.getElementById('filtroVencimiento').value;
+      const actividad   = document.getElementById('filtroActividad').value;
       const filtrados = pilotos.filter(p => {
         const matchBuscar = !buscar ||
           p.nombre_completo.toLowerCase().includes(buscar) ||
@@ -273,12 +305,19 @@
           String(p.numero_piloto || '').includes(buscar) ||
           (p.ultima_categoria || '').toLowerCase().includes(buscar);
         const matchEstatus = !estatus || p.estatus_licencia === estatus;
+        const dias = diasParaVencer(p.fecha_vencimiento_licencia);
+        const matchVencimiento =
+          !vencimiento ||
+          (vencimiento === 'sin_fecha' && dias === null) ||
+          (vencimiento === 'vencida'   && dias !== null && dias < 0) ||
+          (vencimiento === '30'        && dias !== null && dias >= 0 && dias <= 30) ||
+          (vencimiento === '90'        && dias !== null && dias >= 0 && dias <= 90);
         const matchActividad =
           !actividad ||
           (actividad === 'activo'   && p.etapas_recientes > 0) ||
           (actividad === 'inactivo' && p.total_carreras > 0 && p.etapas_recientes === 0) ||
           (actividad === 'nuevo'    && p.total_carreras === 0);
-        return matchBuscar && matchEstatus && matchActividad;
+        return matchBuscar && matchEstatus && matchVencimiento && matchActividad;
       });
       document.getElementById('contadorPilotos').textContent =
         `${filtrados.length} de ${pilotos.length} piloto(s)`;
@@ -296,6 +335,7 @@
       document.getElementById('fSangre').value       = piloto?.tipo_sangre || 'O+';
       document.getElementById('fEstatusLicencia').value = piloto?.estatus_licencia || 'Vigente';
       document.getElementById('fLicencia').value     = piloto?.numero_licencia || '';
+      document.getElementById('fVencimientoLicencia').value = piloto?.fecha_vencimiento_licencia?.split('T')[0] || '';
       document.getElementById('fNacionalidad').value = piloto?.nacionalidad || 'Mexicana';
       document.getElementById('fNacimiento').value   = piloto?.fecha_nacimiento?.split('T')[0] || '';
       document.getElementById('fEmergencia').value   = piloto?.contacto_emergencia || '';
@@ -342,6 +382,7 @@
         tipo_sangre:         sangre,
         estatus_licencia:    document.getElementById('fEstatusLicencia').value,
         numero_licencia:     document.getElementById('fLicencia').value || null,
+        fecha_vencimiento_licencia: document.getElementById('fVencimientoLicencia').value || null,
         nacionalidad:        document.getElementById('fNacionalidad').value,
         fecha_nacimiento:    document.getElementById('fNacimiento').value || null,
         contacto_emergencia: document.getElementById('fEmergencia').value || null,

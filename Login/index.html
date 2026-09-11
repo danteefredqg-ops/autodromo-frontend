@@ -90,6 +90,25 @@
     .btn-primario:active { transform: scale(0.98); }
     .btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* CTA de registro — prominente, no un link chiquito al pie */
+    .cta-registro {
+      display: block; text-decoration: none;
+      background: rgba(37,99,235,0.1); border: 1.5px solid var(--rojo);
+      border-radius: 14px; padding: 16px 20px; margin-bottom: 18px;
+      text-align: center; transition: background 0.18s, transform 0.1s;
+    }
+    .cta-registro:hover { background: rgba(37,99,235,0.18); }
+    .cta-registro:active { transform: scale(0.99); }
+    .cta-registro .cta-eyebrow { font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .cta-registro .cta-titulo {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.05em;
+      color: var(--texto); margin-top: 2px;
+    }
+    .cta-registro .cta-titulo b { color: var(--rojo); }
+    .cta-sep { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+    .cta-sep span { flex: 1; height: 1px; background: var(--borde); }
+    .cta-sep em { font-size: 0.62rem; font-style: normal; color: var(--muted); letter-spacing: 0.1em; white-space: nowrap; }
+
     /* Alert */
     .alerta {
       padding: 10px 14px; border-radius: 8px; font-size: 0.82rem;
@@ -125,6 +144,13 @@
       <div class="linea"></div>
     </div>
 
+    <!-- CTA registro: primero y grande, la mayoría de quienes llegan aquí son nuevos -->
+    <a href="../Registro/index.html" class="cta-registro">
+      <div class="cta-eyebrow">¿Primera vez en el Autódromo?</div>
+      <div class="cta-titulo"><b>Regístrate aquí</b> para competir</div>
+    </a>
+    <div class="cta-sep"><span></span><em>¿ya tienes cuenta? inicia sesión</em><span></span></div>
+
     <!-- Card -->
     <div class="card">
       <div id="alerta" class="alerta"></div>
@@ -155,12 +181,10 @@
       <div id="googleSep" class="pie-sep" style="display:none"><span></span><em>o</em><span></span></div>
       <div id="googleBtnBox" style="display:flex;justify-content:center"></div>
 
-      <div class="pie-sep"><span></span><em>¿primera vez?</em><span></span></div>
+      <div class="pie-sep"><span></span><em>¿ya te inscribió el staff antes?</em><span></span></div>
       <div style="text-align:center;font-size:0.76rem;color:var(--muted)">
-        ¿No tienes acceso aún?
+        Si ya tienes un número de piloto asignado pero nunca has creado tu contraseña:
         <a href="../piloto/index.html#crear" style="color:var(--rojo);text-decoration:none;font-weight:600"> Crear acceso</a>
-        &nbsp;·&nbsp;
-        <a href="../Registro/index.html" style="color:var(--muted);text-decoration:none">Pre-registro</a>
       </div>
     </div>
   </div>

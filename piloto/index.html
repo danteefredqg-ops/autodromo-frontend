@@ -273,7 +273,8 @@
     }
     .campo-p select option{background:var(--card2)}
     .campo-p input::placeholder{color:var(--sub2)}
-    .campo-p input.faltante{border-color:rgba(245,158,11,0.45);background:rgba(245,158,11,0.03)}
+    .campo-p input.faltante,.campo-p select.faltante{border-color:#eab308;background:rgba(234,179,8,0.08)}
+    .campo-p label.req-compite{color:#eab308}
 
     .btn-guardar-perfil{
       padding:11px 24px;background:var(--rojo);border:none;border-radius:3px;
@@ -475,6 +476,7 @@
       </div>
       <div class="barra-fondo"><div class="barra-fill" id="barraFill" style="width:0%"></div></div>
       <div id="camposFaltantes" style="font-size:0.7rem;color:#b8892a;margin-top:6px"></div>
+      <div style="font-size:0.66rem;color:var(--sub2);margin-top:4px">Los campos marcados en <span style="color:#eab308;font-weight:600">amarillo</span> son obligatorios: sin ellos no podrás inscribirte a una carrera.</div>
     </div>
 
     <!-- Stats -->
@@ -723,7 +725,17 @@
         <div class="perfil-section-title">Datos deportivos</div>
         <div class="grid-perfil">
           <div class="campo-p"><label>Nombre del equipo</label><input id="pEquipo" type="text"/></div>
-          <div class="campo-p"><label>Comisión nacional</label><input id="pComision" type="text"/></div>
+          <div class="campo-p" style="grid-column:1/-1"><label>Comisión nacional</label>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:6px">
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="PISTA" class="chkComisionPiloto" style="width:auto"/>Pista</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="KARTISMO" class="chkComisionPiloto" style="width:auto"/>Kartismo</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="RALLIES" class="chkComisionPiloto" style="width:auto"/>Rallies</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="ACELERACIÓN" class="chkComisionPiloto" style="width:auto"/>Aceleración</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="OFF-ROAD" class="chkComisionPiloto" style="width:auto"/>Off-Road</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="VINTAGE" class="chkComisionPiloto" style="width:auto"/>Vintage</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" value="CLÁSICOS" class="chkComisionPiloto" style="width:auto"/>Clásicos</label>
+            </div>
+          </div>
           <div class="campo-p"><label>Año licencia anterior</label><input id="pAnioLic" type="number" min="2000" max="2030"/></div>
           <div class="campo-p"><label>¿Desde qué año corres en el Autódromo?</label><input id="pAnioInicio" type="number" min="1990" max="2030"/></div>
         </div>
@@ -949,23 +961,54 @@ const CAMPOS_REQUERIDOS=[
   {k:'lugar_nacimiento',l:'Lugar de nacimiento'},
 ];
 
+// Mapa campo-requerido → id del input/select en el formulario de perfil.
+// foto_perfil no está aquí porque se sube con su propio botón, no un campo de este mapa.
+const MAPA_CAMPOS_REQUERIDOS={tipo_sangre:'pSangre',fecha_nacimiento:'pFechaNac',curp:'pCurp',telefono:'pTel',
+  contacto_emergencia:'pContactoEmerg',telefono_emergencia:'pTelEmerg',
+  parentesco_emergencia:'pParentesco',calle:'pCalle',colonia:'pColonia',cp:'pCp',
+  ciudad:'pCiudad',estado:'pEstado',escolaridad:'pEscolaridad',lugar_nacimiento:'pLugarNac'};
+
+// Marca de forma permanente (independiente de si ya están llenos) cuál campo es
+// obligatorio para poder competir — el cliente pidió que esta info "venga en
+// amarillo" para que sea evidente desde antes de que falte.
+function marcarCamposObligatorios(){
+  Object.values(MAPA_CAMPOS_REQUERIDOS).forEach(id=>{
+    const el = document.getElementById(id);
+    const label = el?.closest('.campo-p')?.querySelector('label');
+    if(label && !label.querySelector('.marca-obligatoria')){
+      const marca=document.createElement('span');
+      marca.className='marca-obligatoria req-compite';
+      marca.textContent=' *';
+      marca.title='Obligatorio para poder competir';
+      label.appendChild(marca);
+    }
+  });
+}
+marcarCamposObligatorios();
+
+// Devuelve la lista de campos obligatorios que le faltan al piloto (para
+// bloquear la inscripción, no solo para mostrar el banner informativo).
+function camposFaltantesPiloto(p){
+  return CAMPOS_REQUERIDOS.filter(c=>!p[c.k]);
+}
+
 function actualizarCompletitud(p){
-  const faltantes=CAMPOS_REQUERIDOS.filter(c=>!p[c.k]);
+  const faltantes=camposFaltantesPiloto(p);
   const pct=Math.round(((CAMPOS_REQUERIDOS.length-faltantes.length)/CAMPOS_REQUERIDOS.length)*100);
   document.getElementById('pctLabel').textContent=pct+'%';
   document.getElementById('barraFill').style.width=pct+'%';
   if(faltantes.length>0){
     document.getElementById('camposFaltantes').textContent='Faltan: '+faltantes.map(c=>c.l).join(', ');
+    document.getElementById('camposFaltantes').style.color='';
   } else {
     document.getElementById('camposFaltantes').textContent='✓ Perfil completo';
     document.getElementById('camposFaltantes').style.color='var(--verde)';
   }
+  // Limpia marcas viejas antes de reaplicar, si no, un campo ya llenado se
+  // queda pintado de amarillo para siempre en esta sesión.
+  Object.values(MAPA_CAMPOS_REQUERIDOS).forEach(id=>document.getElementById(id)?.classList.remove('faltante'));
   faltantes.forEach(c=>{
-    const mapa={tipo_sangre:'pSangre',fecha_nacimiento:'pFechaNac',curp:'pCurp',telefono:'pTel',
-      contacto_emergencia:'pContactoEmerg',telefono_emergencia:'pTelEmerg',
-      parentesco_emergencia:'pParentesco',calle:'pCalle',colonia:'pColonia',cp:'pCp',
-      ciudad:'pCiudad',estado:'pEstado',escolaridad:'pEscolaridad',lugar_nacimiento:'pLugarNac'};
-    const el=document.getElementById(mapa[c.k]);
+    const el=document.getElementById(MAPA_CAMPOS_REQUERIDOS[c.k]);
     if(el) el.classList.add('faltante');
   });
   mostrarBanner(faltantes, pct);
@@ -1005,7 +1048,7 @@ function llenarFormPerfil(p){
     ciudad:'pCiudad',estado:'pEstado',contacto_emergencia:'pContactoEmerg',
     telefono_emergencia:'pTelEmerg',parentesco_emergencia:'pParentesco',
     alergias:'pAlergias',condiciones_medicas:'pCondMed',nombre_equipo:'pEquipo',
-    comision_nacional:'pComision',anio_licencia_anterior:'pAnioLic',
+    anio_licencia_anterior:'pAnioLic',
     anio_inicio_autodromo:'pAnioInicio'};
   for(const[k,id] of Object.entries(m)){
     const el=document.getElementById(id);
@@ -1015,6 +1058,8 @@ function llenarFormPerfil(p){
         : p[k];
     }
   }
+  const comisiones=(p.comision_nacional||'').split(',').map(s=>s.trim());
+  document.querySelectorAll('.chkComisionPiloto').forEach(c=>{ c.checked = comisiones.includes(c.value); });
   mostrarAnosCorriendo(p.anio_inicio_autodromo);
   mostrarFotoPerfil(p.foto_perfil);
 }
@@ -1395,7 +1440,7 @@ async function guardarPerfil(){
     alergias:document.getElementById('pAlergias').value,
     condiciones_medicas:document.getElementById('pCondMed').value,
     nombre_equipo:document.getElementById('pEquipo').value,
-    comision_nacional:document.getElementById('pComision').value,
+    comision_nacional:[...document.querySelectorAll('.chkComisionPiloto:checked')].map(c=>c.value).join(','),
     anio_licencia_anterior:document.getElementById('pAnioLic').value||null,
     anio_inicio_autodromo:document.getElementById('pAnioInicio').value||null,
   };
@@ -1538,6 +1583,19 @@ function seleccionarCatInscripcion(id, color, precio, btn){
 }
 
 async function enviarInscripcion(){
+  // El reglamento exige tener el perfil completo (CURP, contacto de emergencia,
+  // domicilio, etc.) para poder competir — se bloquea aquí y no solo se avisa,
+  // porque antes el banner era informativo pero no impedía inscribirse.
+  const faltantes = camposFaltantesPiloto(pilotoData);
+  if(faltantes.length>0){
+    mostrarToast(`Completa tu perfil antes de inscribirte — te falta: ${faltantes.map(c=>c.l).join(', ')}`,'error');
+    irAPerfil();
+    return;
+  }
+  if(!pilotoData.numero_piloto){
+    mostrarToast('Aún no tienes un número de piloto asignado. Pide al staff que te lo asigne antes de inscribirte.','error');
+    return;
+  }
   const etapaId  = document.getElementById('inscEtapa').value;
   const vehiculo = document.getElementById('inscVehiculo').value.trim();
   if(!document.getElementById('inscCamp').value) return mostrarToast('Selecciona un campeonato','error');
