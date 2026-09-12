@@ -322,7 +322,10 @@
 
       <div class="sec">Vehículo / Kart</div>
       <div class="g2">
-        <div class="f"><label class="lbl">Marca <span class="req">*</span></label><input class="inp" id="iMarca" placeholder="Ej: Tony Kart" /></div>
+        <div class="f"><label class="lbl">Marca <span class="req">*</span></label>
+          <select class="sel" id="iMarca"></select>
+          <input class="inp" id="iMarca_otra" placeholder="Escribe la marca" style="display:none;margin-top:6px" />
+        </div>
         <div class="f"><label class="lbl">Año</label><input class="inp" type="number" id="iAnio" min="1990" max="2030" placeholder="Ej: 2022" /></div>
         <div class="f"><label class="lbl">Modelo</label><input class="inp" id="iModelo" placeholder="Ej: Rookie EVO" /></div>
         <div class="f"><label class="lbl">Color</label><input class="inp" id="iColor" placeholder="Ej: Rojo/Blanco" /></div>
@@ -370,6 +373,36 @@
     if(!texto) return true;
     const limpio = texto.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
     return !VEHICULOS_BLOQUEADOS.some(p => new RegExp(`\\b${p}\\b`).test(limpio));
+  }
+
+  // Menú de marcas para no depender de que cada quien escriba a mano — con
+  // salida "Otra marca" para no bloquear a nadie cuya marca no esté en la lista.
+  const MARCAS_VEHICULO = {
+    'Autos': ['Acura','Audi','BMW','Buick','Chevrolet','Chrysler','Datsun','Dodge','Fiat','Ford','Honda',
+      'Hyundai','Infiniti','Jeep','Kia','Lexus','Mazda','Mercedes-Benz','Mercury','MINI','Mitsubishi',
+      'Nissan','Oldsmobile','Peugeot','Plymouth','Pontiac','Porsche','Renault','SEAT','Subaru','Toyota',
+      'Volkswagen','Volvo'],
+    'Karts': ['Tony Kart','CRG','OTK','Birel ART','Righetti Ridolfi','Kosmic','Sodikart','Praga','Energy Kart','Parolin','Intrepid'],
+  };
+  function crearSelectorMarca(id){
+    const sel = document.getElementById(id);
+    if(!sel) return;
+    let html = '<option value="">Selecciona una marca...</option>';
+    for(const [grupo, marcas] of Object.entries(MARCAS_VEHICULO)){
+      html += `<optgroup label="${grupo}">` + marcas.map(m=>`<option>${m}</option>`).join('') + '</optgroup>';
+    }
+    html += '<option value="__otra__">Otra marca (especificar)</option>';
+    sel.innerHTML = html;
+    const otra = document.getElementById(id+'_otra');
+    sel.addEventListener('change', () => {
+      if(sel.value === '__otra__'){ otra.style.display='block'; otra.focus(); }
+      else { otra.style.display='none'; otra.value=''; }
+    });
+  }
+  function valorMarca(id){
+    const sel = document.getElementById(id);
+    if(!sel) return '';
+    return sel.value === '__otra__' ? (document.getElementById(id+'_otra')?.value.trim() || '') : sel.value;
   }
 
   let modo = '';       // 'nuevo' | 'existente'
@@ -613,11 +646,13 @@
 
   // ─── Enviar ───────────────────────────────────────────────────────────────
   async function enviar() {
+    const btnYa = document.getElementById('btnEnviar');
+    if (btnYa.disabled) return; // evita doble tap / doble envío mientras la primera petición sigue en curso
     document.getElementById('a4').style.display = 'none';
     const campeonatoId = document.getElementById('iCampeonato').value;
     const etapaId      = document.getElementById('iEtapa').value;
     const numero       = document.getElementById('iNum').value;
-    const marca        = document.getElementById('iMarca').value.trim();
+    const marca        = valorMarca('iMarca');
     if (!campeonatoId) return alerta('a4', 'Selecciona el campeonato');
     if (!etapaId)       return alerta('a4', 'Selecciona la etapa (carrera)');
     if (!catSelIds.size) return alerta('a4', 'Selecciona al menos una categoría');
@@ -712,10 +747,11 @@
     registroCompletado = false;
     document.getElementById('iEtapa').innerHTML = '<option value="">Selecciona el campeonato primero...</option>';
     ['pAPaterno','pAMaterno','pNombres','pTel','pEmail','pNac','pEmerg','pTelEmerg',
-     'iNum','iMarca','iAnio','iModelo','iColor','iApodo','emailBuscar','numeroBuscar'].forEach(id => {
+     'iNum','iMarca','iMarca_otra','iAnio','iModelo','iColor','iApodo','emailBuscar','numeroBuscar'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = id==='pCiudad'?'Monterrey':id==='pEstado'?'Nuevo León':'';
     });
+    document.getElementById('iMarca_otra').style.display = 'none';
     document.getElementById('pSangre').value = '';
     document.getElementById('iNum').readOnly = false;
     document.getElementById('pilotoBox').style.display = 'none';
@@ -729,6 +765,7 @@
   }
 
   init();
+  crearSelectorMarca('iMarca');
 </script>
 </body>
 </html>

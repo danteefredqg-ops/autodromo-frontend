@@ -135,7 +135,8 @@
           </div>
           <div class="campo">
             <label class="etiqueta">Marca *</label>
-            <input class="input" id="iVehiculo" placeholder="Ej: Tony Kart" required />
+            <select class="input" id="iVehiculo" required></select>
+            <input class="input" id="iVehiculo_otra" placeholder="Escribe la marca" style="display:none;margin-top:6px" />
           </div>
           <div class="campo">
             <label class="etiqueta">Año</label>
@@ -218,7 +219,8 @@
         <div id="infoVehiculo" style="font-size:0.82rem;color:var(--muted);margin-bottom:14px"></div>
         <div class="campo">
           <label class="etiqueta">Marca *</label>
-          <input class="input" id="vMarca" placeholder="Ej: Tony Kart" />
+          <select class="input" id="vMarca"></select>
+          <input class="input" id="vMarca_otra" placeholder="Escribe la marca" style="display:none;margin-top:6px" />
         </div>
         <div class="grid-2" style="margin-top:10px">
           <div class="campo"><label class="etiqueta">Modelo</label><input class="input" id="vModelo" /></div>
@@ -265,6 +267,46 @@
       const limpio = texto.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
       return !VEHICULOS_BLOQUEADOS.some(p => new RegExp(`\\b${p}\\b`).test(limpio));
     }
+
+    // Menú de marcas para no depender de que cada quien escriba a mano — con
+    // salida "Otra marca" para no bloquear a nadie cuya marca no esté en la lista.
+    const MARCAS_VEHICULO = {
+      'Autos': ['Acura','Audi','BMW','Buick','Chevrolet','Chrysler','Datsun','Dodge','Fiat','Ford','Honda',
+        'Hyundai','Infiniti','Jeep','Kia','Lexus','Mazda','Mercedes-Benz','Mercury','MINI','Mitsubishi',
+        'Nissan','Oldsmobile','Peugeot','Plymouth','Pontiac','Porsche','Renault','SEAT','Subaru','Toyota',
+        'Volkswagen','Volvo'],
+      'Karts': ['Tony Kart','CRG','OTK','Birel ART','Righetti Ridolfi','Kosmic','Sodikart','Praga','Energy Kart','Parolin','Intrepid'],
+    };
+    function crearSelectorMarca(id){
+      const sel = document.getElementById(id);
+      if(!sel) return;
+      let html = '<option value="">Selecciona una marca...</option>';
+      for(const [grupo, marcas] of Object.entries(MARCAS_VEHICULO)){
+        html += `<optgroup label="${grupo}">` + marcas.map(m=>`<option>${m}</option>`).join('') + '</optgroup>';
+      }
+      html += '<option value="__otra__">Otra marca (especificar)</option>';
+      sel.innerHTML = html;
+      const otra = document.getElementById(id+'_otra');
+      sel.addEventListener('change', () => {
+        if(sel.value === '__otra__'){ otra.style.display='block'; otra.focus(); }
+        else { otra.style.display='none'; otra.value=''; }
+      });
+    }
+    function valorMarca(id){
+      const sel = document.getElementById(id);
+      if(!sel) return '';
+      return sel.value === '__otra__' ? (document.getElementById(id+'_otra')?.value.trim() || '') : sel.value;
+    }
+    function fijarValorMarca(id, valor){
+      const sel = document.getElementById(id), otra = document.getElementById(id+'_otra');
+      const opciones = [...sel.options].map(o => o.value || o.textContent);
+      if(valor && opciones.includes(valor)){ sel.value = valor; otra.style.display='none'; otra.value=''; }
+      else if(valor){ sel.value = '__otra__'; otra.style.display='block'; otra.value = valor; }
+      else { sel.value = ''; otra.style.display='none'; otra.value=''; }
+    }
+    crearSelectorMarca('iVehiculo');
+    crearSelectorMarca('vMarca');
+
     document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
     document.getElementById('usuarioNombre').textContent = usuario.nombre;
     document.getElementById('usuarioRol').textContent    = usuario.rol;
@@ -524,7 +566,7 @@
       document.getElementById('iCampeonato').value = '';
       document.getElementById('iEtapa').innerHTML = '<option value="">Seleccionar etapa...</option>';
       document.getElementById('iNumero').value   = '';
-      document.getElementById('iVehiculo').value = '';
+      fijarValorMarca('iVehiculo', '');
       document.getElementById('iAnio').value     = '';
       document.getElementById('iModelo').value   = '';
       document.getElementById('iColor').value    = '';
@@ -581,7 +623,7 @@
       const campId    = document.getElementById('iCampeonato').value;
       const etapaId   = document.getElementById('iEtapa').value;
       const numero    = document.getElementById('iNumero').value;
-      const vehiculo  = document.getElementById('iVehiculo').value.trim();
+      const vehiculo  = valorMarca('iVehiculo');
 
       if (!pilotoId)              return mostrarToast('Selecciona un piloto', 'error');
       if (!campId)                return mostrarToast('Selecciona un campeonato', 'error');
@@ -691,7 +733,7 @@
       if (!i) return;
       vehiculoInscId = id;
       document.getElementById('infoVehiculo').textContent = `#${i.numero_piloto} — ${i.piloto_nombre}`;
-      document.getElementById('vMarca').value  = i.vehiculo || '';
+      fijarValorMarca('vMarca', i.vehiculo || '');
       document.getElementById('vModelo').value = i.modelo_vehiculo || '';
       document.getElementById('vAnio').value   = i.anio_vehiculo || '';
       document.getElementById('vColor').value  = i.color_vehiculo || '';
@@ -702,7 +744,7 @@
     function cerrarModalVehiculo() { document.getElementById('modalVehiculo').style.display = 'none'; }
 
     async function guardarVehiculo() {
-      const marca = document.getElementById('vMarca').value.trim();
+      const marca = valorMarca('vMarca');
       if (!marca) return mostrarToast('La marca es obligatoria', 'error');
       if (!vehiculoValido(marca)) return mostrarToast('Ese vehículo no es válido para competir en el autódromo', 'error');
       const btn = document.getElementById('btnGuardarVehiculo');

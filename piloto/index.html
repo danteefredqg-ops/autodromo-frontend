@@ -566,7 +566,10 @@
         <div class="perfil-section">
           <div class="perfil-section-title">Tu vehículo</div>
           <div class="grid-perfil">
-            <div class="campo-p"><label>Marca / Vehículo *</label><input id="inscVehiculo" type="text" placeholder="Ej: Honda, Ford, Kart..."/></div>
+            <div class="campo-p"><label>Marca / Vehículo *</label>
+              <select id="inscVehiculo"></select>
+              <input id="inscVehiculo_otra" type="text" placeholder="Escribe la marca" style="display:none;margin-top:6px"/>
+            </div>
             <div class="campo-p"><label>Modelo</label><input id="inscModelo" type="text" placeholder="Ej: Civic, Mustang..."/></div>
             <div class="campo-p"><label>Año</label><input id="inscAnio" type="number" min="1990" max="2030" placeholder="Ej: 2023"/></div>
             <div class="campo-p"><label>Color</label><input id="inscColor" type="text" placeholder="Ej: Rojo metálico"/></div>
@@ -805,6 +808,37 @@ function vehiculoValido(texto){
   const limpio = texto.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
   return !VEHICULOS_BLOQUEADOS.some(p => new RegExp(`\\b${p}\\b`).test(limpio));
 }
+
+// Menú de marcas para no depender de que cada quien escriba a mano — con
+// salida "Otra marca" para no bloquear a nadie cuya marca no esté en la lista.
+const MARCAS_VEHICULO = {
+  'Autos': ['Acura','Audi','BMW','Buick','Chevrolet','Chrysler','Datsun','Dodge','Fiat','Ford','Honda',
+    'Hyundai','Infiniti','Jeep','Kia','Lexus','Mazda','Mercedes-Benz','Mercury','MINI','Mitsubishi',
+    'Nissan','Oldsmobile','Peugeot','Plymouth','Pontiac','Porsche','Renault','SEAT','Subaru','Toyota',
+    'Volkswagen','Volvo'],
+  'Karts': ['Tony Kart','CRG','OTK','Birel ART','Righetti Ridolfi','Kosmic','Sodikart','Praga','Energy Kart','Parolin','Intrepid'],
+};
+function crearSelectorMarca(id){
+  const sel = document.getElementById(id);
+  if(!sel) return;
+  let html = '<option value="">Selecciona una marca...</option>';
+  for(const [grupo, marcas] of Object.entries(MARCAS_VEHICULO)){
+    html += `<optgroup label="${grupo}">` + marcas.map(m=>`<option>${m}</option>`).join('') + '</optgroup>';
+  }
+  html += '<option value="__otra__">Otra marca (especificar)</option>';
+  sel.innerHTML = html;
+  const otra = document.getElementById(id+'_otra');
+  sel.addEventListener('change', () => {
+    if(sel.value === '__otra__'){ otra.style.display='block'; otra.focus(); }
+    else { otra.style.display='none'; otra.value=''; }
+  });
+}
+function valorMarca(id){
+  const sel = document.getElementById(id);
+  if(!sel) return '';
+  return sel.value === '__otra__' ? (document.getElementById(id+'_otra')?.value.trim() || '') : sel.value;
+}
+crearSelectorMarca('inscVehiculo');
 
 async function apiFetch(ruta, ops={}){
   const token = localStorage.getItem(TOKEN_KEY);
@@ -1589,6 +1623,7 @@ function seleccionarCatInscripcion(id, color, precio, btn){
 }
 
 async function enviarInscripcion(){
+  if(document.getElementById('btnInscribirse').disabled) return; // evita doble tap / doble envío
   // El reglamento exige tener el perfil completo (CURP, contacto de emergencia,
   // domicilio, etc.) para poder competir — se bloquea aquí y no solo se avisa,
   // porque antes el banner era informativo pero no impedía inscribirse.
@@ -1605,7 +1640,7 @@ async function enviarInscripcion(){
     numeroPiloto = parseInt(numNuevo);
   }
   const etapaId  = document.getElementById('inscEtapa').value;
-  const vehiculo = document.getElementById('inscVehiculo').value.trim();
+  const vehiculo = valorMarca('inscVehiculo');
   if(!document.getElementById('inscCamp').value) return mostrarToast('Selecciona un campeonato','error');
   if(!etapaId)   return mostrarToast('Selecciona una etapa','error');
   if(!inscCatIds.size) return mostrarToast('Selecciona al menos una categoría','error');
@@ -1675,6 +1710,8 @@ function resetInscripcion(){
   document.getElementById('inscEtapa').innerHTML='<option value="">Primero elige el campeonato</option>';
   document.getElementById('inscCatGrid').innerHTML='<div class="vacio" style="width:100%;padding:16px">Selecciona un campeonato para ver las categorías</div>';
   document.getElementById('inscVehiculo').value='';
+  document.getElementById('inscVehiculo_otra').value='';
+  document.getElementById('inscVehiculo_otra').style.display='none';
   document.getElementById('inscModelo').value='';
   document.getElementById('inscAnio').value='';
   document.getElementById('inscColor').value='';
