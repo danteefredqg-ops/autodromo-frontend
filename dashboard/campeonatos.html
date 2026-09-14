@@ -365,7 +365,11 @@
           </div>`;
         }).join('');
       } catch (err) {
-        listEl.innerHTML = `<div style="color:var(--rojo);font-size:0.8rem">${err.message}</div>`;
+        // esc() en vez de meter err.message crudo en innerHTML — antes, si el
+        // mensaje traía algo que pareciera una etiqueta, se veía como un
+        // pedazo de HTML roto en la pantalla en vez de un error legible.
+        listEl.innerHTML = `<div style="color:var(--rojo);font-size:0.8rem">Error al cargar etapas: ${esc(err.message)}</div>`;
+        mostrarToast(err.message, 'error');
       }
     }
 
