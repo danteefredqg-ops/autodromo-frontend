@@ -41,13 +41,17 @@ function cerrarSesion() {
 function requerirSesion(rolesPermitidos) {
   const token   = obtenerToken();
   const usuario = obtenerUsuario();
+  // Cada página del dashboard hace "requerirSesion(); const usuario = obtenerUsuario();
+  // usuario.nombre..." sin revisar el valor de retorno — asignar location.href no detiene
+  // el script (no es síncrono), así que sin este throw esas líneas siguientes se ejecutan
+  // igual con usuario=null y truenan justo antes de que el redirect termine de surtir efecto.
   if (!token || !usuario) {
     window.location.href = '../Login/index.html';
-    return false;
+    throw new Error('Sin sesión — redirigiendo a Login');
   }
   if (rolesPermitidos && !rolesPermitidos.includes(usuario.rol)) {
     window.location.href = '../dashboard/index.html';
-    return false;
+    throw new Error('Rol sin permiso para esta página — redirigiendo');
   }
   _iniciarMonitorSesion(token);
   return true;
