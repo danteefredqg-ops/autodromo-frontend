@@ -696,10 +696,17 @@
       if (emailBuscar) body.email = emailBuscar;
     }
 
+    // Sin límite de tiempo, un problema de red dejaba a la persona viendo el
+    // botón "Enviando..." congelado para siempre sin ningún aviso. Con un
+    // evento grande (muchos registros llegando a la vez), 30s da margen de
+    // sobra para que la petición espere su turno sin ser un timeout real.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
     try {
       const res  = await fetch(API_URL + '/inscripciones/auto-registro', {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body),
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body), signal: controller.signal,
       });
+      clearTimeout(timer);
       const data = await res.json();
       if (res.status === 403 && data.requiere_contrato) {
         // Volver al paso de contrato
@@ -735,8 +742,9 @@
       registroCompletado = true;
       step(5); show('p5');
     } catch(e) {
-      alerta('a4', e.message);
+      alerta('a4', e.name === 'AbortError' ? 'La solicitud tardó demasiado. Verifica tu conexión e intenta de nuevo.' : e.message);
     } finally {
+      clearTimeout(timer);
       btn.disabled = false; btn.textContent = 'Enviar Pre-inscripción';
     }
   }

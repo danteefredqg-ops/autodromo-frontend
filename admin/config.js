@@ -95,8 +95,12 @@ async function apiFetch(ruta, opciones = {}) {
   const headers = { 'Content-Type': 'application/json', ...fetchOpciones.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
+  // 30s en vez de 15s: en un evento grande con muchos registros llegando a la
+  // vez, una petición puede tardar más esperando su turno en la base de datos
+  // sin que nada esté realmente fallando — con 15s alguien podía ver "tardó
+  // demasiado" en su celular justo cuando su registro sí se había guardado.
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
+  const timer = setTimeout(() => controller.abort(), 30000);
 
   try {
     const res = await fetch(`${API_URL}${ruta}`, { ...fetchOpciones, headers, signal: controller.signal });
