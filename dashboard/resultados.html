@@ -90,8 +90,9 @@
     if (usuario.rol === 'admin') {
       document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
     }
-    const soloLectura = usuario.rol === 'torre';
-    if (soloLectura) document.querySelector('a[href="formularios.html"]').style.display = 'none';
+    // Capturar resultados es tarea de torre (y admin); staff solo los consulta.
+    const soloLectura = usuario.rol === 'inscripciones';
+    if (usuario.rol === 'torre') document.querySelector('a[href="formularios.html"]').style.display = 'none';
 
     const PUNTOS_POS = [0, 25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
     function puntosPreview(posicion, estatus) {

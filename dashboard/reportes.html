@@ -112,9 +112,14 @@
     if (usuario.rol === 'admin') {
       document.querySelectorAll('.solo-admin').forEach(el => el.style.display = 'flex');
     }
-    if (usuario.rol === 'torre') {
+    // Corte de caja y precorte (arqueo) solo para admin: staff ve el reporte de
+    // inscripciones pero no cuánto se juntó. Torre no ve ningún reporte de caja.
+    const veCaja = usuario.rol === 'admin';
+    if (!veCaja) {
       document.getElementById('btnCorte').style.display = 'none';
       document.getElementById('btnArqueo').style.display = 'none';
+    }
+    if (usuario.rol === 'torre') {
       document.getElementById('btnPorCategoria').style.display = 'none';
       document.querySelector('a[href="formularios.html"]').style.display = 'none';
     }
@@ -156,7 +161,7 @@
               selCamp.value = c.id;
               await onCampChange();
               document.getElementById('selEtapa').value = etapaId;
-              cargarCorteGeneral();
+              if (veCaja) cargarCorteGeneral(); else if (usuario.rol !== 'torre') cargarReporteCategoria();
               return;
             }
           }
@@ -268,12 +273,26 @@
         return mostrarToast('No hay un reporte cargado para exportar', 'advertencia');
       }
       const q = v => { if (v == null) return ''; const s = String(v); return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g, '""')}"` : s; };
+      // Staff exporta el mismo reporte pero sin montos ni totales de caja.
+      if (!veCaja) {
+        const filasStaff = [['Categoría', '#', 'Piloto', 'Sangre', 'Vehículo', 'Modelo', 'Estatus', 'Método de pago', 'Fecha de pago'].join(',')];
+        for (const [nombre, g] of Object.entries(ultimoReporteCategoria.agrupado)) {
+          for (const r of g.pilotos) {
+            filasStaff.push([
+              q(nombre), r.numero_piloto, q(r.piloto_nombre), q(r.tipo_sangre), q(r.vehiculo), q(r.modelo_vehiculo),
+              q(r.estatus), q(r.metodo_pago), q(r.pagado_en ? new Date(r.pagado_en).toLocaleDateString('es-MX') : ''),
+            ].join(','));
+          }
+          filasStaff.push(['', '', '', '', '', '', '', `Subtotal ${nombre}`, `${g.pagados}/${g.total} pagados`].map(q).join(','));
+        }
+        return descargarCSV(filasStaff);
+      }
       const heads = ['Categoría', '#', 'Piloto', 'Sangre', 'Vehículo', 'Modelo', 'Estatus', 'Método de pago', 'Monto', 'Fecha de pago'];
       const filas = [heads.join(',')];
       let totalGeneralCobrado = 0, totalGeneralEsperado = 0;
       for (const [nombre, g] of Object.entries(ultimoReporteCategoria.agrupado)) {
         for (const r of g.pilotos) {
-          const monto = r.monto_pago != null ? parseFloat(r.monto_pago) : (r.estatus === 'Pagado' ? parseFloat(r.costo_inscripcion) || 0 : '');
+          const monto = r.monto_pago != null ? parseFloat(r.monto_pago) : ((r.pagado_en || r.estatus === 'Pagado') ? parseFloat(r.costo_inscripcion) || 0 : '');
           filas.push([
             q(nombre), r.numero_piloto, q(r.piloto_nombre), q(r.tipo_sangre), q(r.vehiculo), q(r.modelo_vehiculo),
             q(r.estatus), q(r.metodo_pago), monto, q(r.pagado_en ? new Date(r.pagado_en).toLocaleDateString('es-MX') : ''),
@@ -287,6 +306,10 @@
       if (totalGeneralEsperado > 0) {
         filas.push(['', '', '', '', '', '', '', 'TOTAL ESPERADO', totalGeneralEsperado, ''].map(q).join(','));
       }
+      descargarCSV(filas);
+    }
+
+    function descargarCSV(filas) {
       const blob = new Blob(['﻿' + filas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -472,7 +495,7 @@
                         }
                       </td>
                       <td>${r.metodo_pago ? `<span class="metodo-tag">${esc(r.metodo_pago)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
-                      <td style="font-size:0.82rem;color:#4ade80">${r.estatus !== 'Pagado' ? '—' : '$'+(r.monto_pago != null ? parseFloat(r.monto_pago) : parseFloat(r.costo_inscripcion) || 0).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
+                      <td style="font-size:0.82rem;color:#4ade80">${!(r.pagado_en || r.estatus === 'Pagado') ? '—' : '$'+(r.monto_pago != null ? parseFloat(r.monto_pago) : parseFloat(r.costo_inscripcion) || 0).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
                       <td style="font-size:0.75rem;color:var(--muted)">${r.pagado_en ? new Date(r.pagado_en).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}) : '—'}</td>
                     </tr>
                   `).join('')}

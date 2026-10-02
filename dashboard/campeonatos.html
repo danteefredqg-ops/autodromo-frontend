@@ -359,7 +359,7 @@
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0">
               <a href="inscripciones.html?campeonato_id=${campId}&etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Inscritos</a>
-              <a href="reportes.html?etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Corte</a>
+              ${usuario.rol === 'admin' ? `<a href="reportes.html?etapa_id=${e.id}" class="btn-secundario" style="padding:6px 10px;font-size:0.7rem;text-decoration:none;display:inline-flex;align-items:center">Corte</a>` : ''}
               ${usuario.rol === 'admin' ? `
                 <button class="btn-secundario" style="padding:6px 10px;font-size:0.7rem"
                   onclick="editarEtapaPorId(${campId},${e.id})">

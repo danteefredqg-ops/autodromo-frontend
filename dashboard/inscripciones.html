@@ -318,6 +318,8 @@
       document.querySelector('a[href="formularios.html"]').style.display = 'none';
     }
 
+    // Cambiar estatus (pendiente / pagado / descalificado) es tarea de torre; staff ya no.
+    const puedeCambiarEstatus = usuario.rol === 'torre' || usuario.rol === 'admin';
     let todasCategorias = [], campeonatos = [], pilotos = [];
     let inscripcionesActuales = [];
     let categoriaSeleccionada = '';
@@ -495,8 +497,12 @@
 
     function exportarCSV() {
       if (!inscripcionesActuales.length) return mostrarToast('Sin inscripciones para exportar', 'advertencia');
-      const cols   = ['numero_piloto','piloto_nombre','tipo_sangre','categoria_nombre','etapa_nombre','vehiculo','modelo_vehiculo','anio_vehiculo','color_vehiculo','apodo_vehiculo','estatus','metodo_pago','monto_pago','pagado_en'];
-      const heads  = ['#','Piloto','Sangre','Categoría','Etapa','Vehículo','Modelo','Año','Color','Apodo','Estatus','Método pago','Monto','Fecha pago','Cambió de vehículo','Vehículo original'];
+      let cols   = ['numero_piloto','piloto_nombre','tipo_sangre','categoria_nombre','etapa_nombre','vehiculo','modelo_vehiculo','anio_vehiculo','color_vehiculo','apodo_vehiculo','estatus','metodo_pago','monto_pago','pagado_en'];
+      let heads  = ['#','Piloto','Sangre','Categoría','Etapa','Vehículo','Modelo','Año','Color','Apodo','Estatus','Método pago','Monto','Fecha pago','Cambió de vehículo','Vehículo original'];
+      // Montos solo para admin; torre tampoco exporta método de pago.
+      const quitar = usuario.rol === 'admin' ? [] : usuario.rol === 'torre' ? ['metodo_pago','monto_pago'] : ['monto_pago'];
+      heads = heads.filter((_, idx) => !quitar.includes(cols[idx]));
+      cols  = cols.filter(c => !quitar.includes(c));
       const q = v => { if(v==null) return ''; const s=String(v); return (s.includes(',')||s.includes('"')||s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s; };
       const rows = [heads.join(','), ...inscripcionesActuales.map(i =>
         [...cols.map(c => q(i[c])), i.cambio_vehiculo ? 'Sí' : '', q(i.cambio_vehiculo ? i.vehiculo_original : '')].join(',')
@@ -542,6 +548,14 @@
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                   Cobrar
                 </button>
+              ` : ''}
+              ${puedeCambiarEstatus ? `
+                <select class="select" style="padding:5px 8px;font-size:0.7rem;width:auto" title="Cambiar estatus"
+                  onchange="cambiarEstatus(${i.id}, this)">
+                  <option value="Pendiente" ${i.estatus === 'Pendiente' ? 'selected' : ''} ${i.pagado_en && i.estatus !== 'Pendiente' ? 'disabled' : ''}>Pendiente</option>
+                  <option value="Pagado" ${i.estatus === 'Pagado' ? 'selected' : ''} ${i.pagado_en ? '' : 'disabled'}>Pagado</option>
+                  <option value="Descalificado" ${i.estatus === 'Descalificado' ? 'selected' : ''}>Descalificado</option>
+                </select>
               ` : ''}
               <button class="btn-secundario" style="padding:6px 10px;font-size:0.7rem" onclick="abrirModalVehiculo(${i.id})" title="Editar vehículo">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
@@ -713,6 +727,30 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg> Confirmar Pago';
+      }
+    }
+
+    // ── Cambiar estatus (solo torre y admin) ────────────────────────────────
+    // "Pagado" solo se puede elegir si la inscripción ya tiene un cobro
+    // registrado (p.ej. para reactivar a un descalificado que había pagado), y
+    // una ya cobrada no vuelve a "Pendiente"; el cobro lo registra staff con "Cobrar".
+    async function cambiarEstatus(id, select) {
+      const i = inscripcionesActuales.find(x => x.id === id);
+      const nuevo = select.value;
+      if (!i || nuevo === i.estatus) return;
+      const aviso = nuevo === 'Descalificado'
+        ? `¿Descalificar a #${i.numero_piloto} ${i.piloto_nombre}?`
+        : `¿Cambiar el estatus de #${i.numero_piloto} ${i.piloto_nombre} a "${nuevo}"?`;
+      if (!confirm(aviso)) { select.value = i.estatus; return; }
+      select.disabled = true;
+      try {
+        await apiFetch(`/inscripciones/${id}/estatus`, { method: 'PATCH', body: JSON.stringify({ estatus: nuevo }) });
+        mostrarToast('Estatus actualizado');
+        cargarInscripciones();
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+        select.value = i.estatus;
+        select.disabled = false;
       }
     }
 
