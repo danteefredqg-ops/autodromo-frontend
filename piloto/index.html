@@ -545,11 +545,13 @@
             </div>
             <div class="campo-p">
               <label>Etapa / Fecha</label>
-              <select id="inscEtapa" class="select-p" style="width:100%">
+              <select id="inscEtapa" class="select-p" style="width:100%" onchange="onInscEtapaChange()">
                 <option value="">Primero elige el campeonato</option>
               </select>
             </div>
           </div>
+          <!-- Imágenes que el admin asignó a este campeonato/etapa -->
+          <div id="inscGaleria" style="display:none;margin-top:12px"></div>
           <div class="campo-p" id="inscNumeroWrap" style="display:none;margin-top:10px">
             <label>Tu número de piloto *</label>
             <input id="inscNumero" type="number" min="1" placeholder="Ej: 42"/>
@@ -1572,6 +1574,7 @@ async function onInscCampChange(){
   const catGrid  = document.getElementById('inscCatGrid');
   selEtapa.innerHTML = '<option value="">Cargando...</option>';
   catGrid.innerHTML  = '<div class="vacio" style="width:100%;padding:16px">Cargando categorías...</div>';
+  mostrarImagenesRegistro('inscGaleria', campId, null);
   if(!campId){
     selEtapa.innerHTML = '<option value="">Primero elige el campeonato</option>';
     catGrid.innerHTML  = '<div class="vacio" style="width:100%;padding:16px">Selecciona un campeonato para ver las categorías</div>';
@@ -1595,6 +1598,10 @@ async function onInscCampChange(){
     selEtapa.innerHTML = '<option value="">Error al cargar</option>';
     catGrid.innerHTML  = `<div class="vacio" style="width:100%;padding:16px;color:#f87171">${esc(err.message)}</div>`;
   }
+}
+
+function onInscEtapaChange(){
+  mostrarImagenesRegistro('inscGaleria', document.getElementById('inscCamp').value, document.getElementById('inscEtapa').value || null);
 }
 
 function renderCatsInscripcion(cats){
@@ -1708,6 +1715,7 @@ function resetInscripcion(){
   document.getElementById('inscExito').style.display='none';
   document.getElementById('inscCamp').value='';
   document.getElementById('inscEtapa').innerHTML='<option value="">Primero elige el campeonato</option>';
+  mostrarImagenesRegistro('inscGaleria', null, null);
   document.getElementById('inscCatGrid').innerHTML='<div class="vacio" style="width:100%;padding:16px">Selecciona un campeonato para ver las categorías</div>';
   document.getElementById('inscVehiculo').value='';
   document.getElementById('inscVehiculo_otra').value='';

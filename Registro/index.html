@@ -301,11 +301,14 @@
 
       <div class="f" style="margin-top:12px">
         <label class="lbl">Etapa <span class="req">*</span></label>
-        <select class="sel" id="iEtapa">
+        <select class="sel" id="iEtapa" onchange="onEtapaChange()">
           <option value="">Selecciona el campeonato primero...</option>
         </select>
         <div class="hint">Selecciona la carrera en la que participarás</div>
       </div>
+
+      <!-- Imágenes que el admin asignó a este campeonato/etapa (promos, reglamento, mapa…) -->
+      <div id="galeriaRegistro" style="display:none;margin-top:14px"></div>
 
       <div class="f" style="margin-top:14px">
         <label class="lbl">Categoría(s) <span class="req">*</span> <span style="font-weight:400;text-transform:none">— puedes elegir varias</span></label>
@@ -594,6 +597,7 @@
     const grid = document.getElementById('catGrid');
     const etapaSel = document.getElementById('iEtapa');
     etapaSel.innerHTML = '<option value="">Selecciona una etapa...</option>';
+    mostrarImagenesRegistro('galeriaRegistro', campeonatoSel, null);
     if (!campeonatoSel) {
       grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Selecciona un campeonato primero</div>';
       return;
@@ -609,8 +613,8 @@
         etapaSel.innerHTML = '<option value="">Sin etapas disponibles — contacta al organizador</option>';
       } else {
         etapaSel.innerHTML = '<option value="">Selecciona una etapa...</option>' +
-          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${e.nombre} (${formatFecha(e.fecha)})</option>`).join('');
-        if (etapas.length === 1) etapaSel.value = etapas[0].id;
+          etapas.map(e => `<option value="${e.id}">Etapa ${e.numero} — ${esc(e.nombre)} (${formatFecha(e.fecha)})</option>`).join('');
+        if (etapas.length === 1) { etapaSel.value = etapas[0].id; onEtapaChange(); }
       }
       // Llenar categorías — si el campeonato no tiene asignadas, usar todas
       let catsFinal = catsData;
@@ -627,11 +631,15 @@
       grid.innerHTML = (esFallback ? '<div style="grid-column:span 3;font-size:0.7rem;color:#fbbf24;margin-bottom:6px">Selecciona tu categoría</div>' : '') +
         cats.map(c =>
           `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
-             onclick="selCat(${c.id},'${c.color}',this)">${c.nombre}</button>`
+             onclick="selCat(${c.id},'${c.color}',this)">${esc(c.nombre)}</button>`
         ).join('');
     } catch(e) {
       grid.innerHTML = '<div style="grid-column:span 3;color:#f87171;font-size:0.8rem;text-align:center;padding:12px">Error al cargar datos</div>';
     }
+  }
+
+  function onEtapaChange() {
+    mostrarImagenesRegistro('galeriaRegistro', campeonatoSel, document.getElementById('iEtapa').value || null);
   }
 
   function selCat(id, color, btn) {
@@ -754,6 +762,7 @@
     modo = ''; pilotoId = null; pilotoNumero = null; catSelIds.clear(); campeonatoSel = null; contratoFirmado = false;
     registroCompletado = false;
     document.getElementById('iEtapa').innerHTML = '<option value="">Selecciona el campeonato primero...</option>';
+    mostrarImagenesRegistro('galeriaRegistro', null, null);
     ['pAPaterno','pAMaterno','pNombres','pTel','pEmail','pNac','pEmerg','pTelEmerg',
      'iNum','iMarca','iMarca_otra','iAnio','iModelo','iColor','iApodo','emailBuscar','numeroBuscar'].forEach(id => {
       const el = document.getElementById(id);

@@ -201,6 +201,42 @@
     </div>
   </div>
 
+  <!-- Modal imágenes de registro -->
+  <div class="modal-overlay" id="modalImagenes" style="display:none">
+    <div class="modal" style="max-width:640px">
+      <div class="modal-header">
+        <span class="modal-titulo" id="tituloImagenes">Imágenes del registro</span>
+        <button class="modal-cerrar" onclick="cerrarModalImagenes()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:12px">
+          El piloto ve estas imágenes al inscribirse (registro público y su portal). Las de <strong>todo el campeonato</strong> aparecen al elegir el campeonato; las de una <strong>etapa</strong>, solo al elegir esa etapa.
+        </div>
+        <div style="border:1px dashed var(--borde);border-radius:10px;padding:14px;margin-bottom:16px">
+          <div class="campo">
+            <label class="etiqueta">Imagen * <span style="font-weight:400;text-transform:none">(JPG, PNG o WEBP, máx. 5MB)</span></label>
+            <input class="input" type="file" id="imgArchivo" accept="image/jpeg,image/png,image/webp" onchange="previsualizarImagen()" />
+            <img id="imgPrevia" alt="" style="display:none;margin-top:8px;max-height:160px;max-width:100%;border-radius:8px;border:1px solid var(--borde)" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+            <div class="campo">
+              <label class="etiqueta">¿Dónde se muestra?</label>
+              <select class="select" id="imgDestino"></select>
+            </div>
+            <div class="campo">
+              <label class="etiqueta">Título (opcional)</label>
+              <input class="input" id="imgTitulo" maxlength="150" placeholder="Ej: Reglamento 2026" />
+            </div>
+          </div>
+          <button class="btn-primario" id="btnSubirImagen" style="margin-top:12px;width:100%" onclick="subirImagenRegistro()">Subir imagen</button>
+        </div>
+        <div id="listaImagenes"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="../admin/config.js"></script>
   <script>
     requerirSesion();
@@ -263,6 +299,8 @@
                 ${usuario.rol === 'admin' ? `
                   <button class="btn-secundario" style="padding:6px 12px;font-size:0.72rem"
                     onclick="event.stopPropagation();editarCampeonato(${c.id})">Editar</button>
+                  <button class="btn-secundario" style="padding:6px 12px;font-size:0.72rem" title="Imágenes que ve el piloto al inscribirse"
+                    onclick="event.stopPropagation();abrirModalImagenes(${c.id})">Imágenes</button>
                   <button class="btn-primario" style="padding:6px 12px;font-size:0.72rem"
                     onclick="event.stopPropagation();abrirModalEtapa(${c.id})">+ Etapa</button>
                   <button class="btn-eliminar" style="padding:6px 10px;font-size:0.72rem"
@@ -679,8 +717,133 @@
       } catch (e) { mostrarToast(e.message, 'error'); }
     }
 
+    // ── Imágenes de registro (solo admin) ────────────────────────────────
+    let imgCampId = null;
+    let imgEtapas = [];   // etapas activas del campeonato abierto en el modal
+    let imgActuales = []; // imágenes ya subidas (los botones pasan solo el id)
+
+    function opcionesDestino(seleccion) {
+      return `<option value="" ${seleccion == null ? 'selected' : ''}>Todo el campeonato</option>` +
+        imgEtapas.map(e => `<option value="${e.id}" ${seleccion === e.id ? 'selected' : ''}>Etapa ${e.numero} — ${esc(e.nombre)}</option>`).join('');
+    }
+
+    async function abrirModalImagenes(campId) {
+      imgCampId = campId;
+      document.getElementById('tituloImagenes').textContent = `Imágenes — ${nombresCampeonatos.get(campId) || 'campeonato'}`;
+      document.getElementById('imgArchivo').value = '';
+      document.getElementById('imgTitulo').value = '';
+      document.getElementById('imgPrevia').style.display = 'none';
+      document.getElementById('listaImagenes').innerHTML = '<div style="color:var(--muted);font-size:0.8rem">Cargando...</div>';
+      document.getElementById('modalImagenes').style.display = 'flex';
+      try {
+        imgEtapas = await apiFetch(`/campeonatos/${campId}/etapas`);
+        document.getElementById('imgDestino').innerHTML = opcionesDestino(null);
+        await cargarImagenesRegistro();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
+    function cerrarModalImagenes() {
+      document.getElementById('modalImagenes').style.display = 'none';
+      imgCampId = null;
+    }
+
+    function previsualizarImagen() {
+      const file = document.getElementById('imgArchivo').files[0];
+      const prev = document.getElementById('imgPrevia');
+      if (!file) { prev.style.display = 'none'; return; }
+      prev.src = URL.createObjectURL(file);
+      prev.style.display = 'block';
+    }
+
+    async function cargarImagenesRegistro() {
+      const lista = document.getElementById('listaImagenes');
+      const campId = imgCampId;
+      try {
+        const imgs = await apiFetch(`/imagenes-registro/campeonato/${campId}`);
+        if (campId !== imgCampId) return; // se cerró o se abrió otro campeonato
+        imgActuales = imgs;
+        if (!imgs.length) {
+          lista.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;text-align:center;padding:12px">Este campeonato aún no tiene imágenes</div>';
+          return;
+        }
+        lista.innerHTML = `<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px">${imgs.length} imagen(es)</div>` +
+          imgs.map(img => `
+          <div style="display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--borde);border-radius:10px;margin-bottom:8px">
+            <a href="${esc(UPLOADS_BASE + img.archivo)}" target="_blank" rel="noopener" style="flex-shrink:0">
+              <img src="${esc(UPLOADS_BASE + img.archivo)}" alt="" style="width:96px;height:64px;object-fit:cover;border-radius:6px;border:1px solid var(--borde);display:block" />
+            </a>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:600;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(img.titulo || 'Sin título')}</div>
+              <select class="select" style="margin-top:6px;padding:5px 8px;font-size:0.75rem" title="Dónde se muestra"
+                onchange="cambiarDestinoImagen(${img.id}, this)">${opcionesDestino(img.etapa_id)}</select>
+            </div>
+            <button class="btn-eliminar" style="padding:6px 10px;font-size:0.72rem;flex-shrink:0" title="Eliminar imagen" onclick="eliminarImagenRegistro(${img.id})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/></svg>
+            </button>
+          </div>`).join('');
+      } catch (err) {
+        lista.innerHTML = `<div style="color:#f87171;font-size:0.8rem">${esc(err.message)}</div>`;
+      }
+    }
+
+    async function subirImagenRegistro() {
+      const file = document.getElementById('imgArchivo').files[0];
+      if (!file) return mostrarToast('Selecciona una imagen', 'error');
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return mostrarToast('Solo se permiten imágenes JPG, PNG o WEBP', 'error');
+      if (file.size > 5 * 1024 * 1024) return mostrarToast('La imagen no puede pesar más de 5MB', 'error');
+      const btn = document.getElementById('btnSubirImagen');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Subiendo...';
+      try {
+        const fd = new FormData();
+        fd.append('imagen', file);
+        fd.append('campeonato_id', imgCampId);
+        fd.append('etapa_id', document.getElementById('imgDestino').value);
+        fd.append('titulo', document.getElementById('imgTitulo').value.trim());
+        // fetch directo (no apiFetch): apiFetch fuerza Content-Type JSON y aquí
+        // el navegador tiene que poner el de multipart con su "boundary".
+        const res = await fetch(`${API_URL}/imagenes-registro`, {
+          method: 'POST', headers: { 'Authorization': `Bearer ${obtenerToken()}` }, body: fd,
+        });
+        if (res.status === 401) return cerrarSesion();
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Error al subir la imagen');
+        mostrarToast('Imagen agregada');
+        document.getElementById('imgArchivo').value = '';
+        document.getElementById('imgTitulo').value = '';
+        document.getElementById('imgPrevia').style.display = 'none';
+        await cargarImagenesRegistro();
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Subir imagen';
+      }
+    }
+
+    async function cambiarDestinoImagen(id, select) {
+      const img = imgActuales.find(x => x.id === id);
+      select.disabled = true;
+      try {
+        await apiFetch(`/imagenes-registro/${id}`, { method: 'PATCH', body: JSON.stringify({ etapa_id: select.value || null }) });
+        mostrarToast('Imagen actualizada');
+        if (img) img.etapa_id = select.value ? Number(select.value) : null;
+      } catch (err) {
+        mostrarToast(err.message, 'error');
+        if (img) select.value = img.etapa_id ?? '';
+      } finally { select.disabled = false; }
+    }
+
+    async function eliminarImagenRegistro(id) {
+      const img = imgActuales.find(x => x.id === id);
+      if (!confirm(`¿Eliminar la imagen "${img?.titulo || 'sin título'}"? Ya no la verán los pilotos.`)) return;
+      try {
+        await apiFetch(`/imagenes-registro/${id}`, { method: 'DELETE' });
+        mostrarToast('Imagen eliminada');
+        await cargarImagenesRegistro();
+      } catch (err) { mostrarToast(err.message, 'error'); }
+    }
+
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { cerrarModalCamp(); cerrarModalEtapa(); cerrarModalCategorias(); }
+      if (e.key === 'Escape') { cerrarModalCamp(); cerrarModalEtapa(); cerrarModalCategorias(); cerrarModalImagenes(); }
     });
 
     cargar();

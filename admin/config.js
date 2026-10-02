@@ -189,6 +189,56 @@ function mostrarToast(mensaje, tipo = 'exito', duracionMs = 3500) {
   }
 })();
 
+// ─── Imágenes de registro (las que el admin asigna a un campeonato/etapa) ────
+// Las usan el registro público y el portal del piloto al elegir campeonato y
+// etapa. Endpoint público: se llama con fetch simple, sin token, para que una
+// sesión vieja guardada en el navegador no interfiera.
+const _galeriaReq = {};
+async function mostrarImagenesRegistro(contenedorId, campeonatoId, etapaId) {
+  const cont = document.getElementById(contenedorId);
+  if (!cont) return;
+  const miReq = (_galeriaReq[contenedorId] || 0) + 1;
+  _galeriaReq[contenedorId] = miReq;
+  if (!campeonatoId) { cont.innerHTML = ''; cont.style.display = 'none'; return; }
+  let imagenes = [];
+  try {
+    const qs = `campeonato_id=${encodeURIComponent(campeonatoId)}${etapaId ? `&etapa_id=${encodeURIComponent(etapaId)}` : ''}`;
+    const res = await fetch(`${API_URL}/imagenes-registro?${qs}`);
+    if (res.ok) imagenes = await res.json();
+  } catch { /* sin imágenes no se bloquea el registro */ }
+  if (_galeriaReq[contenedorId] !== miReq) return; // ya se eligió otro campeonato/etapa
+  if (!imagenes.length) { cont.innerHTML = ''; cont.style.display = 'none'; return; }
+
+  if (!document.getElementById('galeria-reg-css')) {
+    const s = document.createElement('style');
+    s.id = 'galeria-reg-css';
+    s.textContent = `
+      .galeria-reg{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-bottom:14px}
+      .galeria-reg figure{flex:0 0 100%;margin:0;scroll-snap-align:start;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:#0b0d11;cursor:zoom-in}
+      .galeria-reg.varias figure{flex-basis:85%}
+      .galeria-reg img{display:block;width:100%;max-height:340px;object-fit:contain;background:#0b0d11}
+      .galeria-reg figcaption{padding:7px 10px;font-size:0.78rem;color:#c7ccd6;background:rgba(255,255,255,0.04)}
+      .galeria-reg-visor{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+      .galeria-reg-visor img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}`;
+    document.head.appendChild(s);
+  }
+  cont.style.display = 'block';
+  cont.innerHTML = `<div class="galeria-reg${imagenes.length > 1 ? ' varias' : ''}">${imagenes.map(img => `
+      <figure data-src="${esc(UPLOADS_BASE + img.archivo)}">
+        <img src="${esc(UPLOADS_BASE + img.archivo)}" alt="${esc(img.titulo || 'Imagen del campeonato')}" loading="lazy" />
+        ${img.titulo ? `<figcaption>${esc(img.titulo)}</figcaption>` : ''}
+      </figure>`).join('')}</div>`;
+  cont.querySelectorAll('figure').forEach(fig => fig.addEventListener('click', () => {
+    const visor = document.createElement('div');
+    visor.className = 'galeria-reg-visor';
+    const grande = document.createElement('img');
+    grande.src = fig.dataset.src;
+    visor.appendChild(grande);
+    visor.addEventListener('click', () => visor.remove());
+    document.body.appendChild(visor);
+  }));
+}
+
 // ─── Formatear fecha ──────────────────────────────────────────────────────────
 function formatFecha(fecha) {
   if (!fecha) return '—';
