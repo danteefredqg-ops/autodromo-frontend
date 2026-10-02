@@ -27,7 +27,7 @@
       <div class="sidebar-logo-badge"><img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" /></div>
     </div>
     <nav class="nav">
-      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="./"         class="nav-link">Dashboard</a>
       <a href="pilotos.html"       class="nav-link">Pilotos</a>
       <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link">Inscripciones</a>
@@ -208,12 +208,10 @@
           div.innerHTML = '<div class="card" style="padding:40px;text-align:center;color:var(--muted)">Sin inscripciones</div>';
           return;
         }
-        const costo = data.costo_etapa || 0;
         div.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
             <h2 style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:0.08em">Reporte por Categoría</h2>
             <div style="display:flex;gap:10px;align-items:center">
-              ${costo > 0 ? `<span style="font-size:0.78rem;color:#4ade80">Costo: $${costo.toLocaleString('es-MX',{minimumFractionDigits:2})}/inscripción</span>` : ''}
               <span style="font-size:0.75rem;padding:3px 12px;border-radius:9999px;background:rgba(37,99,235,0.15);color:var(--rojo);border:1px solid rgba(37,99,235,0.3)">${data.total} total</span>
               <button class="btn-secundario" onclick="exportarReporteCategoriaExcel()" style="border-color:rgba(74,222,128,0.5);color:#4ade80;padding:6px 12px;font-size:0.72rem">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -233,7 +231,8 @@
                   <span style="color:#4ade80">✓ ${g.pagados} pagados</span>
                   <span style="color:#fbbf24">⏳ ${g.total - g.pagados} pendientes</span>
                   <span style="color:var(--texto);font-weight:700">${g.total} total</span>
-                  ${costo > 0 ? `
+                  ${g.costo > 0 ? `<span style="color:var(--muted)">$${g.costo.toLocaleString('es-MX',{minimumFractionDigits:2})}/inscripción</span>` : ''}
+                  ${g.total_esperado > 0 || g.total_cobrado > 0 ? `
                     <span style="color:#4ade80;font-weight:700">$${g.total_cobrado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
                     <span style="color:var(--muted)">/ $${g.total_esperado.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
                   ` : ''}
@@ -247,7 +246,7 @@
                       <tr>
                         <td><span class="num-piloto">${r.numero_piloto}</span></td>
                         <td><strong>${esc(r.piloto_nombre)}</strong></td>
-                        <td style="font-family:'Bebas Neue';font-size:1rem;color:var(--rojo)">${r.tipo_sangre}</td>
+                        <td style="font-family:'Bebas Neue';font-size:1rem;color:var(--rojo)">${esc(r.tipo_sangre)}</td>
                         <td style="color:var(--muted)">${esc(r.vehiculo)}${r.modelo_vehiculo ? ' '+esc(r.modelo_vehiculo) : ''}</td>
                         <td>${badgeEstatus(r.estatus)}</td>
                         <td>${r.metodo_pago ? `<span class="metodo-tag">${esc(r.metodo_pago)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
@@ -274,7 +273,7 @@
       let totalGeneralCobrado = 0, totalGeneralEsperado = 0;
       for (const [nombre, g] of Object.entries(ultimoReporteCategoria.agrupado)) {
         for (const r of g.pilotos) {
-          const monto = r.monto_pago != null ? parseFloat(r.monto_pago) : (r.estatus === 'Pagado' ? g.costo : '');
+          const monto = r.monto_pago != null ? parseFloat(r.monto_pago) : (r.estatus === 'Pagado' ? parseFloat(r.costo_inscripcion) || 0 : '');
           filas.push([
             q(nombre), r.numero_piloto, q(r.piloto_nombre), q(r.tipo_sangre), q(r.vehiculo), q(r.modelo_vehiculo),
             q(r.estatus), q(r.metodo_pago), monto, q(r.pagado_en ? new Date(r.pagado_en).toLocaleDateString('es-MX') : ''),
@@ -383,7 +382,6 @@
       try {
         const data = await apiFetch(`/reportes/corte-general?${qs}`);
         const c = data.resumen;
-        const costo = data.costo || 0;
         const campId = document.getElementById('selCampeonato').value;
         const nombreContexto = campId === 'todos'
           ? 'Todos los campeonatos'
@@ -413,7 +411,7 @@
               ['Transferencia',   c.transferencia,                  '#7e22ce'],
               ['Intercambio',     c.intercambio,                    '#c2410c'],
               ['Recaudado',       '$'+c.ingresos.toLocaleString('es-MX',{minimumFractionDigits:2}), '#4ade80'],
-              ...(costo > 0 ? [['Esperado', '$'+c.esperado.toLocaleString('es-MX',{minimumFractionDigits:2}), 'var(--muted)']] : []),
+              ...(c.esperado > 0 ? [['Esperado', '$'+c.esperado.toLocaleString('es-MX',{minimumFractionDigits:2}), 'var(--muted)']] : []),
             ].map(([label, val, color]) => `
               <div class="stat-corte">
                 <div style="font-family:'Bebas Neue';font-size:1.9rem;color:${color};line-height:1.1">${val}</div>
@@ -463,7 +461,7 @@
                     <tr>
                       <td><span class="num-piloto">${r.numero_piloto}</span></td>
                       <td><strong>${esc(r.piloto_nombre)}</strong></td>
-                      <td style="font-family:'Bebas Neue';font-size:1rem;color:var(--rojo)">${r.tipo_sangre}</td>
+                      <td style="font-family:'Bebas Neue';font-size:1rem;color:var(--rojo)">${esc(r.tipo_sangre)}</td>
                       <td><span style="padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;text-transform:uppercase;background:${r.categoria_color}22;color:${r.categoria_color};border:1px solid ${r.categoria_color}44">${esc(r.categoria_nombre)}</span></td>
                       <td>
                         ${r.estatus === 'Pagado'
@@ -474,7 +472,7 @@
                         }
                       </td>
                       <td>${r.metodo_pago ? `<span class="metodo-tag">${esc(r.metodo_pago)}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
-                      <td style="font-size:0.82rem;color:#4ade80">${r.monto_pago ? '$'+parseFloat(r.monto_pago).toLocaleString('es-MX',{minimumFractionDigits:2}) : (r.estatus === 'Pagado' && costo > 0 ? '$'+costo.toLocaleString('es-MX',{minimumFractionDigits:2}) : '—')}</td>
+                      <td style="font-size:0.82rem;color:#4ade80">${r.estatus !== 'Pagado' ? '—' : '$'+(r.monto_pago != null ? parseFloat(r.monto_pago) : parseFloat(r.costo_inscripcion) || 0).toLocaleString('es-MX',{minimumFractionDigits:2})}</td>
                       <td style="font-size:0.75rem;color:var(--muted)">${r.pagado_en ? new Date(r.pagado_en).toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}) : '—'}</td>
                     </tr>
                   `).join('')}

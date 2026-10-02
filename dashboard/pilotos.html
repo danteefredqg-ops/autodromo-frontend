@@ -14,7 +14,7 @@
       <div class="sidebar-logo-badge"><img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" /></div>
     </div>
     <nav class="nav">
-      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="./"         class="nav-link">Dashboard</a>
       <a href="pilotos.html"       class="nav-link activo">Pilotos</a>
       <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link">Inscripciones</a>
@@ -258,7 +258,7 @@
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px">
-              <div ${p.foto_perfil ? `onclick="verFotoGrande('${UPLOADS_BASE}${p.foto_perfil}','${esc(p.nombre_completo).replace(/'/g,"\\'")}')" title="Ver foto en grande"` : ''} style="width:32px;height:32px;border-radius:50%;background:${p.foto_perfil ? `url('${UPLOADS_BASE}${p.foto_perfil}') center/cover` : (inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(37,99,235,0.15)')};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(37,99,235,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? 'var(--amarillo)' : 'var(--rojo)'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0;${p.foto_perfil ? 'cursor:pointer' : ''}">${p.foto_perfil ? '' : esc(p.nombre_completo[0])}</div>
+              <div ${p.foto_perfil ? `data-foto="${esc(UPLOADS_BASE + p.foto_perfil)}" data-nombre="${esc(p.nombre_completo)}" onclick="verFotoGrande(this.dataset.foto, this.dataset.nombre)" title="Ver foto en grande"` : ''} style="width:32px;height:32px;border-radius:50%;background:${p.foto_perfil ? `url('${UPLOADS_BASE}${p.foto_perfil}') center/cover` : (inactivo ? 'rgba(245,158,11,0.12)' : 'rgba(37,99,235,0.15)')};border:1px solid ${inactivo ? 'rgba(245,158,11,0.3)' : 'rgba(37,99,235,0.3)'};display:flex;align-items:center;justify-content:center;color:${inactivo ? 'var(--amarillo)' : 'var(--rojo)'};font-family:'Bebas Neue';font-size:1rem;flex-shrink:0;${p.foto_perfil ? 'cursor:pointer' : ''}">${p.foto_perfil ? '' : esc(p.nombre_completo[0])}</div>
               <div>
                 <div style="display:flex;align-items:center;gap:6px">
                   <span style="font-weight:600">${esc(p.nombre_completo)}</span>

@@ -435,7 +435,7 @@
       </div>
 
       <button class="btn-rojo" id="btnCrear" onclick="crearAcceso()">Crear mi acceso</button>
-      <div class="hint-login">¿Ya tienes acceso? <a href="../Login/index.html" style="color:var(--texto);text-decoration:underline">Inicia sesión</a></div>
+      <div class="hint-login">¿Ya tienes acceso? <a href="../Login/" style="color:var(--texto);text-decoration:underline">Inicia sesión</a></div>
     </div>
 
     <div class="login-footer">© Autódromo Monterrey — todos los derechos reservados</div>
@@ -934,7 +934,7 @@ async function crearAcceso(){
       throw new Error(data.error || 'Error al crear acceso');
     }
     mostrarToast('¡Acceso creado! Ahora inicia sesión.','exito');
-    setTimeout(()=>{ window.location.href='../Login/index.html'; }, 1200);
+    setTimeout(()=>{ window.location.href='../Login/'; }, 1200);
   } catch(err){ mostrarError(err.message); }
   finally{ btn.disabled=false; btn.textContent='Crear mi acceso'; }
 }

@@ -9,6 +9,13 @@ const UPLOADS_BASE = API_URL.replace(/\/api$/, '');
 // coincidir con el GOOGLE_CLIENT_ID configurado en el backend (Railway).
 const GOOGLE_CLIENT_ID = '';
 
+// ─── URL limpia ───────────────────────────────────────────────────────────────
+// Si alguien entra con un enlace o marcador viejo (".../Login/index.html"), se
+// quita "index.html" de la barra de direcciones sin recargar la página.
+if (/\/index\.html$/.test(location.pathname)) {
+  history.replaceState(null, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash);
+}
+
 // ─── Seguridad: escapar HTML para evitar XSS ──────────────────────────────────
 function esc(str) {
   return String(str ?? '')
@@ -35,7 +42,7 @@ function obtenerUsuario() {
 function cerrarSesion() {
   localStorage.removeItem('autodromo_token');
   localStorage.removeItem('autodromo_usuario');
-  window.location.href = '../Login/index.html';
+  window.location.href = '../Login/';
 }
 
 function requerirSesion(rolesPermitidos) {
@@ -46,11 +53,11 @@ function requerirSesion(rolesPermitidos) {
   // el script (no es síncrono), así que sin este throw esas líneas siguientes se ejecutan
   // igual con usuario=null y truenan justo antes de que el redirect termine de surtir efecto.
   if (!token || !usuario) {
-    window.location.href = '../Login/index.html';
+    window.location.href = '../Login/';
     throw new Error('Sin sesión — redirigiendo a Login');
   }
   if (rolesPermitidos && !rolesPermitidos.includes(usuario.rol)) {
-    window.location.href = '../dashboard/index.html';
+    window.location.href = '../dashboard/';
     throw new Error('Rol sin permiso para esta página — redirigiendo');
   }
   _iniciarMonitorSesion(token);

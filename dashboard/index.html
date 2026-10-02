@@ -14,7 +14,7 @@
       <div class="sidebar-logo-badge"><img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" /></div>
     </div>
     <nav class="nav">
-      <a href="index.html"             class="nav-link activo" data-page="dashboard">
+      <a href="./"             class="nav-link activo" data-page="dashboard">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </a>
@@ -272,7 +272,8 @@
         // Actualizar stats
         const pagados    = todasInscritas.filter(i => i.estatus === 'Pagado');
         const pendientes = todasInscritas.filter(i => i.estatus === 'Pendiente');
-        const recaudado  = pagados.reduce((s, i) => s + (parseFloat(i.monto_pago) || 0), 0);
+        // Un monto NULL (no capturado) cuenta al costo de la categoría, igual que el corte de caja; un 0 cuenta como 0.
+        const recaudado  = pagados.reduce((s, i) => s + (i.monto_pago != null ? parseFloat(i.monto_pago) : (parseFloat(i.costo_categoria) || 0)), 0);
         document.getElementById('statInscritos').textContent  = todasInscritas.length;
         document.getElementById('statPagados').textContent    = pagados.length;
         document.getElementById('statPendientes').textContent = pendientes.length;

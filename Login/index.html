@@ -145,7 +145,7 @@
     </div>
 
     <!-- CTA registro: primero y grande, la mayoría de quienes llegan aquí son nuevos -->
-    <a href="../Registro/index.html" class="cta-registro">
+    <a href="../Registro/" class="cta-registro">
       <div class="cta-eyebrow">¿Primera vez en el Autódromo?</div>
       <div class="cta-titulo"><b>Regístrate aquí</b> para competir</div>
     </a>
@@ -184,7 +184,7 @@
       <div class="pie-sep"><span></span><em>¿ya te inscribió el staff antes?</em><span></span></div>
       <div style="text-align:center;font-size:0.76rem;color:var(--muted)">
         Si ya tienes un número de piloto asignado pero nunca has creado tu contraseña:
-        <a href="../piloto/index.html#crear" style="color:var(--rojo);text-decoration:none;font-weight:600"> Crear acceso</a>
+        <a href="../piloto/#crear" style="color:var(--rojo);text-decoration:none;font-weight:600"> Crear acceso</a>
       </div>
     </div>
   </div>
@@ -194,12 +194,12 @@
   <script>
     // Redirigir si ya hay sesión admin
     if (localStorage.getItem('autodromo_token')) {
-      window.location.href = '../dashboard/index.html';
+      window.location.href = '../dashboard/';
     }
 
     // Redirigir si ya hay sesión piloto
     if (localStorage.getItem('piloto_token')) {
-      window.location.href = '../piloto/index.html';
+      window.location.href = '../piloto/';
     }
 
     // Mostrar/ocultar contraseña
@@ -253,11 +253,11 @@
         if (data.tipo === 'piloto') {
           localStorage.setItem('piloto_token', data.token);
           localStorage.setItem('piloto_data', JSON.stringify(data.piloto));
-          window.location.href = '../piloto/index.html';
+          window.location.href = '../piloto/';
         } else {
           localStorage.setItem('autodromo_token', data.token);
           localStorage.setItem('autodromo_usuario', JSON.stringify(data.usuario));
-          window.location.href = '../dashboard/index.html';
+          window.location.href = '../dashboard/';
         }
       } catch (err) {
         mostrarAlerta(err.message);
@@ -291,14 +291,14 @@
           if (data.requiere_registro) {
             mostrarAlerta('No tienes una cuenta con ese correo de Google todavía. Te llevamos a crear tu acceso...', 'error');
             const email = encodeURIComponent(data.email || '');
-            setTimeout(() => { window.location.href = `../piloto/index.html?email=${email}#crear`; }, 1800);
+            setTimeout(() => { window.location.href = `../piloto/?email=${email}#crear`; }, 1800);
             return;
           }
           throw new Error(data.error || 'No se pudo iniciar sesión con Google');
         }
         localStorage.setItem('piloto_token', data.token);
         localStorage.setItem('piloto_data', JSON.stringify(data.piloto));
-        window.location.href = '../piloto/index.html';
+        window.location.href = '../piloto/';
       } catch (err) {
         mostrarAlerta(err.message);
       }

@@ -13,7 +13,7 @@
       <div class="sidebar-logo-badge"><img src="../assets/logo.png" alt="Autódromo Monterrey" class="sidebar-logo-img" /></div>
     </div>
     <nav class="nav">
-      <a href="index.html"         class="nav-link">Dashboard</a>
+      <a href="./"         class="nav-link">Dashboard</a>
       <a href="pilotos.html"       class="nav-link">Pilotos</a>
       <a href="campeonatos.html"   class="nav-link">Campeonatos</a>
       <a href="inscripciones.html" class="nav-link activo">Inscripciones</a>
@@ -523,7 +523,7 @@
             <div style="font-weight:600">${esc(i.piloto_nombre)}</div>
             ${i.auto_registro ? '<div style="font-size:0.72rem;color:#60a5fa">auto-registro</div>' : ''}
           </td>
-          <td>${usuario.rol === 'torre' ? '<span style="color:var(--muted)">—</span>' : `<span style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">${i.tipo_sangre}</span>`}</td>
+          <td>${usuario.rol === 'torre' ? '<span style="color:var(--muted)">—</span>' : `<span style="font-family:'Bebas Neue';font-size:1.1rem;color:var(--rojo)">${esc(i.tipo_sangre)}</span>`}</td>
           <td><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:${i.categoria_color}22;color:${i.categoria_color};border:1px solid ${i.categoria_color}44">${esc(i.categoria_nombre)}</span></td>
           <td style="font-size:0.78rem;color:var(--muted)">${i.etapa_nombre ? `Etapa ${i.etapa_numero} — ${esc(i.etapa_nombre)}` : '—'}</td>
           <td style="color:var(--muted);font-size:0.82rem">
@@ -702,7 +702,7 @@
           method: 'PATCH',
           body: JSON.stringify({
             metodo_pago: metodoPagoSeleccionado,
-            monto_pago:  parseFloat(document.getElementById('iMonto').value) || null,
+            monto_pago:  document.getElementById('iMonto').value === '' ? null : parseFloat(document.getElementById('iMonto').value),
           }),
         });
         mostrarToast('Pago registrado correctamente');

@@ -114,7 +114,7 @@
       </div>
 
       <div class="volver">
-        <a href="index.html">← Volver a iniciar sesión</a>
+        <a href="./">← Volver a iniciar sesión</a>
       </div>
     </div>
   </div>
@@ -173,7 +173,7 @@
 
         document.getElementById('pasoForm').style.display = 'none';
         mostrarAlerta('¡Contraseña actualizada! Redirigiendo a iniciar sesión...', 'exito');
-        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+        setTimeout(() => { window.location.href = './'; }, 1500);
       } catch (err) {
         mostrarAlerta(err.message);
         btn.disabled = false;
