@@ -631,7 +631,8 @@
       grid.innerHTML = (esFallback ? '<div style="grid-column:span 3;font-size:0.7rem;color:#fbbf24;margin-bottom:6px">Selecciona tu categoría</div>' : '') +
         cats.map(c =>
           `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}"
-             onclick="selCat(${c.id},'${c.color}',this)">${esc(c.nombre)}</button>`
+             onclick="selCat(${c.id},'${c.color}',this)">${esc(c.nombre)}${etiquetaReglasCategoria(c)
+               ? `<div style="font-size:0.6rem;font-weight:500;text-transform:none;letter-spacing:0;opacity:0.8;margin-top:2px">${esc(etiquetaReglasCategoria(c))}</div>` : ''}</button>`
         ).join('');
     } catch(e) {
       grid.innerHTML = '<div style="grid-column:span 3;color:#f87171;font-size:0.8rem;text-align:center;padding:12px">Error al cargar datos</div>';
@@ -647,6 +648,12 @@
       catSelIds.delete(id);
       btn.style.background = 'var(--dark)'; btn.style.borderColor = 'var(--borde)'; btn.style.color = 'var(--muted)';
     } else {
+      // Categoría única (p.ej. Jr Dragster): no se combina con otras.
+      for (const otra of idsADeseleccionarPorExclusiva(catSelIds, cats, id)) {
+        catSelIds.delete(otra);
+        const b = document.querySelector(`.cat-btn[data-id="${otra}"]`);
+        if (b) { b.style.background = 'var(--dark)'; b.style.borderColor = 'var(--borde)'; b.style.color = 'var(--muted)'; }
+      }
       catSelIds.add(id);
       btn.style.background = color+'22'; btn.style.borderColor = color+'66'; btn.style.color = color;
     }
@@ -668,6 +675,11 @@
     if (parseInt(numero) < 1) return alerta('a4', 'El número debe ser mayor a 0');
     if (!marca)         return alerta('a4', 'Ingresa la marca de tu vehículo');
     if (!vehiculoValido(marca)) return alerta('a4', 'Ese vehículo no es válido para competir en el autódromo');
+    // Piloto nuevo + categoría con límite de edad: la fecha de nacimiento (paso de datos) es obligatoria.
+    const conEdad = cats.find(c => catSelIds.has(c.id) && (c.edad_minima != null || c.edad_maxima != null));
+    if (modo === 'nuevo' && conEdad && !document.getElementById('pNac').value) {
+      return alerta('a4', `${conEdad.nombre} tiene límite de edad: regresa a tus datos y agrega tu fecha de nacimiento.`);
+    }
 
     const btn = document.getElementById('btnEnviar');
     btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Enviando...';

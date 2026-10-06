@@ -189,6 +189,27 @@ function mostrarToast(mensaje, tipo = 'exito', duracionMs = 3500) {
   }
 })();
 
+// ─── Reglas por categoría (edad / categoría única) ───────────────────────────
+// El backend es quien las hace cumplir; aquí solo se muestran en los botones
+// de categoría y se evita seleccionar combinaciones que se van a rechazar.
+function etiquetaReglasCategoria(c) {
+  const partes = [];
+  if (c.edad_minima != null && c.edad_maxima != null) partes.push(`${c.edad_minima} a ${c.edad_maxima} años`);
+  else if (c.edad_maxima != null) partes.push(`Hasta ${c.edad_maxima} años`);
+  else if (c.edad_minima != null) partes.push(`${c.edad_minima}+ años`);
+  if (Number(c.exclusiva)) partes.push('Categoría única');
+  return partes.join(' · ');
+}
+
+// Al seleccionar `idNuevo`: si es categoría única, se quitan las demás; si
+// no, se quita cualquier categoría única ya seleccionada. Devuelve los ids a
+// deseleccionar (el que llama actualiza su Set y sus botones).
+function idsADeseleccionarPorExclusiva(seleccionados, categorias, idNuevo) {
+  const esExclusiva = id => Number(categorias.find(c => c.id === id)?.exclusiva) === 1;
+  if (esExclusiva(idNuevo)) return [...seleccionados].filter(id => id !== idNuevo);
+  return [...seleccionados].filter(id => id !== idNuevo && esExclusiva(id));
+}
+
 // ─── Imágenes de registro (las que el admin asigna a un campeonato/etapa) ────
 // Las usan el registro público y el portal del piloto al elegir campeonato y
 // etapa. Endpoint público: se llama con fetch simple, sin token, para que una

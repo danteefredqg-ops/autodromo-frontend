@@ -1541,6 +1541,7 @@ async function cambiarPass(){
 
 // ── Inscripción desde portal ──
 let inscCatIds = new Set();
+let inscCats = []; // categorías mostradas (para las reglas de categoría única)
 let inscCampReqId = 0; // evita que una respuesta vieja (campeonato cambiado rápido) pise a la más nueva
 
 function poblarCampeonatosInscripcion(){
@@ -1606,14 +1607,16 @@ function onInscEtapaChange(){
 
 function renderCatsInscripcion(cats){
   const grid = document.getElementById('inscCatGrid');
+  inscCats = cats;
   if(!cats.length){ grid.innerHTML='<div class="vacio" style="width:100%;padding:16px">Sin categorías disponibles</div>'; return; }
   grid.innerHTML = cats.map(c=>{
     const precio = c.costo ?? c.costo_default ?? null;
-    return `<button type="button" class="insc-cat-btn"
+    const reglas = etiquetaReglasCategoria(c);
+    return `<button type="button" class="insc-cat-btn" data-id="${c.id}"
       style="border-color:${c.color||'#333'}44"
       onclick="seleccionarCatInscripcion(${c.id},'${c.color||'#888'}',${precio??'null'},this)">
       <span class="insc-cat-color" style="background:${c.color||'#888'}"></span>
-      <span class="insc-cat-nombre">${esc(c.nombre)}</span>
+      <span class="insc-cat-nombre">${esc(c.nombre)}${reglas?`<span style="display:block;font-size:0.68rem;font-weight:500;opacity:0.75">${esc(reglas)}</span>`:''}</span>
       ${precio?`<span class="insc-cat-precio">$${Number(precio).toLocaleString('es-MX')}</span>`:''}
     </button>`;
   }).join('');
@@ -1624,6 +1627,11 @@ function seleccionarCatInscripcion(id, color, precio, btn){
     inscCatIds.delete(id);
     btn.classList.remove('seleccionada');
   } else {
+    // Categoría única (p.ej. Jr Dragster): no se combina con otras.
+    for(const otra of idsADeseleccionarPorExclusiva(inscCatIds, inscCats, id)){
+      inscCatIds.delete(otra);
+      document.querySelector(`.insc-cat-btn[data-id="${otra}"]`)?.classList.remove('seleccionada');
+    }
     inscCatIds.add(id);
     btn.classList.add('seleccionada');
   }

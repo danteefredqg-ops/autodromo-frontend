@@ -130,7 +130,7 @@
             <div style="font-size:0.7rem;color:var(--muted);margin-top:22px">Un piloto puede inscribirse en varias categorías</div>
           </div>
           <div class="campo col-2">
-            <label class="etiqueta">Categoría *</label>
+            <label class="etiqueta">Categoría(s) * <span style="font-weight:400;text-transform:none">— puedes elegir varias</span></label>
             <div id="gridCategorias" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px"></div>
           </div>
           <div class="campo">
@@ -322,7 +322,8 @@
     const puedeCambiarEstatus = usuario.rol === 'torre' || usuario.rol === 'admin';
     let todasCategorias = [], campeonatos = [], pilotos = [];
     let inscripcionesActuales = [];
-    let categoriaSeleccionada = '';
+    const categoriasSeleccionadas = new Set();
+    let catsModal = []; // categorías del modal (para las reglas de categoría única)
     let metodoPagoSeleccionado = 'Efectivo';
     let inscripcionCobroId = null;
 
@@ -404,7 +405,7 @@
     async function onModalCampChange() {
       const campId = document.getElementById('iCampeonato').value;
       const miReqId = ++modalCampReqId;
-      categoriaSeleccionada = '';
+      categoriasSeleccionadas.clear();
       document.getElementById('gridCategorias').innerHTML = '';
       const etapaSelect = document.getElementById('iEtapa');
       etapaSelect.innerHTML = '<option value="">Seleccionar etapa...</option>';
@@ -424,6 +425,7 @@
     }
 
     function renderCatGrid(cats, esFallback = false) {
+      catsModal = cats;
       const grid = document.getElementById('gridCategorias');
       if (cats.length === 0) {
         grid.innerHTML = '<div style="grid-column:span 3;color:var(--muted);font-size:0.8rem">Sin categorías disponibles</div>';
@@ -432,9 +434,11 @@
       grid.innerHTML = (esFallback ? `<div style="grid-column:span 3;font-size:0.72rem;color:#fbbf24;margin-bottom:4px">⚠ Campeonato sin categorías asignadas — mostrando todas</div>` : '') +
         cats.map(c => {
           const precio = c.costo ?? c.costo_default ?? null;
+          const reglas = etiquetaReglasCategoria(c);
           return `<button type="button" class="cat-btn" data-id="${c.id}" data-color="${c.color}" data-costo="${precio ?? ''}"
             onclick="seleccionarCategoria(${c.id},'${c.color}',${precio ?? 'null'},this)">
             <div>${esc(c.nombre)}</div>
+            ${reglas ? `<div style="font-size:0.62rem;font-weight:500;color:#fbbf24;margin-top:2px">${esc(reglas)}</div>` : ''}
             ${precio ? `<div style="font-size:0.65rem;font-weight:400;opacity:0.7;margin-top:2px">$${Number(precio).toLocaleString('es-MX')}</div>` : ''}
           </button>`;
         }).join('');
@@ -573,7 +577,7 @@
 
     // ── Modal inscripción ─────────────────────────────────────────────────────
     function abrirModalInscripcion() {
-      categoriaSeleccionada = '';
+      categoriasSeleccionadas.clear();
       document.getElementById('iBuscarNum').value  = '';
       document.getElementById('infoPilotoBuscado').style.display = 'none';
       document.getElementById('iPiloto').value   = '';
@@ -617,19 +621,29 @@
       }, 400);
     }
 
+    // Varias categorías por inscripción (antes solo una: cada clic reemplazaba
+    // a la anterior y se inscribía únicamente la última elegida).
     function seleccionarCategoria(id, color, costo, btn) {
-      categoriaSeleccionada = id;
-      document.querySelectorAll('.cat-btn').forEach(b => {
+      const apagar = b => {
         b.classList.remove('activo');
-        b.style.background = 'var(--dark)';
-        b.style.borderColor = 'var(--borde)';
-        b.style.color = 'var(--muted)';
-      });
+        b.style.background = 'var(--dark)'; b.style.borderColor = 'var(--borde)'; b.style.color = 'var(--muted)';
+      };
+      if (categoriasSeleccionadas.has(id)) {
+        categoriasSeleccionadas.delete(id);
+        apagar(btn);
+        return;
+      }
+      // Categoría única (p.ej. Jr Dragster): no se combina con otras.
+      for (const otra of idsADeseleccionarPorExclusiva(categoriasSeleccionadas, catsModal, id)) {
+        categoriasSeleccionadas.delete(otra);
+        const b = document.querySelector(`#gridCategorias .cat-btn[data-id="${otra}"]`);
+        if (b) apagar(b);
+      }
+      categoriasSeleccionadas.add(id);
       btn.classList.add('activo');
       btn.style.background = color + '22';
       btn.style.borderColor = color + '66';
       btn.style.color = color;
-      if (costo !== null) document.getElementById('iMonto').value = costo;
     }
 
     async function guardarInscripcion() {
@@ -643,20 +657,20 @@
       if (!campId)                return mostrarToast('Selecciona un campeonato', 'error');
       if (!etapaId)               return mostrarToast('Selecciona una etapa', 'error');
       if (!numero)                return mostrarToast('Ingresa el número de piloto', 'error');
-      if (!categoriaSeleccionada) return mostrarToast('Selecciona una categoría', 'error');
+      if (!categoriasSeleccionadas.size) return mostrarToast('Selecciona al menos una categoría', 'error');
       if (!vehiculo)              return mostrarToast('Ingresa la marca del vehículo', 'error');
       if (!vehiculoValido(vehiculo)) return mostrarToast('Ese vehículo no es válido para competir en el autódromo', 'error');
 
       const btn = document.getElementById('btnInscribir');
       btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
       try {
-        await apiFetch('/inscripciones', {
+        const res = await apiFetch('/inscripciones', {
           method: 'POST',
           body: JSON.stringify({
             piloto_id:       parseInt(pilotoId),
             campeonato_id:   parseInt(campId),
             etapa_id:        parseInt(etapaId),
-            categoria_id:    parseInt(categoriaSeleccionada),
+            categoria_ids:   [...categoriasSeleccionadas],
             numero_piloto:   parseInt(numero),
             vehiculo,
             anio_vehiculo:   parseInt(document.getElementById('iAnio').value) || null,
@@ -665,7 +679,8 @@
             apodo_vehiculo:  document.getElementById('iApodo').value || null,
           }),
         });
-        mostrarToast('Piloto inscrito exitosamente');
+        const n = res?.inscripciones?.length || 1;
+        mostrarToast(n > 1 ? `Piloto inscrito en ${n} categorías` : 'Piloto inscrito exitosamente');
         cerrarModalInsc();
         document.getElementById('filtroCampeonato').value = campId;
         await onFiltroCampChange();
