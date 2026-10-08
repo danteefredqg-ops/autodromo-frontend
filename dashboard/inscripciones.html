@@ -724,7 +724,9 @@
     }
 
     async function confirmarPago() {
+      if (!inscripcionCobroId) return; // sin inscripción elegida no hay nada que cobrar
       const btn = document.getElementById('btnConfirmarPago');
+      if (btn.disabled) return; // doble clic: el primer cobro sigue en curso
       btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
       try {
         await apiFetch(`/inscripciones/${inscripcionCobroId}/pagar`, {

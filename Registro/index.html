@@ -432,7 +432,7 @@
       campeonatos = await apiFetch('/campeonatos', { sinSesion: true });
       const sel = document.getElementById('iCampeonato');
       sel.innerHTML = '<option value="">Selecciona el campeonato...</option>' +
-        campeonatos.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        campeonatos.map(c => `<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
       if (campeonatos.length === 1) {
         sel.value = campeonatos[0].id;
         onCampeonatoChange();

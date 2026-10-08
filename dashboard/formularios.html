@@ -238,7 +238,7 @@
 
   <script src="../admin/config.js"></script>
   <script>
-    requerirSesion();
+    requerirSesion(['admin', 'inscripciones']); // torre no ve datos sensibles (el API también se lo niega)
     const usuario = obtenerUsuario();
     document.getElementById('usuarioAvatar').textContent = usuario.nombre[0].toUpperCase();
     document.getElementById('usuarioNombre').textContent = usuario.nombre;
@@ -356,7 +356,7 @@
       const campos = [
         ['Teléfono',      p.telefono],
         ['Email',         p.email],
-        ['Fecha nacim.',  p.fecha_nacimiento ? new Date(p.fecha_nacimiento).toLocaleDateString('es-MX') : null],
+        ['Fecha nacim.',  p.fecha_nacimiento ? fechaLocal(p.fecha_nacimiento).toLocaleDateString('es-MX') : null],
         ['Tipo de sangre',p.tipo_sangre],
         ['Núm. Licencia', p.numero_licencia],
         ['CURP / RFC',    p.curp],
@@ -553,10 +553,10 @@
       val(178, 73.2, p.nacionalidad, 8);
 
       // Fecha de nacimiento / Edad / CURP
-      const fechaNac = p.fecha_nacimiento ? new Date(p.fecha_nacimiento).toLocaleDateString('es-MX') : '';
+      const fechaNac = p.fecha_nacimiento ? fechaLocal(p.fecha_nacimiento).toLocaleDateString('es-MX') : '';
       let edad = '';
       if (p.fecha_nacimiento) {
-        const nac = new Date(p.fecha_nacimiento);
+        const nac = fechaLocal(p.fecha_nacimiento);
         const hoyD = new Date();
         edad = hoyD.getFullYear() - nac.getFullYear() - ((hoyD.getMonth() < nac.getMonth() || (hoyD.getMonth() === nac.getMonth() && hoyD.getDate() < nac.getDate())) ? 1 : 0);
       }
@@ -647,10 +647,10 @@
       val(28,  55.9, prep.email);
       val(178, 73.2, prep.nacionalidad, 8);
 
-      const fechaNac = prep.fecha_nacimiento ? new Date(prep.fecha_nacimiento).toLocaleDateString('es-MX') : '';
+      const fechaNac = prep.fecha_nacimiento ? fechaLocal(prep.fecha_nacimiento).toLocaleDateString('es-MX') : '';
       let edad = '';
       if (prep.fecha_nacimiento) {
-        const nac = new Date(prep.fecha_nacimiento);
+        const nac = fechaLocal(prep.fecha_nacimiento);
         const hoyD = new Date();
         edad = hoyD.getFullYear() - nac.getFullYear() - ((hoyD.getMonth() < nac.getMonth() || (hoyD.getMonth() === nac.getMonth() && hoyD.getDate() < nac.getDate())) ? 1 : 0);
       }
@@ -757,7 +757,7 @@
       const p   = pilotoActual;
       const i   = inscripcionActual;
       const hoy = new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'long', year:'numeric' });
-      const fechaEvento = i?.etapa_fecha ? new Date(i.etapa_fecha).toLocaleDateString('es-MX') : hoy;
+      const fechaEvento = i?.etapa_fecha ? fechaLocal(i.etapa_fecha).toLocaleDateString('es-MX') : hoy;
 
       doc.setFont('helvetica','bold'); doc.setFontSize(14);
       doc.text('FORMATO DE INSPECCIÓN "FJO1"', 148, 14, {align:'center'});

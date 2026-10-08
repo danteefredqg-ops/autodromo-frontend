@@ -180,14 +180,14 @@
                 }
               </button>
             </div>
-            <div style="font-weight:700;font-size:1rem;margin-bottom:2px">${u.nombre}</div>
-            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">@${u.username}</div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:2px">${esc(u.nombre)}</div>
+            <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">@${esc(u.username)}</div>
             <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:9999px;font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(37,99,235,0.12);color:var(--rojo);border:1px solid rgba(37,99,235,0.25)">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              ${u.rol}
+              ${esc(u.rol)}
             </span>
             <div style="font-size:0.72rem;color:var(--muted);margin-top:6px">${DESC_ROLES[u.rol]}</div>
-            <button onclick="abrirModalPw(${u.id}, '${u.username}')"
+            <button data-username="${esc(u.username)}" onclick="abrirModalPw(${u.id}, this.dataset.username)"
               style="margin-top:14px;width:100%;padding:7px;border-radius:7px;background:none;border:1px solid var(--borde);color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:6px"
               onmouseover="this.style.borderColor='var(--rojo)';this.style.color='var(--rojo)'" onmouseout="this.style.borderColor='var(--borde)';this.style.color='var(--muted)'">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>

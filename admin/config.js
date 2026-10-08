@@ -69,6 +69,8 @@ function _iniciarMonitorSesion(token) {
   try {
     const payload  = JSON.parse(atob(token.split('.')[1]));
     const ahora    = Math.floor(Date.now() / 1000);
+    // Token sin fecha de vencimiento: no se programa nada (antes NaN → cerraba la sesión al instante).
+    if (!Number.isFinite(payload.exp)) return;
     const restante = payload.exp - ahora;
 
     if (restante <= 0) { cerrarSesion(); return; }
@@ -261,13 +263,23 @@ async function mostrarImagenesRegistro(contenedorId, campeonatoId, etapaId) {
 }
 
 // ─── Formatear fecha ──────────────────────────────────────────────────────────
+// Convierte una fecha del API a un Date local. Las columnas DATE de MySQL
+// (fecha de etapa, nacimiento, vencimiento de licencia…) llegan como
+// "2026-10-13T00:00:00.000Z" — medianoche UTC, que en Monterrey (UTC-6) es
+// todavía el día anterior. Antes solo se corregía "2026-10-13" sin hora, así
+// que las etapas y las fechas de nacimiento (incluido el PDF FEMADAC) salían
+// un día antes. Una fecha-hora real (p.ej. pagado_en) se convierte normal.
+function fechaLocal(fecha) {
+  if (!fecha) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})(T00:00:00(\.000)?Z)?$/.exec(String(fecha));
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const d = new Date(fecha);
+  return isNaN(d) ? null : d;
+}
+
 function formatFecha(fecha) {
-  if (!fecha) return '—';
-  // Fechas tipo "2024-06-15" se parsean como UTC; añadir hora local evita que
-  // en zonas UTC-6 aparezca un día antes.
-  const d = /^\d{4}-\d{2}-\d{2}$/.test(fecha)
-    ? new Date(fecha + 'T00:00:00')
-    : new Date(fecha);
+  const d = fechaLocal(fecha);
+  if (!d) return '—';
   return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
